@@ -1,0 +1,8 @@
+# y=x && z = 5
+trace1; I x; I y; I z
+trace1; 0;0;5
+trace1; 1;1;5
+trace1; 2;2;5
+trace1; 3;3;5
+trace1; 4;4;5
+trace1; 5;5;5
