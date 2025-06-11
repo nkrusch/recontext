@@ -16,6 +16,7 @@
 
 ### Some baseline assumptions about inputs
 
+* We are interested in numerical invariants
 * A variable holds one value at a time
 * Integer domain (or a subset)
 * relationships between variables (vs. individual variables)
