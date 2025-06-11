@@ -44,9 +44,11 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
    
 ## DIG vs. SymInfer
 
-* SymInfer takes input is a program in C, Java, or Java bytecode, marked with target locations.    
+* SymInfer takes input is a program in C, Java, or Java bytecode (NOT traces), marked with target locations.    
   It returns invariants found at those locations [@4]
+
 * The Instrumentation step may be specific to SymInfer?
+
 * Without symbolic states:
   - CEGIR inference should not iterate?
   - Inequality invariants may not be inferrable?

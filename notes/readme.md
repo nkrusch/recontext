@@ -1,6 +1,6 @@
 # Questions
 
-1. [How does DIG work](dig.md)
+1. [How does DIG work?](dig.md)
 
 2. What is the impact on the inference if we...
   * increase the degree, i.e., number of variables
@@ -20,8 +20,8 @@
 * Integer domain (or a subset)
 * null values -- unknown
 
-I use "trace" as a generic term for some tabular data.
-Could be generated from a program execution, but could also come from other sources.
+I use "trace" as a generic term for numerical tabular data.
+A trace could be generated from a program execution (but it could also come from other sources).
 
 ### Intuitions
 
