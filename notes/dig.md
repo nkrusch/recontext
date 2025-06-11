@@ -9,7 +9,8 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
    - "concrete state" is an alias of trace
 
 2. (optional) INSTRUMENTATION                     
-   - Uses symbolic execution to compute symbolic states; then symbolic states are used to obtain concrete states.
+   - Uses symbolic execution to compute symbolic states.
+   - Symbolic states are used to obtain concrete states.
 
 3. INFERENCE of equality and inequality invariants.
 
@@ -18,7 +19,7 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
         to confirm or refute an invariant, solves those using an SMT solver, 
         and produces counterexamples to refine the inference process [@1]. 
       + Giving traces as input means symbolic states are not used [@2]     
-      + Can result in spurious invariants (correct in traces, but not overall)
+      + Using traces only can generate _spurious invariants_, i.e., correct in traces, but not overall.
 
              [*] Traces -----> Inference                    [*] start
                   ↑               ↓     
