@@ -6,7 +6,7 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
 
 1. INPUT
    - C, Java, Java bytecode, or trace file [@3] 
-   - concrete state is an alias of trace
+   - "concrete state" is an alias of trace
 
 2. (optional) INSTRUMENTATION                     
    - Uses symbolic execution to compute symbolic states; then symbolic states are used to obtain concrete states.
@@ -14,13 +14,11 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
 3. INFERENCE of equality and inequality invariants.
 
    A) **Equation invariants (CEGIR-based)** [@2]      
-      SymInfer formulates verification conditions from symbolic states, 
-      to confirm or refute an invariant, solves those using an SMT solver, 
-      and produces counterexamples to refine the inference process [@1].
-     
-      Giving traces as input means symbolic states are not used [@2]    
-      (without symbolic states, inference should not iterate?).
-      Can result in spurious invariants (correct in traces, but not overall)
+      + SymInfer formulates verification conditions from symbolic states, 
+        to confirm or refute an invariant, solves those using an SMT solver, 
+        and produces counterexamples to refine the inference process [@1]. 
+      + Giving traces as input means symbolic states are not used [@2]     
+      + Can result in spurious invariants (correct in traces, but not overall)
 
              [*] Traces -----> Inference                    [*] start
                   ↑               ↓     
@@ -48,7 +46,9 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
 * SymInfer takes input is a program in C, Java, or Java bytecode, marked with target locations.    
   It returns invariants found at those locations [@4]
 * The Instrumentation step may be specific to SymInfer?
-* Inequality invariants may not be inferrable without Symbolic states?
+* Without symbolic states:
+  - CEGIR inference should not iterate?
+  - Inequality invariants may not be inferrable?
 
 
 -------------
