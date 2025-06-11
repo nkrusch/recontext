@@ -8,6 +8,9 @@ Clone with submodules
 git clone --recurse-submodules https://github.com/nkrusch/invariants.git
 ```
 
+<small>Pull submodules after clone: `git submodule update --init`</small>
+
+
 Build a container
 
 ```
