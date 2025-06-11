@@ -25,11 +25,11 @@ A trace could be generated from a program execution (but it could also come from
 
 ### Intuitions
 
-* I Suspect an inference techniques fails easily if we only use traces
-  - we may be unable to say much about the input
+* I suspect an inference technique will fail "easily" if we only provide traces as input
+  - We may be unable to say much about the input => what can we say?
   - Why/what makes the inference fail?
   
-* Increasing the difficulty of inference (e.g., higher variable count, more traces, or noise in traces) will likely break the inference.
+* Increasing the difficulty of inference (e.g., higher variable count, more traces, or "noisy" trace) will likely break inference.
 * Can we uncover/describe the limitations/boundary of the state-of-the-art techniques?
 
 ### About other invariant inference techniques
