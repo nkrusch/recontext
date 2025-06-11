@@ -18,6 +18,7 @@
 
 * A variable holds one value at a time
 * Integer domain (or a subset)
+* relationships between variables (vs. individual variables)
 * null values -- unknown
 
 I use "trace" as a generic term for numerical tabular data.
