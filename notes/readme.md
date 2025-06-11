@@ -3,9 +3,9 @@
 1. [How does DIG work?](dig.md)
 
 2. What is the impact on the inference if we...
-   * increase the degree, i.e., number of variables
-   * add more/give less traces, i.e., change number of rows
-   * restrict value domain (Z, nat, binary)
+   * Increase the degree, i.e., number of variables
+   * Adding more/giving fewer traces, i.e., change the number of rows
+   * Restrict value domain (Z, nat, binary)
 
 3. What are some other ways to infer invariants from numerical data
    * This is a lit review question (may have nothing to do with FM or PL)
@@ -25,9 +25,12 @@ A trace could be generated from a program execution (but it could also come from
 
 ### Intuitions
 
-* The inference techniques may fail easily & maybe cannot say much (why/what makes them fail).
-* More entries in traces; increasing "variables", or noise in traces will likely break the inference.
-* Can we uncover the limitations/boundary of the current existing techniques?
+* I Suspect an inference techniques fails easily if we only use traces
+  - we may be unable to say much about the input
+  - Why/what makes the inference fail?
+  
+* Increasing the difficulty of inference (e.g., higher variable count, more traces, or noise in traces) will likely break the inference.
+* Can we uncover/describe the limitations/boundary of the state-of-the-art techniques?
 
 ### About other invariant inference techniques
 
