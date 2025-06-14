@@ -1,30 +1,20 @@
-# Questions
-
-1. [How does DIG work?](dig.md)
-
-2. What is the impact on the inference if we...
-   * Increase the degree, i.e., number of variables
-   * Adding more/giving fewer traces, i.e., change the number of rows
-   * Restrict value domain (Z, nat, binary)
-
-3. What are some other ways to infer invariants from numerical data
-   * This is a lit review question (may have nothing to do with FM or PL)
-   * Ultimately we want to do some comparison
-
 # Notes
 
-Baseline assumptions about inputs
+## Baseline assumptions
 
 * We are interested in numerical invariants
 * A variable holds one value at a time
-* Integer domain (or a subset)
-* relationships between variables (vs. individual variables)
-* null values -- unknown
+* Assume integer domain or its subset (but real domain may be achievable) 
+* Hope to infer invariants about individual variables and ideally relationships _between_ variables
+* The inference is automatic (no manual problem-specific annotations, beyond CLI options)
+* Treatment of null values is unknown
 
-I use "trace" as a generic term for inputs that that can be viewed as numerical tabular data.
+I use "trace" as a generic term for inputs that that can be viewed as numerical tabular data ("data frames").
 A trace could be generated from a program execution, but it could also come from other sources.
 
-Intuitions
+An "invariant" (in PL/FM/math) may be called a "constraint" in some other domains.  
+
+## Intuitions
 
 * I suspect an inference technique will fail "easily" if we only provide traces as input
   - We may be unable to say much about the input => what can we say?
@@ -32,10 +22,41 @@ Intuitions
   
 * Increasing the difficulty of inference (e.g., higher variable count, more
   traces, or "noisy" trace) will likely break inference.
+
 * Can we uncover/describe the limitations/boundary of the state-of-the-art
   techniques?
 
-# Invariant inference techniques
+* For polynomial equalities: 
+  - The polynomial degree and #-variables exponentially increase the solution space/solver time
+  - Would be helpful to preprocess this configuration or fix some terms my deduction
+  
+* Using "diverse input" samples is useful to guide the inference
+  - How to locate such diverse input in N rows of traces?
+
+* (Assumptions) DIG without symbolic states:
+  - Instrumentation should not occur
+  - CEGIR-based inference should not iterate
+  - Inequality invariants should not be inferrable ==> THIS IS LIKELY FALSE
+  - The symbolic exec impacts the quality of generated invariants;
+    it should NOT affect the overall expressivity and/or equation search 
+  
+## Questions
+
+1. [How does DIG work?](dig.md)
+
+2. What is the impact on the inference if we...
+    * Increase the degree, i.e., number of variables [A: exponential!]
+    * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
+    * Restrict value domain, Z, nat, binary [A: ???]
+
+3. What are some other ways to infer invariants from numerical data
+    * This is a lit review question (may have nothing to do with FM or PL)
+    * Ultimately we want to do some comparison
+
+4. What does a case study look like/how is it structured?
+    * Look at previous works at same venue for inspiration
+
+## Invariant inference techniques
 
 Invariants can be identified from programs using static or dynamic analysis [@nguyen2014].
 
@@ -51,11 +72,8 @@ on the quality and completeness of the test cases. However, dynamic analysis is
 generally efficient and scales well to complex programs because it focuses on
 traces, rather than program structures.
 
-**Examples**
-
 - Static techniques: abstract interpretation and the constraint-based approach
-  are the most widespread approaches [@furia2010]
-  e.g., [@karr1976]
+  are the most widespread approaches [@furia2010], e.g., [@karr1976, @dillig2013]
 
 - Dynamic, template-based invariant inference: given a predefined collection of
   invariant templates likely to occur in programs, the detector filters out
@@ -98,14 +116,14 @@ traces, rather than program structures.
 [DAIKON]: https://plse.cs.washington.edu/daikon
 [DIG]: https://github.com/dynaroars/dig
 
-## Notes about tools
+## Tool-specific notes
 
 * Daikon [@ernst2007] observes concrete program states that capture the values
   of variables at designated locations in the program when a program is run on a
   given input. By sampling large numbers of inputs, Daikon can determine
   relationships that may hold among variables across those samples. Confirming
   that those relationships constitute a true invariant has been a focus of
-  follow-on work to Daikon. 
+  follow-on work to Daikon. [@nguyen2022]
 
 
 
