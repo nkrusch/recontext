@@ -1,11 +1,12 @@
 # How DIG Works
 
-DIG is a dynamic analysis framework for inferring expressive numerical invariants [@1].
+DIG is a dynamic analysis framework for inferring expressive numerical
+invariants [@nguyen2022].
 
 ### Analysis steps
 
 1. INPUT
-   - C, Java, Java bytecode, or trace file [@3] 
+   - C, Java, Java bytecode, or trace file [@dig] 
    - "concrete state" is an alias of trace
 
 2. (optional) INSTRUMENTATION                     
@@ -14,12 +15,14 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
 
 3. INFERENCE of equality and inequality invariants.
 
-   A) **Equation invariants (CEGIR-based)** [@2]      
-      + SymInfer formulates verification conditions from symbolic states, 
+   A) **Equation invariants (CEGIR-based)** [@nguyen2022c]      
+      - SymInfer formulates verification conditions from symbolic states, 
         to confirm or refute an invariant, solves those using an SMT solver, 
-        and produces counterexamples to refine the inference process [@1]. 
-      + Giving traces as input means symbolic states are not used [@2]     
-      + Using traces only can generate _spurious invariants_, i.e., correct in traces, but not overall.
+        and produces counterexamples to refine the inference process [@nguyen2022]. 
+      - Giving traces as input means symbolic states are not used [@nguyen2022c]     
+      - Using traces only can generate _spurious invariants_, i.e., correct in traces,
+        but not in all executions [@nguyen2022c].
+      - Convergence rate depends on the form of examples [@feldman2019].
 
              [*] Traces -----> Inference                    [*] start
                   ↑               ↓     
@@ -29,11 +32,11 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
                   ↑               ↓     
              Counterexample <---- Z3 Solver <---- Symbolic states
    
-   B) **Inequality invariants (SMT-based)** [@4]      
+   B) **Inequality invariants (SMT-based)** [@nguyen2022b]      
       Computed directly from symbolic states. 
-      + Enumerate octagonal terms (x-y, x+y, etc.) and min/max-plus 
+      - Enumerate octagonal terms (x-y, x+y, etc.) and min/max-plus 
         terms, such as min(x, y, z). 
-      + For each term t, use an SMT solver to compute the smallest 
+      - For each term t, use an SMT solver to compute the smallest 
         upperbound k for t, from symbolic states.
 
 4. POSTPROCESSING
@@ -42,22 +45,14 @@ DIG is a dynamic analysis framework for inferring expressive numerical invariant
 5. OUTPUT: Invariants
 
    
-## DIG vs. SymInfer
+## About DIG vs. SymInfer
 
-* SymInfer takes input is a program in C, Java, or Java bytecode (NOT traces), marked with target locations.    
-  It returns invariants found at those locations [@4]
+* SymInfer takes input is a program in C, Java, or Java bytecode (but NOT
+  traces) [@nguyen2022b]
+* DIG supports nonlinear equalities and inequalities, of arbitrary degree, over
+  numerical variables [@nguyen2014]
 
-* The Instrumentation step may be specific to SymInfer?
-
-* Without symbolic states:
-  - CEGIR inference should not iterate?
-  - Inequality invariants may not be inferrable?
-
-
--------------
-## References
-
-* [1]: "Using Symbolic States to Infer Numerical Invariants": https://roars.dev/pubs/nguyen2021using.pdf
-* [2]: "SymInfer - ICSE'22 Demo": https://www.youtube.com/watch?v=VEuhJw1RBUE
-* [3]: DIG source code: https://github.com/dynaroars/dig
-* [4]: "SymInfer: Inferring Numerical Invariants using Symbolic States": https://roars.dev/pubs/nguyen2022syminfer.pdf
+* Without symbolic states (these are assumptions):
+  - Instrumentation should not occur 
+  - CEGIR-based inference should not iterate
+  - Inequality invariants should not be inferrable
