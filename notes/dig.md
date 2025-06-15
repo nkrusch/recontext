@@ -43,8 +43,7 @@ benchmark suites [@nguyen2014].
                   ↑               ↓     
              Counterexample ←-- Z3 Solver ←-- Symbolic states
    
-   B) **Inequality invariants (SMT-based)** [@nguyen2022b]      
-      Computed directly from symbolic states. 
+   B) **Inequality invariants (SMT-based)** [@nguyen2022b] - computed directly from symbolic states. 
       - Enumerate octagonal terms (x-y, x+y, etc.) and min/max-plus 
         terms, such as min(x, y, z). 
       - For each term t, use an SMT solver to compute the smallest 
@@ -61,7 +60,7 @@ benchmark suites [@nguyen2014].
 
 ## About The Invariant Inference Step
 
-DIG Workflow From [@nguyen2014] pg. 5
+DIG Workflow from [@nguyen2014] pg. 5
 
      Traces --→ INV GENERATOR --→ Post Process --→ Candidate Invariants
 
@@ -71,61 +70,60 @@ nested arrays.
 DIG uses concepts and tools from mathematical fields (linear algebra,
 geometry, formal methods, etc.) to improve dynamic analysis [@nguyen2014].
 
-* DIG uses _parameterized templates_ [@nguyen2014]
-  - Computes the unknown coefficients in the templates directly from trace.
-  - Resulting invariants are precise over the input traces.
+DIG uses _parameterized templates_ [@nguyen2014]
+- Computes the unknown coefficients in the templates directly from trace.
+- Resulting invariants are precise over the input traces.
 
-* Inference is based on a subset of traces for inference [@nguyen2014]
-  - Since an invariant holds for any set of traces, it is likely that we
-    can find that same invariant using a smaller subset of the available traces.
+Inference is based on a subset of traces for inference [@nguyen2014]
+- Since an invariant holds for any set of traces, it is likely that we
+  can find that same invariant using a smaller subset of the available traces.
 
-* Different techniques are used to generate invariants, depending on the
-  invariant kind (polynomial, inequality, etc.) [@nguyen2014]
-  - Trace data is treated as points in Euclidean space and DIG computes
-    geometric shapes enclosing the points
+Different techniques are used to generate invariants, depending on the
+invariant kind (polynomial, inequality, etc.) [@nguyen2014]
+- Trace data is treated as points in Euclidean space and DIG computes
+  geometric shapes enclosing the points
   
-* Polynomial equality relations
-  - Viewed as unbounded geometric shapes (lines, planes, etc.)
-    + use algorithms from linear algebra and geometry to generate invariants
-  - From the shapes, obtain equality invariants of the form $c_1t_1 + ··· + c_nt_n = 0$ 
-    where $c_i$ are real-valued and $t_i$ are _terms_ (cf. @nguyen2014 pg. 5-6).
-  - The polynomial degree and number of variables rapidly increase the solution space
-  - See @nguyen2014 pg. 7 for algorithm and details
+Polynomial equality relations
+- Viewed as unbounded geometric shapes (lines, planes, etc.)
+  + use algorithms from linear algebra and geometry to generate invariants
+- From the shapes, obtain equality invariants of the form $c_1t_1 + ··· + c_nt_n = 0$ 
+  where $c_i$ are real-valued and $t_i$ are _terms_ (cf. @nguyen2014 pg. 5-6).
+- The polynomial degree and number of variables rapidly increase the solution space
+- See @nguyen2014 pg. 7 for algorithm and details
   
-* Inequality relations
-  - Represents equality and inequality constraints among multiple variables as
-    hyperplanes and polyhedra.
-  - When additional inputs are available, new inequalities can be deduced from
-    previously inferred equality relations.
+Inequality relations
+- Represents equality and inequality constraints among multiple variables as
+  hyperplanes and polyhedra.
+- When additional inputs are available, new inequalities can be deduced from
+  previously inferred equality relations.
        
-*  (multidimensional) _array variables_ and functions that can be viewed as arrays [@nguyen2014]:
-  - Invariants may represent flat (non-nested) or nested array relations 
-  - Linear equations in flat arrays: 
-    + 1. Find equalities among array elements 
-    + 2. Identify the relations among array indices from the obtained equalities
-  - Nested array relations are inferred by performing reachability analysis and by
-    SMT solver
-  - Automatic theorem proving is used to reason about large arrays more
-    efficiently
+Array variables and functions that can be viewed as arrays [@nguyen2014]
+- Invariants may represent flat (non-nested) or nested array relations 
+- Linear equations in flat arrays: find equalities among array elements, then
+  identify the relations among array indices from the obtained equalities
+- Nested array relations are inferred by performing reachability analysis and by
+  SMT solver
+- Automatic theorem proving is used to reason about large arrays more
+  efficiently
 
-* User can modify the parameters of DIG for better performance or specify
-  additional information to aid the invariant generation process [@nguyen2014].
+User can modify the parameters of DIG for better performance or specify
+additional information to aid the invariant generation process [@nguyen2014].
 
 ## Inference Example
 
 The trace values of the two variables v1, v2 are points in the (v1, v2)-plane.
 First DIG determines if these points lie on a line, represented by a linear
-equation of the form c0 + c1v1 + c2v2 = 0.
+equation of the form $c_0 + c_1v_1 + c_2v_2 = 0$.
 
 If such a line does not exist, DIG builds a bounded convex polygon from these
 points. The edges of the polygon are represented by linear inequalities of the
-form c0 + c1v1 + c2v2 >= 0.
+form $c_0 + c_1v_1 + c_2v_2 \geq 0$.
 
 This technique generalizes to equations and inequalities among multiple
 variables by constructing hyperplanes and polyhedra in a high-dimensional space.
 
 To generate nonlinear constraints, DIG uses terms to represent nonlinear
-polynomials over program variables, for example, t1 = v1, t2 = v1v2. This allows
-DIG to generate equations such as t1 + t2 = 1. This represents a line over t1,t2
-and a hyperbola over v1, v2.
+polynomials over program variables, for example, $t_1 = v_1$, $t_2 = v_1v_2$. 
+This allows DIG to generate equations such as $t_1 + t_2 = 1$. 
+This represents a line over $t_1, t_2$ and a hyperbola over $v_1, v_2$.
 

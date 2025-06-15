@@ -1,6 +1,7 @@
 # Motivations
 
 THOUGHTS
+
 * An invariant is an assertion that always holds at certain program location [@nguyen2014].
 * Invariants are critical for program verification and fault-detection.
     - In verification, invariants can be used to show a program meets its specification.
@@ -20,6 +21,7 @@ THOUGHTS
 * Thus, we can obtain trace-like records from various (non-program) sources.
 
 HYPOTHESIS
+
 Taking as a baseline the state-of-the-art techniques developed for numerical invariant inference (in programs),
 we investigate whether the same techniques generalize to analysis of numerical data (from non-program sources).
 
@@ -28,5 +30,6 @@ we investigate whether the same techniques generalize to analysis of numerical d
 * Would also strengthen the significance of decades of research results in the programming context of invariant inference.
 
 EXPECTED OUTCOME
+
 (A) we will discover new capabilities embedded in the existing invariant inference techniques; -or-
 (B) we will improve understanding of their limitations and how to improve (and the role of programs in driving the inference).
