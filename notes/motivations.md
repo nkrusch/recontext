@@ -25,9 +25,11 @@ HYPOTHESIS
 Taking as a baseline the state-of-the-art techniques developed for numerical invariant inference (in programs),
 we investigate whether the same techniques generalize to analysis of numerical data (from non-program sources).
 
-* Such capability would enable many new applications
-* e.g., in data synthesis, needed for data protection and privacy; anomaly detection, machine learning, etc.
-* Would also strengthen the significance of decades of research results in the programming context of invariant inference.
+* Such capability would enable many new applications:    
+  e.g., in data synthesis, needed for data protection and privacy; anomaly detection, machine learning, etc.
+* Dynamic program analysis has many pre-requisites (full program, tracing execution), it can only be used in some cases     
+  => the new use case would extend the utility of dynamic techniques.
+* More broadly: strengthen the significance of decades of research results in the programming context of invariant inference.
 
 EXPECTED OUTCOME
 

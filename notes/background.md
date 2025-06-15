@@ -30,19 +30,19 @@ traces, rather than program structures.
 
 ## Inference Tools & Implementations
 
-| Name and Notes                            | Ref           | Inference | Notes                              |
-|:------------------------------------------|:--------------|:----------|:-----------------------------------|
-| [AutoSpec][AUTOSPEC]                      | [@wen2024]    | static    | 💀 broken, LLM                     |
-| [Daikon][DAIKON]                          | [@ernst2007]  | dynamic   | ✔️ works                           |
-| [G-CLN][G-CLN]                            | [@yao2020]    |           | machine learning                   |
-| [ImplCheck][IMPLC][^1] [[Zenodo]][IMPLCZ] | [@riley2022]  |           | CHC within Seahorn                 |
-| [LIPuS][LIPUS] [[Zenodo]][LIPUSZ]         | [@yu2023]     |           | 💀 broken                          |
-| [NumInv][NUMINV] ("DIG2")                 | [@nguyen2017] | hybrid    | 💀 deprecated                      |
-| [cln2inv][CLN2]                           | [@ryan2020]   |           | machine learning                   |
-| [code2inv][CODE2]                         | [@si2018]     | static    | ✔️ linear only; weird input format |
-| [cvc5][CVC5][^1]                          |               |           | smt solver                         |
-| [eldarica][ELDERICA][^1]                  |               |           | model checker                      |
-| [DIG][DIG]                                | [@nguyen2014] | hybrid    | ✔️ works                           |
+| Name and Notes                            | Ref           | Inference | Status | Notes                           |
+|:------------------------------------------|:--------------|:----------|:------:|:--------------------------------|
+| [AutoSpec][AUTOSPEC]                      | [@wen2024]    | static    |   💀   | broken, LLM                     |
+| [Daikon][DAIKON]                          | [@ernst2007]  | dynamic   |   ✔️   | works                           |
+| [G-CLN][G-CLN]                            | [@yao2020]    |           |        | machine learning                |
+| [ImplCheck][IMPLC][^1] [[Zenodo]][IMPLCZ] | [@riley2022]  |           |        | CHC within Seahorn              |
+| [LIPuS][LIPUS] [[Zenodo]][LIPUSZ]         | [@yu2023]     |           |   💀   | broken                          |
+| [NumInv][NUMINV]                          | [@nguyen2017] | hybrid    |   💀   | deprecated                      |
+| [cln2inv][CLN2]                           | [@ryan2020]   |           |        | machine learning                |
+| [code2inv][CODE2]                         | [@si2018]     | static    |   ✔️   | linear only; weird input format |
+| [cvc5][CVC5][^1]                          |               |           |        | smt solver                      |
+| [eldarica][ELDERICA][^1]                  |               |           |        | model checker                   |
+| [DIG][DIG]                                | [@nguyen2014] | hybrid    |   ✔️   | works                           |
 
 [NUMINV]: https://github.com/dynaroars/numinv
 [G-CLN]: https://github.com/jyao15/G-CLN
