@@ -23,7 +23,7 @@ An "invariant" may correspond to a "constraint" in some other domains.
 
 * For polynomial equalities: 
   - The polynomial degree and variable count exponentially increases the solution space/solver time
-  - Can we preprocess a trace, or fix some terms by deduction, to make this more scalable?
+  - Can we preprocess a trace, or fix some terms by deduction, to make this more scalable? [cf. @bouajjani2022]
   
 * Using diverse input samples is helpful to guide the inference 
   - How to locate such diverse input (maximally different entries) in traces?

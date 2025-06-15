@@ -58,6 +58,8 @@ traces, rather than program structures.
 [DAIKON]: https://plse.cs.washington.edu/daikon
 [DIG]: https://github.com/dynaroars/dig
 
+[^1]: Not a standalone tool; invariants inference is an internal step of the parent tool.
+
 ## Tool-specific notes
 
 * Daikon [@ernst2007] observes concrete program states that capture the values
@@ -67,6 +69,11 @@ traces, rather than program structures.
   that those relationships constitute a true invariant has been a focus of
   follow-on work to Daikon. [@nguyen2022]
 
+## Notations
 
+Let X be a set of variables. 
+Linear formulas over X are boolean combinations of linear constraints of the form \( \Sigma^n_{i=1} a_i x_i \leq b \) where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and \( b \in \mathbb{Z} \cup \{ + \infty \} \).
+We use linear formulas to reason symbolically about programs with integer variables. 
+Assume we have a program with a set of variables $V$ and let \(n = |V|\). 
+A state of the program is a vector of integers in \(\mathbb{Z}^n\).
 
-[^1]: Not a standalone tool; invariants inference is an internal step of the parent tool.
