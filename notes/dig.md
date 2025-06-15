@@ -16,15 +16,20 @@ benchmark suites [@nguyen2014].
 
 ## Analysis steps
 
-1. INPUT
+**DIG Workflow**
+
+     Traces --→ INV GENERATOR --→ Post Process --→ Candidate Invariants
+
+
+1. **INPUT**
    - C, Java, Java bytecode, or trace file ("concrete states") [@dig]
    - traces are values from numerical (reals/integer) or array variables at any program point [@nguyen2014]
 
-2. (optional) INSTRUMENTATION                     
+2. (optional) **INSTRUMENTATION**                     
    - Uses symbolic execution to compute symbolic states.
    - Symbolic states are used to obtain concrete states.
 
-3. INFERENCE of equality and inequality invariants.
+3. **INFERENCE** of equality and inequality invariants.
 
    A) **Equation invariants (CEGIR-based)** [@nguyen2022c]      
       - SymInfer formulates verification conditions from symbolic states, 
@@ -49,55 +54,49 @@ benchmark suites [@nguyen2014].
       - For each term t, use an SMT solver to compute the smallest 
         upperbound k for t, from symbolic states.
 
-4. POSTPROCESSING (simplification + removing redundancy) [@nguyen2014]
+4. **POSTPROCESSING** (simplification + removing redundancy) [@nguyen2014]
    - pruning and filtering to remove redundant and spurious invariants
    - pruning removes invariants that are logical implications from other invariants, 
      e.g. keep $x=y$ and discard $x^2=y^2$.
    - Traces not used in inference are used to check the resulting invariants
    - Using symbolic execution helps in this step; to procude higher quality invariants [@nguyen2022]
 
-5. OUTPUT: Invariants
+5. **OUTPUT** Invariants
 
 ## About The Invariant Inference Step
 
-DIG Workflow from [@nguyen2014] pg. 5
-
-     Traces --→ INV GENERATOR --→ Post Process --→ Candidate Invariants
-
-The generator creates relations that are polynomial, disjunctive, and/or flat &
-nested arrays.
-
+The generator creates relations that are polynomial, disjunctive, and/or flat and nested arrays.
 DIG uses concepts and tools from mathematical fields (linear algebra,
 geometry, formal methods, etc.) to improve dynamic analysis [@nguyen2014].
 
-DIG uses _parameterized templates_ [@nguyen2014]
+DIG uses **_parameterized templates_** [@nguyen2014]
 - Computes the unknown coefficients in the templates directly from trace.
 - Resulting invariants are precise over the input traces.
 
-Inference is based on a subset of traces for inference [@nguyen2014]
+Inference is based on a **subset of traces** for inference [@nguyen2014]
 - Since an invariant holds for any set of traces, it is likely that we
   can find that same invariant using a smaller subset of the available traces.
 
-Different techniques are used to generate invariants, depending on the
+**Different techniques** are used to generate invariants, depending on the
 invariant kind (polynomial, inequality, etc.) [@nguyen2014]
 - Trace data is treated as points in Euclidean space and DIG computes
   geometric shapes enclosing the points
-  
-Polynomial equality relations
+
+**Polynomial equality relations**
 - Viewed as unbounded geometric shapes (lines, planes, etc.)
   + use algorithms from linear algebra and geometry to generate invariants
 - From the shapes, obtain equality invariants of the form $c_1t_1 + ··· + c_nt_n = 0$ 
   where $c_i$ are real-valued and $t_i$ are _terms_ (cf. @nguyen2014 pg. 5-6).
 - The polynomial degree and number of variables rapidly increase the solution space
 - See @nguyen2014 pg. 7 for algorithm and details
-  
-Inequality relations
+
+**Inequality relations**
 - Represents equality and inequality constraints among multiple variables as
   hyperplanes and polyhedra.
 - When additional inputs are available, new inequalities can be deduced from
   previously inferred equality relations.
-       
-Array variables and functions that can be viewed as arrays [@nguyen2014]
+
+**Array variables** and functions that can be viewed as arrays [@nguyen2014]
 - Invariants may represent flat (non-nested) or nested array relations 
 - Linear equations in flat arrays: find equalities among array elements, then
   identify the relations among array indices from the obtained equalities
@@ -106,7 +105,7 @@ Array variables and functions that can be viewed as arrays [@nguyen2014]
 - Automatic theorem proving is used to reason about large arrays more
   efficiently
 
-User can modify the parameters of DIG for better performance or specify
+**User can modify the parameters** for better performance or to specify
 additional information to aid the invariant generation process [@nguyen2014].
 
 ## Inference Example

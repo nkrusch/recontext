@@ -31,5 +31,8 @@ we investigate whether the same techniques generalize to analysis of numerical d
 
 EXPECTED OUTCOME
 
-(A) we will discover new capabilities embedded in the existing invariant inference techniques; -or-
-(B) we will improve understanding of their limitations and how to improve (and the role of programs in driving the inference).
+(A) We will discover new capabilities embedded in the existing invariant inference techniques.
+
+-or-
+
+(B) We will improve understanding of their limitations and how to improve (and the role of programs in driving the inference).

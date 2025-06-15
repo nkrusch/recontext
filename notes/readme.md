@@ -14,36 +14,35 @@ An "invariant" may correspond to a "constraint" in some other domains.
 # Intuitions
 
 * I suspect inference will fail "easily" if we only provide traces as input
-  - We may be unable to say much about the input/what can we say?
-  - Why/what makes the inference fail?
+  - We may be unable to say much about the input (what can we say?)
+  - Why? What makes the inference fail?
   
 * Increasing the difficulty of inference (e.g., higher variable count, more
   traces, or "noisy" trace) will likely break inference.
-
-* Can we uncover the limitations/boundary of the state-of-the-art techniques?
+  - Can we uncover the limitations/boundary of the state-of-the-art techniques?
 
 * For polynomial equalities: 
   - The polynomial degree and variable count exponentially increases the solution space/solver time
-  - Can we preprocess a trace or fix some terms by deduction?
+  - Can we preprocess a trace, or fix some terms by deduction, to make this more scalable?
   
 * Using diverse input samples is helpful to guide the inference 
-  - how to locate such diverse input (maximally different entries) in traces
+  - How to locate such diverse input (maximally different entries) in traces?
 
-* (Assumptions) Using DIG without symbolic states:
+* Assumptions about Using DIG without symbolic states:
   - Instrumentation should not occur
   - CEGIR-based inference should not iterate
-  - Inequality invariants should not be inferrable ==> LIKELY FALSE
-  - The symbolic exec impacts the quality of generated invariants;
-    it should NOT affect the overall expressivity and/or equation search 
+  - [LIKELY FALSE] Inequality invariants should not be inferrable
+  - Symbolic execution impacts the quality of generated invariants;
+    it should NOT affect the overall expressivity, and what equations may be generated 
   
 # Questions
 
 1. [How does DIG work?](dig.md)
 
 2. What is the impact on the inference if we...
-    * Increase the degree, i.e., number of variables [A: exponential!]
+    * Increase the degree, i.e., number of variables [A: exponential]
     * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
-    * Restrict value domain, Z, nat, binary [A: ???]
+    * Restrict the domain (Z, nat, binary) [A: ???]
 
 3. What are some other ways to infer invariants from numerical data
     * This is a lit review question (may have nothing to do with FM or PL)
