@@ -1,0 +1,8 @@
+# y = x
+trace1; I x; I y;
+trace1; 0; 0;
+trace1; 1; 1;
+trace1; 2; 2;
+trace1; 3; 3;
+trace1; 4; 4;
+trace1; 5; 5;

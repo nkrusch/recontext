@@ -1,30 +1,42 @@
 # invariants
 
-Invariant generation experiments
-
-Clone with submodules
-
-```bash
-git clone --recurse-submodules https://github.com/nkrusch/invariants.git
-```
-
-<small>Pull submodules after clone: `git submodule update --init`</small>
+Invariant generation experiments.
 
 
-Build a container
+## Running Experiments
 
-```
-(cd dig && docker build . -t='dig')
-```
+Requires: [Docker](https://docs.docker.com/engine/install/)
 
-Run the container (`inputs` is a shared & mounted directory) 
+1. Clone the repository with submodules
+    
+    ```bash
+    git clone --recurse-submodules https://github.com/nkrusch/invariants.git
+    ```
+    
+    <small>To pull submodules after clone: `git submodule update --init`</small>
 
-```
-docker run -v "$(pwd)/inputs:/dig/inputs" -it --rm dig /bin/bash
-```
+2. Build a container
 
-Run some experiment, e.g., `inputs/test.csv`
+    ```
+    (cd dig && docker build . -t='dig')
+    ```
 
-```
-time ~/miniconda3/bin/python3 -O dig.py  ../inputs/test.csv -log 3
-```
+3. Run the container (where `inputs` is a shared and mounted directory) 
+    
+    ```
+    docker run -v "$(pwd)/inputs:/dig/inputs" -it --rm dig /bin/bash
+    ```
+
+4. Run some experiment, e.g., `test`
+
+    ```
+    time ~/miniconda3/bin/python3 -O dig.py  ../inputs/test.csv -log 3
+    ```
+   
+
+## About inputs
+
+| Filename | Invariant(s)    |
+|:---------|:----------------|
+| `xy`     | `x - y = 0`     |
+| `test`   | `2 * x + 3 = y` |
