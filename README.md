@@ -21,11 +21,13 @@ Requires: [Docker](https://docs.docker.com/engine/install/)
     (cd dig && docker build . -t='dig')
     ```
 
-3. Run the container (where `inputs` is a shared and mounted directory) 
+3. Run the container 
     
     ```
     docker run -v "$(pwd)/inputs:/dig/inputs" -it --rm dig /bin/bash
     ```
+    
+    `inputs` is a shared and mounted directory that can be edited outside the container.
 
 4. Run some experiment, e.g., `test`
 
