@@ -48,6 +48,11 @@ More specialized techniques
 - Constrained Horn clause (CHC) solvers for generating loop invariants
   e.g., Eldarica, ImplCheck, [@zhu2018]
   
+- syntax-guided [@alur2013]: To improve tractability, syntax-guided techniques 
+  allow imposing structural (syntactic) constraints on the set of possible 
+  solutions. The structural constraints are imposed by restricting the 
+  solution to functions defined by a given context-free grammar.
+
 
 ## Tools & Implementations
 
