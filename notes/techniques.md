@@ -1,4 +1,4 @@
-## Invariant inference techniques
+# Invariant inference techniques
 
 Invariants can be identified from programs using static or dynamic analysis [@nguyen2014].
 
@@ -28,7 +28,8 @@ traces, rather than program structures.
   verify statically that they hold for all inputs
   e.g., [@zhang2014, @padhi2016, @garg2016, @nguyen2017, @yao2020]
 
-More specialized techniques
+
+## Technical subcategories
 
 - Data-driven techniques use sampled data to generate invariants, 
   e.g., ICE-DT, LoopInvGen, Guess-and-Check
@@ -37,7 +38,7 @@ More specialized techniques
   the program dependencies, e.g., Cln2Inv, G-CLN
 
 - Symbolic execution, 
-  e.g., NumInv, DIG
+  e.g., NumInv, [@nguyen2022b]
 
 - Abstract interpretation, 
   e.g., [@rodriguezc2004, @rodriguezc2007] 
@@ -48,10 +49,11 @@ More specialized techniques
 - Constrained Horn clause (CHC) solvers for generating loop invariants
   e.g., Eldarica, ImplCheck, [@zhu2018]
   
-- syntax-guided [@alur2013]: To improve tractability, syntax-guided techniques 
+- Syntax-guided: To improve tractability, syntax-guided techniques 
   allow imposing structural (syntactic) constraints on the set of possible 
   solutions. The structural constraints are imposed by restricting the 
   solution to functions defined by a given context-free grammar.
+  e.g., [@alur2013]
 
 
 ## Tools & Implementations
@@ -63,18 +65,20 @@ More specialized techniques
 | [Daikon][DAIKON]         | [@ernst2007]  | dynamic     |   ✔️   |                  |
 | [Eldarica][ELDERICA][^1] |               |             |        | model checker    |
 | [G-CLN][G-CLN]           | [@yao2020]    |             |        | machine learning |
-| [ImplCheck][IMPLC][^1]   | [@riley2022]  |             |        | in Seahorn       |
+| [ImplCheck][IMPLC][^1]   | [@riley2022]  |             |        | inside Seahorn   |
 | [LIPuS][LIPUS]           | [@yu2023]     |             |   💀   |                  |
-| [LoopInvGen][LOOPINV]    |               | data-driven |   💀   |                  |
+| [LoopInvGen][LOOPINV]    | [@padhi2016]  | data-driven |   💀   |                  |
 | [NumInv][NUMINV]         | [@nguyen2017] | hybrid      |   💀   | deprecated       |
 | [cln2inv][CLN2]          | [@ryan2020]   |             |        | machine learning |
 | [code2inv][CODE2]        | [@si2018]     | static      |   ✔️   |                  |
-| [cvc5][CVC5][^1]         |               |             |        | smt solver       |
+| [cvc5][CVC5][^1]         |               |             |   ✔️   | SMT solver       |
+
+The tools with ✔️ can be executed; the ones with 💀 should not even be attempted. 
 
 
-## Tool-specific notes
+## Extended tool-specific notes 
 
-* Daikon [@ernst2007] observes concrete program states that capture the values
+* **Daikon** [@ernst2007] observes concrete program states that capture the values
   of variables at designated locations in the program when a program is run on a
   given input. By sampling large numbers of inputs, Daikon can determine
   relationships that may hold among variables across those samples. Confirming
@@ -82,20 +86,7 @@ More specialized techniques
   follow-on work to Daikon. [@nguyen2022]
 
 
-## Notations
-
-- Let X be a set of variables. 
-  Linear formulas over X are boolean combinations of linear constraints of the form 
-  $\Sigma^n_{i=1} a_i x_i \leq b$ where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and
-  $b \in \mathbb{Z} \cup \{ + \infty \}$.
-  We use linear formulas to reason symbolically about programs with integer variables. 
-  Assume we have a program with a set of variables $V$ and let \(n = |V|\). 
-  A state of the program is a vector of integers in $\mathbb{Z}^n$.
-
-- Nice DLS grammar in [@wang2022] p. 4 (Fig. 4)
-
-
-
+  
 [NUMINV]: https://github.com/dynaroars/numinv
 [G-CLN]: https://github.com/jyao15/G-CLN
 [CLN2]: https://github.com/gryan11/cln2inv.git

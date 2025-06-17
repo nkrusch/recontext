@@ -1,3 +1,19 @@
+# Questions
+
+1. [How does DIG work?](dig.md)
+
+2. What is the impact on the inference if we...
+    * Increase the degree, i.e., number of variables [A: exponential]
+    * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
+    * Restrict the domain of values (Z, nat, binary) [A: ???]
+
+3. What are some other ways to infer invariants from numerical data
+    * This is a lit review question (may have nothing to do with FM or PL)
+    * Ultimately we want to do some comparison
+
+4. What does a case study look like/how is it structured?
+    * Look at previous works at same venue for inspiration
+
 # Baseline assumptions
 
 * We are interested in [_numerical (relational?) invariants_](vocabulary.md)
@@ -35,19 +51,5 @@ An "invariant" may correspond to a "constraint" in some other literature.
   - [LIKELY FALSE] Inequality invariants should not be inferrable
   - Symbolic exec. impacts invariant quality; should NOT affect expressivity
   
-# Questions
 
-1. [How does DIG work?](dig.md)
-
-2. What is the impact on the inference if we...
-    * Increase the degree, i.e., number of variables [A: exponential]
-    * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
-    * Restrict the domain of values (Z, nat, binary) [A: ???]
-
-3. What are some other ways to infer invariants from numerical data
-    * This is a lit review question (may have nothing to do with FM or PL)
-    * Ultimately we want to do some comparison
-
-4. What does a case study look like/how is it structured?
-    * Look at previous works at same venue for inspiration
 
