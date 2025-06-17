@@ -11,21 +11,21 @@ It can successfully discover polynomial and array invariants in standard benchma
 
 1. **INPUT**
    - formally: the set $V$ of variables, that are in scope at location $L$, the associated traces $X$, and a maximum degree $d$ [@nguyen2014].
-   - C, Java, Java bytecode, or trace file ("concrete states") [@dig]
    - traces are values from numerical (reals/integer) or array variables at any program point [@nguyen2014]
+   - input file format: C, Java, or Java bytecode program, or a trace file ("concrete states") [@dig]
 
-2. (optional) **INSTRUMENTATION**                     
+2. **INSTRUMENTATION** (optional) if the initial input file is not traces.                    
    - Uses symbolic execution to compute symbolic states.
    - Symbolic states are used to obtain concrete states.
 
 3. **INFERENCE** of invariants.
    - supports nonlinear equalities and inequalities, of arbitrary degree, over numerical variables [@nguyen2014].
 
-4. **POSTPROCESSING** (simplification + removing redundancy) [@nguyen2014]
+4. **POSTPROCESSING** simplification + removing redundancy [@nguyen2014]
    - pruning and filtering to remove redundant and spurious invariants
    - pruning removes invariants that are logical implications from other invariants, e.g., keep $x=y$ and discard $x^2=y^2$.
    - Traces not used in inference are used to check the resulting invariants
-   - Using symbolic execution helps in this step; to procude higher quality invariants [@nguyen2022]
+   - Using symbolic execution helps in this step to procude higher quality invariants [@nguyen2022]
 
 5. **OUTPUT** Invariants
    - returns a set of possible polynomial relations among the variables in $V$ whose degree is at most $d$ [@nguyen2014].
@@ -34,18 +34,15 @@ It can successfully discover polynomial and array invariants in standard benchma
 
 The generator creates relations about polynomials, disjunctions, flat arrays, or nested arrays.
 DIG uses concepts and tools from mathematical fields (linear algebra, geometry, formal methods, etc.) to improve dynamic analysis [@nguyen2014].
+Different techniques are used to generate invariants, depending on the invariant kind [@nguyen2014].
 
 DIG uses **_parameterized templates_** [@nguyen2014].
 - Computes the unknown coefficients in the templates directly from trace.
 - Resulting invariants are precise over the input traces.
 
 Inference is based on a **subset of traces** [@nguyen2014].
-- Since an invariant holds for any set of traces, it is likely that we
-  can find that same invariant using a smaller subset of the available traces.
-
-**Different techniques** are used to generate invariants, depending on the invariant kind [@nguyen2014].
-- Trace data is treated as points in Euclidean space and DIG computes 
-  geometric shapes enclosing the points.
+- Since an invariant holds for all traces, cab likely find that same invariant using a subset of traces.
+- Trace data is treated as points in Euclidean space, DIG computes  geometric shapes enclosing the points.
 
 **Polynomial equality relations**
 - Viewed as unbounded geometric shapes (lines, planes, etc.)
@@ -61,7 +58,7 @@ Inference is based on a **subset of traces** [@nguyen2014].
 - When additional inputs are available, new inequalities can be deduced from
   previously inferred equality relations.
 
-**Array variables** and functions that can be viewed as arrays [@nguyen2014]
+**Array variables** and functions that can be viewed as arrays [@nguyen2014]:
 - Invariants may represent flat (non-nested) or nested array relations 
 - Linear equations in flat arrays: find equalities among array elements, then
   identify the relations among array indices from the obtained equalities

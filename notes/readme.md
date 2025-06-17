@@ -5,7 +5,7 @@
 2. What is the impact on the inference if we...
     * Increase the degree, i.e., number of variables [A: exponential]
     * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
-    * Restrict the domain of values (Z, nat, binary) [A: ???]
+    * Restrict the domain of values (Z, nat, binary) [A: convergence: bin < nat < Z ?]
 
 3. What are some other ways to infer invariants from numerical data
     * This is a lit review question (may have nothing to do with FM or PL)
@@ -17,14 +17,15 @@
 # Baseline assumptions
 
 * We are interested in [_numerical (relational?) invariants_](vocabulary.md)
-* We want to infer invariants about variables: ideally relationships _between_ variables
-* A "variable" holds one value at a time
+* "Variable" is an abstraction (beyond program variables)
+* A variable holds one value at a time
 * Assume values are in integer domain (or its subset)
+* We want to infer invariants about variables and ideally relationships _between_ variables
 * Treatment of null values is unknown
-
-"Trace" is as a generic term for inputs -- can be viewed as numerical tabular data ("data frames").   
-A trace could be generated from a program execution, but it could also come from other sources.    
-An "invariant" may correspond to a "constraint" in some other literature.  
+* "Trace" is as a generic term to represent a record of variable values
+    - A trace could be generated from a program execution, but it could also come from other sources.
+    - in general: numerical tabular data ("data frames") can be viewed as a trace 
+* An "invariant" is a "constraint" in some other literature.  
 
 # Intuitions
 
