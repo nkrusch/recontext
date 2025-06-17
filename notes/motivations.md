@@ -38,3 +38,25 @@ EXPECTED OUTCOME
 -or-
 
 (B) We will improve understanding of their limitations and how to improve (and the role of programs in driving the inference).
+
+
+# Maybe Useful Arguments
+
+- The problem is undecidable in general; all practical techniques must
+  search for invariants heuristically in a potentially-infinite space
+  of candidates [@wang2022]
+
+- State-of-the-art invariant synthesis tools were designed primarily
+  for a single program (e.g., symbolic exec, abstract interpretation)
+  => cannot be easily adapted to generate relational invariants. [@wang2022]
+
+- Invariants based on sampled data, may produce unnecessarily complicated
+  invariants (program semantics helps). [@wang2022, @nguyen2022b]
+
+- Neural network based techniques focus on encoding program dependencies;
+  often ineffective in synthesizing relational predicates. [@wang2022]
+
+- Good if a [solution] does not constrain the search space
+  e.g., the number of variables or the values of coefficients, and does
+  not fix the invariant shape e.g., by bounding the number and kind
+  of logical connectives.

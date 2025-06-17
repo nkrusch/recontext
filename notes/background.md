@@ -17,7 +17,7 @@ traces, rather than program structures.
 - Static techniques: abstract interpretation and the constraint-based approach
   are the most widespread approaches [@furia2010], e.g., [@karr1976, @dillig2013]
 
-- Dynamic, template-based invariant inference: given a predefined collection of
+- Dynamic, template-based inference: given a predefined collection of
   invariant templates likely to occur in programs, the detector filters out
   invalid templates based on observed program traces and returns the remainders
   as candidate invariants
@@ -28,37 +28,44 @@ traces, rather than program structures.
   verify statically that they hold for all inputs
   e.g., [@zhang2014, @padhi2016, @garg2016, @nguyen2017, @yao2020]
 
-## Inference Tools & Implementations
+More specialized techniques
 
-| Name and Notes                            | Ref           | Inference | Status | Notes                           |
-|:------------------------------------------|:--------------|:----------|:------:|:--------------------------------|
-| [AutoSpec][AUTOSPEC]                      | [@wen2024]    | static    |   💀   | broken, LLM                     |
-| [Daikon][DAIKON]                          | [@ernst2007]  | dynamic   |   ✔️   | works                           |
-| [G-CLN][G-CLN]                            | [@yao2020]    |           |        | machine learning                |
-| [ImplCheck][IMPLC][^1] [[Zenodo]][IMPLCZ] | [@riley2022]  |           |        | CHC within Seahorn              |
-| [LIPuS][LIPUS] [[Zenodo]][LIPUSZ]         | [@yu2023]     |           |   💀   | broken                          |
-| [NumInv][NUMINV]                          | [@nguyen2017] | hybrid    |   💀   | deprecated                      |
-| [cln2inv][CLN2]                           | [@ryan2020]   |           |        | machine learning                |
-| [code2inv][CODE2]                         | [@si2018]     | static    |   ✔️   | linear only; weird input format |
-| [cvc5][CVC5][^1]                          |               |           |        | smt solver                      |
-| [eldarica][ELDERICA][^1]                  |               |           |        | model checker                   |
-| [DIG][DIG]                                | [@nguyen2014] | hybrid    |   ✔️   | works                           |
+- Data-driven techniques use sampled data to generate invariants, 
+  e.g., ICE-DT, LoopInvGen, Guess-and-Check
 
-[NUMINV]: https://github.com/dynaroars/numinv
-[G-CLN]: https://github.com/jyao15/G-CLN
-[CLN2]: https://github.com/gryan11/cln2inv.git
-[CODE2]: https://github.com/PL-ML/code2inv.git
-[CVC5]: https://github.com/cvc5/cvc5
-[ELDERICA]: https://github.com/uuverifiers/eldarica
-[LIPUS]: https://github.com/Santiago-Yu/LIPuS
-[LIPUSZ]: https://zenodo.org/records/7909725
-[IMPLC]: https://github.com/grigoryfedyukovich/aeval.git
-[IMPLCZ]: https://zenodo.org/records/7047061
-[AUTOSPEC]: https://sites.google.com/view/autospecification
-[DAIKON]: https://plse.cs.washington.edu/daikon
-[DIG]: https://github.com/dynaroars/dig
+- Neural network based techniques use graph neural networks to encode 
+  the program dependencies, e.g., Cln2Inv, G-CLN
 
-[^1]: Not a standalone tool; invariants inference is an internal step of the parent tool.
+- Symbolic execution, 
+  e.g., NumInv, DIG
+
+- Abstract interpretation, 
+  e.g., [@rodriguezc2004, @rodriguezc2007] 
+
+- Compositional recurrence analysis 
+  e.g., [@kincaid2017, @kincaid2017b, @farzan2015]
+
+- Constrained Horn clause (CHC) solvers for generating loop invariants
+  e.g., Eldarica, ImplCheck, [@zhu2018]
+  
+
+## Tools & Implementations
+
+| Name and Notes           | Ref           | Inference   | Status | Notes            |
+|:-------------------------|:--------------|:------------|:------:|:-----------------|
+| [AutoSpec][AUTOSPEC]     | [@wen2024]    | static      |   💀   | LLM 🤮           |
+| [DIG][DIG]               | [@nguyen2014] | hybrid      |   ✔️   |                  |
+| [Daikon][DAIKON]         | [@ernst2007]  | dynamic     |   ✔️   |                  |
+| [Eldarica][ELDERICA][^1] |               |             |        | model checker    |
+| [G-CLN][G-CLN]           | [@yao2020]    |             |        | machine learning |
+| [ImplCheck][IMPLC][^1]   | [@riley2022]  |             |        | in Seahorn       |
+| [LIPuS][LIPUS]           | [@yu2023]     |             |   💀   |                  |
+| [LoopInvGen][LOOPINV]    |               | data-driven |   💀   |                  |
+| [NumInv][NUMINV]         | [@nguyen2017] | hybrid      |   💀   | deprecated       |
+| [cln2inv][CLN2]          | [@ryan2020]   |             |        | machine learning |
+| [code2inv][CODE2]        | [@si2018]     | static      |   ✔️   |                  |
+| [cvc5][CVC5][^1]         |               |             |        | smt solver       |
+
 
 ## Tool-specific notes
 
@@ -69,11 +76,32 @@ traces, rather than program structures.
   that those relationships constitute a true invariant has been a focus of
   follow-on work to Daikon. [@nguyen2022]
 
+
 ## Notations
 
-Let X be a set of variables. 
-Linear formulas over X are boolean combinations of linear constraints of the form \( \Sigma^n_{i=1} a_i x_i \leq b \) where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and \( b \in \mathbb{Z} \cup \{ + \infty \} \).
-We use linear formulas to reason symbolically about programs with integer variables. 
-Assume we have a program with a set of variables $V$ and let \(n = |V|\). 
-A state of the program is a vector of integers in \(\mathbb{Z}^n\).
+- Let X be a set of variables. 
+  Linear formulas over X are boolean combinations of linear constraints of the form 
+  $\Sigma^n_{i=1} a_i x_i \leq b$ where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and
+  $b \in \mathbb{Z} \cup \{ + \infty \}$.
+  We use linear formulas to reason symbolically about programs with integer variables. 
+  Assume we have a program with a set of variables $V$ and let \(n = |V|\). 
+  A state of the program is a vector of integers in $\mathbb{Z}^n$.
 
+- Nice DLS grammar in [@wang2022] p. 4 (Fig. 4)
+
+
+
+[NUMINV]: https://github.com/dynaroars/numinv
+[G-CLN]: https://github.com/jyao15/G-CLN
+[CLN2]: https://github.com/gryan11/cln2inv.git
+[CODE2]: https://github.com/PL-ML/code2inv.git
+[CVC5]: https://github.com/cvc5/cvc5
+[ELDERICA]: https://github.com/uuverifiers/eldarica
+[LIPUS]: https://github.com/Santiago-Yu/LIPuS
+[IMPLC]: https://github.com/grigoryfedyukovich/aeval.git
+[AUTOSPEC]: https://sites.google.com/view/autospecification
+[DAIKON]: https://plse.cs.washington.edu/daikon
+[DIG]: https://github.com/dynaroars/dig
+[LOOPINV]: https://github.com/SaswatPadhi/LoopInvGen
+
+[^1]: Not a standalone tool; invariants inference is an internal step of the parent tool.

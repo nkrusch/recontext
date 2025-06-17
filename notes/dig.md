@@ -1,18 +1,13 @@
 # How DIG Works
 
-DIG is a dynamic analysis framework for inferring expressive numerical
-invariants [@nguyen2022].
+DIG is a dynamic analysis framework for inferring expressive numerical invariants [@nguyen2022].
 
-DIG supports nonlinear equalities and inequalities, of arbitrary degree, over
-numerical variables [@nguyen2014]
+DIG supports nonlinear equalities and inequalities, of arbitrary degree, over numerical variables [@nguyen2014]
 
-DIG takes as input the set $V$ of variables that are in scope at location $L$,
-the associated traces $X$, and a maximum degree $d$, and returns a set of
-possible polynomial relations among the variables in $V$ whose degree is at most
-$d$ [@nguyen2014].
+DIG takes as input the set $V$ of variables, that are in scope at location $L$, the associated traces $X$, and a maximum degree $d$. 
+It returns a set of possible polynomial relations among the variables in $V$ whose degree is at most $d$ [@nguyen2014].
 
-DIG can successfully discover polynomial and array invariants in standard
-benchmark suites [@nguyen2014].
+DIG can successfully discover polynomial and array invariants in standard benchmark suites (of programs) [@nguyen2014].
 
 ## Analysis steps
 
@@ -62,11 +57,11 @@ benchmark suites [@nguyen2014].
 
 5. **OUTPUT** Invariants
 
-## About The Invariant Inference Step
+## About Invariant Inference
 
 The generator creates relations that are polynomial, disjunctive, and/or flat and nested arrays.
-DIG uses concepts and tools from mathematical fields (linear algebra,
-geometry, formal methods, etc.) to improve dynamic analysis [@nguyen2014].
+
+DIG uses concepts and tools from mathematical fields (linear algebra, geometry, formal methods, etc.) to improve dynamic analysis [@nguyen2014].
 
 DIG uses **_parameterized templates_** [@nguyen2014]
 - Computes the unknown coefficients in the templates directly from trace.
@@ -104,24 +99,19 @@ geometric shapes enclosing the points.
 - Automatic theorem proving is used to reason about large arrays more
   efficiently
 
-**User can modify the parameters** for better performance or to specify
-additional information to aid the invariant generation process [@nguyen2014].
+**User can modify the parameters** for better performance or to specify additional information to aid the invariant generation process [@nguyen2014].
 
-## Inference Example
+## Inference Example [@nguyen2014, p.4]
 
-The trace values of the two variables $v_1$, $v_2$ are points in the ($v_1$,
-$v_2$)-plane. First DIG determines if these points lie on a line, represented by
-a linear equation of the form $c_0 + c_1v_1 + c_2v_2 = 0$.
+The trace values of the two variables $v_1$, $v_2$ are points in the ($v_1$, $v_2$)-plane. 
+First DIG determines if these points lie on a line, represented by a linear equation of the form $c_0 + c_1v_1 + c_2v_2 = 0$.
 
-If such a line does not exist, DIG builds a bounded convex polygon from these
-points. The edges of the polygon are represented by linear inequalities of the
-form $c_0 + c_1v_1 + c_2v_2 \geq 0$.
+If such a line does not exist, DIG builds a bounded convex polygon from these points. 
+The edges of the polygon are represented by linear inequalities of the form $c_0 + c_1v_1 + c_2v_2 \geq 0$.
 
-This technique generalizes to equations and inequalities among multiple
-variables by constructing hyperplanes and polyhedra in a high-dimensional space.
+This technique generalizes to equations and inequalities among multiple variables by constructing hyperplanes and polyhedra in a high-dimensional space.
 
-To generate nonlinear constraints, DIG uses terms to represent nonlinear
-polynomials over program variables, for example, $t_1 = v_1$, $t_2 = v_1v_2$. 
+To generate nonlinear constraints, DIG uses terms to represent nonlinear polynomials over program variables, for example, $t_1 = v_1$, $t_2 = v_1v_2$. 
 This allows DIG to generate equations such as $t_1 + t_2 = 1$. 
 This represents a line over $t_1$, $t_2$ and a hyperbola over $v_1$, $v_2$.
 

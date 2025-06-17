@@ -1,19 +1,18 @@
 # Baseline assumptions
 
-* We are interested in numerical invariants
-* A variable holds one value at a time
-* Assume integer domain or its subset (but real domain may be achievable) 
-* Hope to infer invariants about individual variables and ideally relationships _between_ variables
-* The inference is automatic (no manual problem-specific annotations/beyond what is possible through CLI options)
+* We are interested in [_numerical (relational?) invariants_](vocabulary.md)
+* We want to infer invariants about variables: ideally relationships _between_ variables
+* A "variable" holds one value at a time
+* Assume values are in integer domain (or its subset)
 * Treatment of null values is unknown
 
-I use "trace" as a generic term for inputs that that can be viewed as numerical tabular data ("data frames").   
+"Trace" is as a generic term for inputs -- can be viewed as numerical tabular data ("data frames").   
 A trace could be generated from a program execution, but it could also come from other sources.    
-An "invariant" may correspond to a "constraint" in some other domains.  
+An "invariant" may correspond to a "constraint" in some other literature.  
 
 # Intuitions
 
-* I suspect inference will fail "easily" if we only provide traces as input
+* Inference will fail "easily" if we only provide traces as input
   - We may be unable to say much about the input (what can we say?)
   - Why? What makes the inference fail?
   
@@ -22,18 +21,19 @@ An "invariant" may correspond to a "constraint" in some other domains.
   - Can we uncover the limitations/boundary of the state-of-the-art techniques?
 
 * For polynomial equalities: 
-  - The polynomial degree and variable count exponentially increases the solution space/solver time
+  - in DIG, the polynomial degree and variable count exponentially increase the solution space/solver time
   - Can we preprocess a trace, or fix some terms by deduction, to make this more scalable? [cf. @bouajjani2022]
+  - Some related strategies: prune the search space, use semantics to check feasibility, 
+    model space of feasible programs; use types to prune infeasible programs. [@wang2022]
   
-* Using diverse input samples is helpful to guide the inference 
-  - How to locate such diverse input (maximally different entries) in traces?
+* Using diverse input samples (maximally different) is helpful to guide the inference 
+  - How to locate such diverse inputs in traces?
 
-* Assumptions about Using DIG without symbolic states:
+* Assumptions about DIG without symbolic states:
   - Instrumentation should not occur
   - CEGIR-based inference should not iterate
   - [LIKELY FALSE] Inequality invariants should not be inferrable
-  - Symbolic execution impacts the quality of generated invariants;
-    it should NOT affect the overall expressivity, and what equations may be generated 
+  - Symbolic exec. impacts invariant quality; should NOT affect expressivity
   
 # Questions
 
@@ -42,7 +42,7 @@ An "invariant" may correspond to a "constraint" in some other domains.
 2. What is the impact on the inference if we...
     * Increase the degree, i.e., number of variables [A: exponential]
     * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
-    * Restrict the domain (Z, nat, binary) [A: ???]
+    * Restrict the domain of values (Z, nat, binary) [A: ???]
 
 3. What are some other ways to infer invariants from numerical data
     * This is a lit review question (may have nothing to do with FM or PL)
