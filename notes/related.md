@@ -1,5 +1,8 @@
 # Related Works
 
+Note: we are only interested in approaches with an implementation, since it would not be possible to do comparisons otherwise.
+
+
 ### [TaCLe](https://github.com/ML-KULeuven/tacle) [@paramonov2017]
 
 Investigates a "Tabular Constraint Learning Problem" over rows and columns of tabular (numeric/string) data.   
@@ -12,7 +15,10 @@ Investigates a "Tabular Constraint Learning Problem" over rows and columns of ta
  
 * Returns all constraints (from templates) that are valid for the provided input     
   => much redundancy!  
-  
 
+
+### [Daikon](https://plse.cs.washington.edu/daikon/) [@ernst2007] 
+
+Observes concrete program states that capture the values of variables at designated locations in the program when a program is run on a given input. By sampling large numbers of inputs, Daikon can determine relationships that may hold among variables across those samples. Confirming that those relationships constitute a true invariant has been a focus of follow-on work to Daikon. [@nguyen2022]
 
 

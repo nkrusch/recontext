@@ -13,6 +13,10 @@
 
 4. What does a case study look like/how is it structured?
     * Look at previous works at same venue for inspiration
+    * Examples: [1](https://arxiv.org/pdf/2412.07235)
+
+5. What are the challenges and lessons learned from= transferring research 
+   ideas to new settings (think of these questions in advance) 
 
 # Baseline assumptions
 

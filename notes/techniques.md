@@ -78,12 +78,7 @@ The tools with ✔️ can be executed; the ones with 💀 should not even be att
 
 ## Extended tool-specific notes 
 
-* **Daikon** [@ernst2007] observes concrete program states that capture the values
-  of variables at designated locations in the program when a program is run on a
-  given input. By sampling large numbers of inputs, Daikon can determine
-  relationships that may hold among variables across those samples. Confirming
-  that those relationships constitute a true invariant has been a focus of
-  follow-on work to Daikon. [@nguyen2022]
+
 
 * By introducing the slack variable $\displaystyle \mathbf {s} \geq \mathbf {0}$, the inequality
   $\displaystyle \mathbf {A} \mathbf {x} \leq \mathbf {b}$ can be converted to the equation
