@@ -18,12 +18,13 @@
 
 We are interested in [_numerical (relational?) invariants_](vocabulary.md)
 
-_Variable_ is an abstraction (but can be thought of as program variables)
-* A variable holds one value at a time
-* Assume values are in the integer domain (or subset) and consistent (noise-free)
-* Treatment of null values is unknown
+_Variable_ is an abstraction (for variable $x$, we have $x \mapsto int$) 
+* A variable holds one value at one point in time
+* Values are in the integer domain (or its subset) 
+* Values (at different times) are consistent (noise-free)
+* Treatment of null values is unknown [maybe remove?]
 
-"Trace" is as a generic term to represent a record of variable values
+_Trace_ is as a generic term for a record of variable values
 * A trace could be generated from a program execution, but it could also come from other sources.
 * in general: numerical tabular data ("data frames") can be viewed as a trace
 * Traces, and the values they contain, are always over finite domains. 
