@@ -85,8 +85,11 @@ The tools with ✔️ can be executed; the ones with 💀 should not even be att
   that those relationships constitute a true invariant has been a focus of
   follow-on work to Daikon. [@nguyen2022]
 
-
+* By introducing the slack variable $\displaystyle \mathbf {s} \geq \mathbf {0}$, the inequality
+  $\displaystyle \mathbf {A} \mathbf {x} \leq \mathbf {b}$ can be converted to the equation
+  $\displaystyle \mathbf {A} \mathbf {x} +\mathbf {s} =\mathbf {b}$.
   
+
 [NUMINV]: https://github.com/dynaroars/numinv
 [G-CLN]: https://github.com/jyao15/G-CLN
 [CLN2]: https://github.com/gryan11/cln2inv.git

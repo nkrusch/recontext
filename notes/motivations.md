@@ -7,6 +7,9 @@ THOUGHTS
     - In verification, invariants can be used to show a program meets its specification.
     - More broadly, invariants support numerous software development tasks, like testing, debugging, optimization, and code maintenance [@rosenblum1995, @alagarsamy2024, @zhang2015, @ernst2000].
 
+python -m tacle d    > Constraint-satisfaction problems arise in diverse application areas, including software and hardware verification, type inference, static program analysis, test-case generation, scheduling, planning, and graph problems, and share a common trait—a core component using logical formulas for describing states and transformations between them. [@demoura2011]
+
+
 * Unfortunately, invariant are implicit in programs and innovation is needed to discover them.
 * Invariant inference is one of the hardest problems in verification [@feldman2019, @yu2023, @dillig2013].
 * Since the 1970s, and the seminal work of [@karr1976], invariant inference is a major research area in program analysis [@nguyen2014].
@@ -60,3 +63,8 @@ EXPECTED OUTCOME
   e.g., the number of variables or the values of coefficients, and does
   not fix the invariant shape e.g., by bounding the number and kind
   of logical connectives.
+
+- Invariant inference can be seen as an inverse constraint satisfaction 
+  problem (CSP). In a CSP one is given a set of constraints over variables 
+  that must all be satisfied, and the goal is to find an instantiation 
+  of all the variables that satisfies these constraints [@paramonov2017]. 

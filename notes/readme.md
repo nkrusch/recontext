@@ -16,16 +16,21 @@
 
 # Baseline assumptions
 
-* We are interested in [_numerical (relational?) invariants_](vocabulary.md)
-* "Variable" is an abstraction (beyond program variables)
+We are interested in [_numerical (relational?) invariants_](vocabulary.md)
+
+* "Variable" is an abstraction (but if it helps, think of program variables)
 * A variable holds one value at a time
-* Assume values are in integer domain (or its subset)
-* We want to infer invariants about variables and ideally relationships _between_ variables
+* Assume values are in integer domain (or its subset) 
 * Treatment of null values is unknown
+
 * "Trace" is as a generic term to represent a record of variable values
-    - A trace could be generated from a program execution, but it could also come from other sources.
-    - in general: numerical tabular data ("data frames") can be viewed as a trace 
-* An "invariant" is a "constraint" in some other literature.  
+* A trace could be generated from a program execution, but it could also come from other sources.
+* in general: numerical tabular data ("data frames") can be viewed as a trace
+* Traces, and the values they contain, are always over finite domains. 
+  
+* We want to infer invariants about variables and ideally relationships _between_ variables
+* Invariant holds for _each instance_ of a trace (not _across_ many instances)
+* An "invariant" is an [(arithmetic) constraint](./vocabulary.md) in some other literature.
 
 # Intuitions
 

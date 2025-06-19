@@ -15,3 +15,9 @@
 * __numerical invariants__: capture numerical relations among program variables; can be conjunctive, disjunctive, etc. [@nguyen2022]
 
 * __relational invariants__: logical assertions defined over multiple programs or program executions. [@wang2022]
+
+* __constraint__: is a relation between multiple variables that limits the values these variables can take simultaneously. [https://en.wikipedia.org/wiki/Constraint_programming]
+
+* __arithmetic constraints__: constraints are defined by an arithmetic expression, i.e., using $\displaystyle <,>,\leq ,\geq ,=,\neq,...$
+
+
