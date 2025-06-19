@@ -10,12 +10,16 @@
 3. [What are some other ways to infer invariants from numerical data](related.md)
     * This is a lit review question (may have nothing to do with FM or PL)
     * Ultimately we want to do some comparison
+  
+4. Experiments
+    * TODO: start thinking about the right experiment design
+    * What are we testing and on what? (see: [this](https://www.sigplan.org/Resources/EmpiricalEvaluation/) and [this](https://evaluate.inf.usi.ch/sites/default/files/EvaluateCollaboratoryTR1.pdf))
 
-4. What does a case study look like/how is it structured?
+5. What does a case study look like/how is it structured?
     * Look at previous works at same venue for inspiration
     * Examples: [1](https://arxiv.org/pdf/2412.07235)
 
-5. What are the challenges and lessons learned from transferring research 
+6. What are the challenges and lessons learned from transferring research 
    ideas to new settings
    * Think of these questions in advance
 
