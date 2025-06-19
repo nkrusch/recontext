@@ -1,3 +1,6 @@
 [submodule "dig"]
 	path = dig
 	url = https://github.com/dynaroars/dig.git
+[submodule "tacle"]
+	path = tacle
+	url = https://github.com/ML-KULeuven/tacle.git
