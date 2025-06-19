@@ -8,8 +8,10 @@
     * Restrict the domain of values (Z, nat, binary)
 
 3. [What are some other ways to infer invariants from numerical data](related.md)
-    * This is a lit review question (may have nothing to do with FM or PL)
-    * Ultimately we want to do some comparison
+    * This is a lit review question
+    * [(De Moura and Bjørner, 2011)](https://doi.org/10.1145/1995376.1995394) is a nice broad intro into the related _solving_ problem
+    * Discussion of the [PL/FM techniques](techniques.md)
+    * Ultimately we want to do some comparison between the techniques
   
 4. Experiments
     * TODO: start thinking about the right experiment design
