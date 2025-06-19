@@ -7,7 +7,7 @@
     * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
     * Restrict the domain of values (Z, nat, binary) [A: convergence: bin < nat < Z ?]
 
-3. What are some other ways to infer invariants from numerical data
+3. [What are some other ways to infer invariants from numerical data](related.md)
     * This is a lit review question (may have nothing to do with FM or PL)
     * Ultimately we want to do some comparison
 
@@ -18,9 +18,9 @@
 
 We are interested in [_numerical (relational?) invariants_](vocabulary.md)
 
-* "Variable" is an abstraction (but if it helps, think of program variables)
+* _Variable_ is an abstraction (but can be thought of as program variables)
 * A variable holds one value at a time
-* Assume values are in integer domain (or its subset) 
+* Assume values are in the integer domain (or subset) and consistent (noise-free)
 * Treatment of null values is unknown
 
 * "Trace" is as a generic term to represent a record of variable values
