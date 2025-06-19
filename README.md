@@ -1,6 +1,6 @@
-# invariants
+# Invariants
 
-Invariant generation experiments.
+Explorations of finding numerical invariants in (generic) numerical data.
 
 
 **Inputs**
@@ -12,7 +12,7 @@ Invariant generation experiments.
 
 
 
-## Running Experiments
+## Running various tools
 
 
 **Getting started.**
