@@ -1,4 +1,4 @@
-# Questions
+# Active questions
 
 1. [How does DIG work?](dig.md)
 
@@ -44,7 +44,7 @@ We want to infer invariants about variables and ideally relationships _between_ 
   - Why? What makes the inference fail?
   
 * Increasing the difficulty of inference (e.g., higher variable count, more
-  traces, or "noisy" trace) will likely break inference.
+  traces, or noisy trace) will likely break inference.
   - Can we uncover the limitations/boundary of the state-of-the-art techniques?
 
 * For polynomial equalities: 
@@ -55,12 +55,4 @@ We want to infer invariants about variables and ideally relationships _between_ 
   
 * Using diverse input samples (maximally different) is helpful to guide the inference 
   - How to locate such diverse inputs in traces?
-
-* Assumptions about DIG without symbolic states:
-  - Instrumentation should not occur
-  - CEGIR-based inference should not iterate
-  - [LIKELY FALSE] Inequality invariants should not be inferrable
-  - Symbolic exec. impacts invariant quality; should NOT affect expressivity
-  
-
 

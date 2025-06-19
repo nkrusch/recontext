@@ -30,6 +30,13 @@ It can successfully discover polynomial and array invariants in standard benchma
 5. **OUTPUT** Invariants
    - returns a set of possible polynomial relations among the variables in $V$ whose degree is at most $d$ [@nguyen2014].
 
+## About DIG without symbolic states
+
+- Instrumentation should not occur
+- CEGIR-based inference should not iterate
+- [LIKELY FALSE] Inequality invariants should not be inferrable
+- Symbolic exec. impacts invariant quality; should NOT affect expressivity
+
 ## About Invariant Inference
 
 The generator creates relations about polynomials, disjunctions, flat arrays, or nested arrays.
@@ -82,4 +89,6 @@ This technique generalizes to equations and inequalities among multiple variable
 To generate nonlinear constraints, DIG uses terms to represent nonlinear polynomials over program variables, for example, $t_1 = v_1$, $t_2 = v_1v_2$. 
 This allows DIG to generate equations such as $t_1 + t_2 = 1$. 
 This represents a line over $t_1$, $t_2$ and a hyperbola over $v_1$, $v_2$.
+
+  
 
