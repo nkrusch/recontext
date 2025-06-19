@@ -2,10 +2,10 @@
 
 1. [How does DIG work?](dig.md)
 
-2. What is the impact on the inference if we...
-    * Increase the degree, i.e., number of variables [A: exponential]
-    * Adding more/giving fewer traces, i.e., change the number of rows [A: should be adaptable]
-    * Restrict the domain of values (Z, nat, binary) [A: convergence: bin < nat < Z ?]
+2. For different techniques, what is the impact on the inference if we...
+    * Increase the degree, i.e., number of variables 
+    * Adding more/giving fewer traces, i.e., change the number of rows 
+    * Restrict the domain of values (Z, nat, binary)
 
 3. [What are some other ways to infer invariants from numerical data](related.md)
     * This is a lit review question (may have nothing to do with FM or PL)
@@ -18,17 +18,17 @@
 
 We are interested in [_numerical (relational?) invariants_](vocabulary.md)
 
-* _Variable_ is an abstraction (but can be thought of as program variables)
+_Variable_ is an abstraction (but can be thought of as program variables)
 * A variable holds one value at a time
 * Assume values are in the integer domain (or subset) and consistent (noise-free)
 * Treatment of null values is unknown
 
-* "Trace" is as a generic term to represent a record of variable values
+"Trace" is as a generic term to represent a record of variable values
 * A trace could be generated from a program execution, but it could also come from other sources.
 * in general: numerical tabular data ("data frames") can be viewed as a trace
 * Traces, and the values they contain, are always over finite domains. 
   
-* We want to infer invariants about variables and ideally relationships _between_ variables
+We want to infer invariants about variables and ideally relationships _between_ variables
 * Invariant holds for _each instance_ of a trace (not _across_ many instances)
 * An "invariant" is an [(arithmetic) constraint](./vocabulary.md) in some other literature.
 
