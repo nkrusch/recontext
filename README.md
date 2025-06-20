@@ -5,6 +5,9 @@ Explorations of finding numerical invariants in (generic) numerical data.
 
 ## Running various tools
 
+**Prerequisites.**
+git, make, and [Python](https://www.python.org/downloads/).
+
 **Getting started.**
 Clone the repository with submodules.
 
@@ -12,36 +15,20 @@ Clone the repository with submodules.
 
 To pull submodules after clone, run `git submodule update --init`
 
-**Prerequisites** &nbsp;
-[Docker 🐳](https://docs.docker.com/engine/install/) or 
-[Python 🐍](https://www.python.org/downloads/)
 
-
-<details>
-<summary>🐳 <strong>DIG (Docker)</strong></summary>
-
-Setup
-
-    (cd dig && docker build . -t='dig')
-    docker run -v "$(pwd)/inputs:/dig/inputs" -it --rm dig /bin/bash
-
-Experiment
-
-    time ~/miniconda3/bin/python3 -O dig.py -log 3 ../inputs/xy.csv 
-
-</details>
-<details><summary>🐍 <strong>DIG (native host)</strong></summary>
+### DIG
 
 Setup   
  
-    install sympy z3-solver beartype pycparser
+    pip install sympy z3-solver beartype pycparser
 
 Experiment
 
-    (cd dig/src && time python -O dig.py -noss -nomp -log 3 ../../inputs/xy.csv) 
+    (cd dig/src && echo "xy.csv" >> ../../out/xy_dig.txt 
+        time python -O dig.py -log 0 ../../inputs/xy.csv -noss -nomp >> ../../out/xy_dig.txt) 
 
-</details>
-<details><summary>🐍 <strong>TaCle</strong></summary>
+
+### TaCle
 
 Setup
  
@@ -49,9 +36,7 @@ Setup
 
 Experiment
 
-    python taclef.py inputs/xy.csv > temp && time  (cd tacle && python -m tacle ../temp) && rm -rf temp
-
-</details>
+    python taclef.py inputs/xy.csv > temp && time (cd tacle && python -m tacle ../temp) && rm -rf temp
 
 
 ## Inputs
