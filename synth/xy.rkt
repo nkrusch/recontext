@@ -3,66 +3,74 @@
 (require rosette/lib/synthax)  ; sketching library
 (require rosette/lib/destruct) ; value destructuring
 
-; syntax
-(struct plus (left right) #:transparent)
-(struct mul  (left right) #:transparent)
-(struct square (arg)      #:transparent)
-
-; semantics
-(define (interpret p)
-  (destruct p
-    [(plus a b)  (+ (interpret a) (interpret b))]
-    [(mul a b)   (* (interpret a) (interpret b))]
-    [(square a)  (expt (interpret a) 2)]
-    [_ p]))
-
-;; symbolic variables
-(define-symbolic b c integer?)
-
-;; find one solution
-(solve (assert (= (interpret (mul c b)) (+ b b))))
-
-;; forall x
-(synthesize
-  #:forall (list b)
-  #:guarantee (assert (= (interpret (mul c b)) (+ b b))))
-
-;; ================================================
-
 ;; shorthand for 32-bit bitvector.
 (define int32? (bitvector 32))
 
 ;; int -> 32-bit bitvect.
 (define (INT i) (bv i int32?))
 
-;; DSL (2-variable) invariant grammar
+;; symbolic variables
+(define-symbolic b c integer?)
+(define-symbolic x y int32?)
+
+ ;; DSL: 2-variable invariant grammar
 (define-grammar (inv x y)  
-  ;; e := x | y | op exp exp | op const exp
-  [e (choose x y ((op) (e) (e)) ((op) (c) (e)))] 
-  ;; op  :=  + | - | * | %
-  [op (choose bvadd bvsub bvmul bvsmod)]
-  ;; c := const
-  [c (choose (?? int32?))]
-)
+  [exp     ;; x | y | bop exp exp | op exp const
+     (choose x y
+             ((bop) (exp) (exp))
+             ((bop) (exp) (const)))]   
+  [bop     ;; op  :=  + | - | * | / | %
+     (choose bvadd bvsub bvmul bvsdiv bvsmod)]
+  [const   ;; c := const
+     (choose (?? int32?))])
+
+; syntax
+(struct plus (left right) #:transparent)
+(struct mult (left right) #:transparent)
+(struct subs (left right) #:transparent)
+(struct divs (left right) #:transparent)
+(struct mods (left right) #:transparent)
+(struct square (arg)      #:transparent)
+(struct cube   (arg)      #:transparent)
+
+; semantics
+(define (interpret p)
+  (destruct p
+    [(plus a b)  (+ (interpret a) (interpret b))]
+    [(mult a b)  (* (interpret a) (interpret b))]
+    [(subs a b)  (- (interpret a) (interpret b))]
+    [(divs a b)  (/ (interpret a) (interpret b))]
+    [(mods a b)  (modulo (interpret a) (interpret b))]
+    [(square a)  (expt (interpret a) 2)]
+    [(cube   a)  (expt (interpret a) 3)]
+    [_ p]))
+
+
+;; find one solution
+(solve
+ (assert
+  (= (interpret (mult c b)) (+ b b))))
+
+;; solution forall b
+(synthesize
+  #:forall (list b)
+  #:guarantee (assert (= (interpret (mult c b)) (+ b b))))
+
+
+;; invariant term
+(define (term a b)
+  (inv a b #:depth 3))
 
 ;; Specification:
 ;; invariant must satisfy trace
-(define (same fn a b)
-  (assert (bveq (INT 0)(fn a b)))
+(define (same fn)
+  (assert (bveq (INT 0)(fn (INT 0) (INT 0))))
 ) 
-  
-;; invariant term
-(define (term v1 v2)
-  (inv v1 v2 #:depth 2))
 
-;; variables
-(define-symbolic x y int32?)
-
-(define solution
-   (synthesize
-    #:forall    (list x y)
-    #:guarantee (same term x y)))
-
-(if (sat? solution) (print-forms solution) (print "UNSAT"))
+;(define solution
+;   (synthesize
+;    #:forall    (list x y)
+;    #:guarantee (same term x y)))
+;(if (sat? solution) (print-forms solution) (print "UNSAT"))
 
 (print "DONE")
