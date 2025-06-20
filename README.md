@@ -17,19 +17,19 @@ Explorations of finding numerical invariants in (generic) numerical data.
 
    To pull submodules after clone, run `git submodule update --init`
 
-2. Install Python dependencies
+2. Install dependencies
 
        pip install -r requirements.txt
 
-3. Run all experiments
+**Experiments.** Run all experiments at once.
 
        make
 
-   The experiment results are written to `results/`.
+The results are written to `results`.
 
-   Run individual experiment on `input/FILE`:
-   - use DIG: `make results/FILE.dig`
-   - use TaCle: `make results/FILE.tacle`
+To run an individual experiment on `inputs/FILE`
+- using DIG: `make results/FILE.dig`
+- using TaCle: `make results/FILE.tacle`
 
 ## Inputs
 
