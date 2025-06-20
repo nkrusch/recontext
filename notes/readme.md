@@ -9,13 +9,15 @@
 
 3. [What are some other ways to infer invariants from numerical data](related.md)
     * This is a lit review question
-    * [(De Moura and Bjørner, 2011)](https://doi.org/10.1145/1995376.1995394) is a nice broad intro into the related _solving_ problem
+    * [(De Moura and Bjørner, 2011)](https://doi.org/10.1145/1995376.1995394) is a nice intro connecting domains
     * Discussion of the [PL/FM techniques](techniques.md)
     * Ultimately we want to do some comparison between the techniques
   
 4. Experiments
     * TODO: start thinking about the right experiment design
-    * What are we testing and on what? (see: [this](https://www.sigplan.org/Resources/EmpiricalEvaluation/) and [this](https://evaluate.inf.usi.ch/sites/default/files/EvaluateCollaboratoryTR1.pdf))
+    * What are we testing and on what? (
+      see: [this](https://www.sigplan.org/Resources/EmpiricalEvaluation/) 
+      and [this](https://evaluate.inf.usi.ch/sites/default/files/EvaluateCollaboratoryTR1.pdf))
 
 5. What does a case study look like/how is it structured?
     * Look at previous works at same venue for inspiration
@@ -29,7 +31,7 @@
 
 We are interested in [_numerical (relational?) invariants_](vocabulary.md)
 
-_Variable_ is an abstraction (for variable $x$, we have $x \mapsto int$) 
+_Variable_ is a symbolic abstraction (for variable $x$, we have $x \mapsto int$) 
 * A variable holds one value at one point in time
 * Values are in the integer domain (or its subset) 
 * Values (at different times) are consistent (noise-free)

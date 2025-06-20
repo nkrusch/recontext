@@ -14,3 +14,15 @@ Given $n$ variables and $m$ records of variable values, a trace is an $n \times 
 A matrix element is a "cell". 
 A cell holds a value with a numerical type, whose type is integer or float.
 When a cell is empty, its type is $\epsilon$, which is a subtype of all other types.
+
+We use capitals for variables (e.g. X, Y and S), and lower case for values (e.g. v and w). 
+We write D(X) for the domain of a variable X.
+
+# Maybe useful?
+
+* By introducing the slack variable $\displaystyle \mathbf {s} \geq \mathbf {0}$, the inequality
+  $\displaystyle \mathbf {A} \mathbf {x} \leq \mathbf {b}$ can be converted to the equation
+  $\displaystyle \mathbf {A} \mathbf {x} +\mathbf {s} =\mathbf {b}$.
+
+* [X] proposes a set of constraints taken from the global constraints catalog that are consistent with the given examples.  
+

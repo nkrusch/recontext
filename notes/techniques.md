@@ -55,8 +55,13 @@ traces, rather than program structures.
   solution to functions defined by a given context-free grammar.
   e.g., [@alur2013]
 
+- Generate-and-test [@valiant1984] (or guess-and-check): based on some 
+  heuristic, propose a candidate and check, until convergence.
+
 
 ## Tools & Implementations
+
+The tools with ✔️ can be executed; the ones with 💀 should not even be attempted.
 
 | Name and Notes           | Ref           | Inference   | Status | Notes            |
 |:-------------------------|:--------------|:------------|:------:|:-----------------|
@@ -72,18 +77,6 @@ traces, rather than program structures.
 | [cln2inv][CLN2]          | [@ryan2020]   |             |        | machine learning |
 | [code2inv][CODE2]        | [@si2018]     | static      |   ✔️   |                  |
 | [cvc5][CVC5][^1]         |               |             |   ✔️   | SMT solver       |
-
-The tools with ✔️ can be executed; the ones with 💀 should not even be attempted. 
-
-
-## Extended tool-specific notes 
-
-
-
-* By introducing the slack variable $\displaystyle \mathbf {s} \geq \mathbf {0}$, the inequality
-  $\displaystyle \mathbf {A} \mathbf {x} \leq \mathbf {b}$ can be converted to the equation
-  $\displaystyle \mathbf {A} \mathbf {x} +\mathbf {s} =\mathbf {b}$.
-  
 
 [NUMINV]: https://github.com/dynaroars/numinv
 [G-CLN]: https://github.com/jyao15/G-CLN
