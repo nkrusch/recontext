@@ -2,11 +2,11 @@
 
 Let X be a set of variables.
 Linear formulas over X are boolean combinations of linear constraints of the form
-$\Sigma^n_{i=1} a_i x_i \leq b$ where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and
-$b \in \mathbb{Z} \cup \{ + \infty \}$.
+$\displaystyle \Sigma^n_{i=1} a_i x_i \leq b$ where the $x_i$'s are variables in X, the $a_i$'s are integer constants, and
+$\displaystyle b \in \mathbb{Z} \cup \{ + \infty \}$.
 We use linear formulas to reason symbolically about programs with integer variables.
-Assume we have a program with a set of variables $V$ and let \(n = |V|\).
-A state of the program is a vector of integers in $\mathbb{Z}^n$.
+Assume we have a program with a set of variables $V$ and let $n = |V|$.
+A state of the program is a vector of integers in $\displaystyle \mathbb{Z}^n$.
 
 Nice DLS grammars in [@wang2022] p. 4 (Fig. 4) and in [@alur2013]
 
@@ -24,5 +24,5 @@ We write D(X) for the domain of a variable X.
   $\displaystyle \mathbf {A} \mathbf {x} \leq \mathbf {b}$ can be converted to the equation
   $\displaystyle \mathbf {A} \mathbf {x} +\mathbf {s} =\mathbf {b}$.
 
-* [X] proposes a set of constraints taken from the global constraints catalog that are consistent with the given examples.  
+* ...proposes a set of constraints taken from the global constraints catalog that are consistent with the given examples.  
 

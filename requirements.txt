@@ -3,6 +3,7 @@ sympy
 z3-solver
 beartype
 pycparser
+
 # TaCLe dependencies
 numpy==1.23.4
 python-constraint

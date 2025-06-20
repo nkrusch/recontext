@@ -1,6 +1,6 @@
 # Related Works
 
-Note: we are only interested in approaches with an implementation, since it would not be possible to do comparisons otherwise.
+In general: we are interested in implemented approaches, since comparisons are difficult otherwise.
 
 ### TaCLe
 
@@ -37,14 +37,13 @@ relationships that may hold among variables across those samples.
 Confirming that those relationships constitute a true invariant has 
 been a focus of follow-on work to Daikon. [@nguyen2022]
 
+### In Literature
 
-
-
-
-### Literature
-
-The first algorithm for learning constraints was given by Valiant [@valiant1984]. 
-Given a set of feasible examples, the algorithm learns Boolean formulas consistent with the given examples. 
-It enumerates all possible formulas upto a pre-defined complexity and keeps only those which are satisfied by all feasible examples.
-This is essentially a generate-and-test approach, where the algorithm generates all possible constraints and then tests whether they hold on the given dataset.
+The first algorithm for learning constraints was given by Valiant 
+[@valiant1984]. Given a set of feasible examples, the algorithm learns 
+Boolean formulas consistent with the given examples. It enumerates all 
+possible formulas upto a pre-defined complexity and keeps only those 
+which are satisfied by all feasible examples. This is essentially a 
+generate-and-test approach, where the algorithm generates all possible 
+constraints and then tests whether they hold on the given dataset.
 

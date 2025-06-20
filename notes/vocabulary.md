@@ -6,7 +6,7 @@
   
 * __bias__: the set of possible invariants that can be learned. [@kumar2022]
 
-* __constrained horn clause (CHC)__: clauses of special form that cover a fragment of first-order logic <https://en.wikipedia.org/wiki/Constrained_Horn_clauses>
+* __constrained horn clause (CHC)__: clauses of special form that cover a fragment of first-order logic. [https://en.wikipedia.org/wiki/Constrained_Horn_clauses]
 
 * __constraint__: is a relation between multiple variables that limits the values these variables can take simultaneously. [https://en.wikipedia.org/wiki/Constraint_programming]
 
