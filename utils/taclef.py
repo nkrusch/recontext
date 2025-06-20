@@ -1,8 +1,7 @@
 from sys import argv
 
-# converts a dig trace to a csv:
-# no header row, comments, location label
-# and with comma separator
+# converts a (DIG) trace to a csv:
+# no header and comments, remove location label, use comma separator
 
 if __name__ == '__main__':
     with open(argv[1], 'r') as fp:

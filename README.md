@@ -2,42 +2,34 @@
 
 Explorations of finding numerical invariants in (generic) numerical data.
 
-
 ## Running various tools
 
 **Prerequisites.**
-git, make, and [Python](https://www.python.org/downloads/).
+[git](https://git-scm.com/downloads), 
+[make](https://www.gnu.org/software/make/), and 
+[Python](https://www.python.org/downloads/).
 
 **Getting started.**
-Clone the repository with submodules.
 
-    git clone --recurse-submodules https://github.com/nkrusch/invariants.git
+1. Clone the repository with submodules.
 
-To pull submodules after clone, run `git submodule update --init`
+       git clone --recurse-submodules https://github.com/nkrusch/invariants.git
 
+   To pull submodules after clone, run `git submodule update --init`
 
-### DIG
+2. Install Python dependencies
 
-Setup   
- 
-    pip install sympy z3-solver beartype pycparser
+       pip install -r requirements.txt
 
-Experiment
+3. Run all experiments
 
-    (cd dig/src && echo "xy.csv" >> ../../out/xy_dig.txt 
-        time python -O dig.py -log 0 ../../inputs/xy.csv -noss -nomp >> ../../out/xy_dig.txt) 
+       make
 
+   The experiment results are written to `results/`.
 
-### TaCle
-
-Setup
- 
-    (cd tacle && pip install . && pip install numpy==1.23.4)
-
-Experiment
-
-    python taclef.py inputs/xy.csv > temp && time (cd tacle && python -m tacle ../temp) && rm -rf temp
-
+   Run individual experiment on `input/FILE`:
+   - use DIG: `make results/FILE.dig`
+   - use TaCle: `make results/FILE.tacle`
 
 ## Inputs
 
