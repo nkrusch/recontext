@@ -6,32 +6,27 @@ module VMod {
   const degree : pos
 
   // types
-  type bit = i : nat | i in {0, 1} witness 1
   type idx = x : nat | x < degree witness 0
   type Pred = seq<real> -> bool
 
   type mutableT = (seq<idx>, Pred)
-  type immutableS = seq<idx>
   type mutableS = seq<mutableT>
+  type immutableS = seq<idx>
   type matrow = r : seq<real> | |r| == degree witness seq(degree, _ => 0.0)
-  type matrix = m : seq<matrow> | forall i : nat :: i < |m| ==> |m[i]| == degree witness []
   type maskr = r : seq<bool> | |r| == degree witness seq(degree, _ => false)
-  type mask = m : seq<maskr> | forall i : nat :: i < |m| ==> |m[i]| == degree witness []
+  type matrix = seq<matrow>
+  type mask = seq<maskr>
 
-
-  function IdxValues(row: matrow, colI: seq<idx>) : seq<real>
-    ensures var res := IdxValues(row, colI); |res| == |colI| && forall i : nat :: i < |colI| ==> res[i] == row[colI[i]]
-  {
-    if |colI| == 0 then [] else [row[colI[0]]] + IdxValues(row, colI[1..])
+  predicate Correct(original: matrix, mutated: matrix, cond: mutableS, colI : immutableS)
+    requires |original| == |mutated| {
+    ImmutableHold(original, mutated, colI) && MutableHold(mutated, cond)
   }
 
-  predicate MutableHold(matrix: matrix, cond : mutableS)
-  {
+  predicate MutableHold(matrix: matrix, cond : mutableS) {
     forall row : nat :: 0 <= row < |matrix| ==> MutableHoldAtRow(matrix[row], cond)
   }
 
-  predicate MutableHoldAtRow(row: matrow, cond: mutableS)
-  {
+  predicate MutableHoldAtRow(row: matrow, cond: mutableS) {
     if |cond| == 0 then true
     else
       var fst, rest := cond[0], cond[1..];
@@ -40,153 +35,152 @@ module VMod {
   }
 
   predicate ImmutableHold(original: matrix, mutated: matrix, colI: immutableS)
-    requires |original| == |mutated|
-  {
-    forall row : nat :: row < |original| ==> SeqEqual(IdxValues(original[row], colI), IdxValues(mutated[row], colI))
+    requires |original| == |mutated| {
+    forall ri : nat :: ri < |original| ==> ImmutableHoldAtRow(original[ri], mutated[ri], colI)
   }
 
-  predicate Correct(original: matrix, mutated: matrix, cond: mutableS, colI : immutableS)
-    requires |original| == |mutated|
-  {
-    ImmutableHold(original, mutated, colI) && MutableHold(mutated, cond)
+  predicate ImmutableHoldAtRow(o: matrow, m: matrow, ci: immutableS) {
+    SeqEqual(IdxValues(o, ci), IdxValues(m, ci))
   }
 
-  class Verify {
+  predicate SeqEqual<T(==)>(a: seq<T>, b: seq<T>) {
+    |a| == |b| && forall i : nat :: 0 <= i < |a| ==> a[i] == b[i]
+  }
+
+  class ControlledMutation {
     const mut : mutableS
     const imm : immutableS
     const irow : maskr
-    const deps : seq<seq<idx>>
 
     constructor (mut: mutableS, imm: immutableS)
-      // ensures |deps| == |mut|
       decreases *
     {
-      var deps := Dependencies(mut);
       this.mut := mut;
       this.imm := imm;
-      this.deps := deps;
-
       var tmp := new bool[degree](_ => true);
       for i := 0 to degree { tmp[i] := i in imm; }
       this.irow := tmp[..];
     }
 
-    static method Dependencies(m: mutableS) returns (res: seq<seq<idx>>)
-      decreases *
-      // ensures |res| == |m|
-    {
-      var sets := Map(m, (x: mutableT) => ToSet(x.0));
-      var merged := true;
-      var scc := [];
-      while merged decreases *
-      {
-        merged := false;
-        while |sets| > 0 decreases *
-        {
-          var fst, rest := sets[0], sets[1..];
-          sets := [];
-          for i := 0 to |rest| {
-            var other := rest[i];
-            if other !! fst {
-              sets := sets + [other];
-            } else {
-              merged := true;
-              fst := fst + other; // union
-            }
-          }
-          scc := scc + [fst];
-        }
-      }
-      res := [];
-      for i := 0 to |m| {
-        var idx := ToSet(m[i].0);
-        for j := 0 to |scc| {
-          if (scc[j] !! idx) == false {
-            idx := idx + scc[j];
-          }
-        }
-        var ss := SetToSeq(idx);
-        res := res + [ss];
-      }
-    }
-
-    function ApplyIdx(j:idx, ri: nat, o: matrix, m: matrix, mask: mask) : real 
-    requires |m| == |o| == |mask| && ri < |o|
-    {
-      if mask[ri][j] then m[ri][j] else o[ri][j]
-    }
-
-    function Apply(o: matrix, m: matrix, mask: mask) : matrix
-      requires |o| == |m| == |mask|
-      requires forall i : nat :: i < |mask| ==> |mask[i]| == degree
-      // ensures var m' := Apply(o, m, mask); |m'| == |o|
-    {
-      o
-    }
-
     method EnsureC(o: matrix, m: matrix) returns (final: matrix)
-      requires MutableHold(o, mut)
-      requires |deps| == |mut|
-      requires |m| == |o|
-      ensures |final| == |o|
+      requires |o| == |m| && MutableHold(o, mut)
+      ensures  |o| == |final|
       // ensures Correct(final, o, mut, imm)
     {
       var vmap : mask := seq(|o|, _ => irow[..]);
       var m' := Apply(o, m, vmap);
       // assert ImmutableHold(o, m', imm);
-
-      vmap := seq(|o|, _ => seq(degree, _ => true));
-      // for k := 0 to |mut|
-      // {
-      //   var src, P, dp := mut[k].0, mut[k].1, deps[k];
-      //   for rr := 0 to r {
-      //     var values := IdxValues(m', rr, src);
-      //     if !P(values) {
-      //       for i := 0 to |dp| {
-      //         vmap[rr, dp[i]] := false;
-      //       }
-      //     }
-      //   }
-      // }
-
+      vmap := MutMask(m', mut);
       final := Apply(o, m', vmap);
+      //assert Correct(final, o, mut, imm);
     }
   }
 
-  predicate SeqEqual<T(==)>(a: seq<T>, b: seq<T>)
+  function MutMask (m: matrix, cond: mutableS) : mask
+    ensures var m' := MutMask(m, cond); |m'| == |m|
   {
-    |a| == |b| && forall i : nat :: 0 <= i < |a| ==> a[i] == b[i]
+    if |m| == 0 then [] else [MutRow(m[0], cond)] + MutMask(m[1..], cond)
   }
 
-  function ToSet<T>(xs: seq<T>): set<T>
-  {
-    set x: T | x in xs
+  function MutRow (m: matrow, cond: mutableS) : maskr {
+    var corr := MutableHoldAtRow(m, cond);
+    seq(degree, _ => corr) // dep only
   }
 
-  method SetToSeq<A>(s: set<A>) returns (se: seq<A>)
-    ensures var q := se; forall i :: 0 <= i < |q| ==> q[i] in s
+  function Apply(original: matrix, modified: matrix, mask: mask) : matrix
+    requires |original| == |modified| == |mask|
+    ensures var m := Apply(original, modified, mask); |m| == |original|
+    ensures var m := Apply(original, modified, mask);
+            forall r : nat :: r < |original| ==> forall i : idx :: if mask[r][i] then m[r][i] == modified[r][i] else m[r][i] == original[r][i]
   {
-    se := [];
-    var temp := s;
-    while temp != {}
-      invariant forall x :: x in s ==> x in temp || x in se
-      invariant forall x :: x in se ==> x in s
-    {
-      var x :| x in temp;
-      se := se + [x];
-      temp := temp - {x};
-    }
+    if |original| == 0 then []
+    else var o, m, k := original[0], modified[0], mask[0];
+    [MapRow(o, m, k)] + Apply(original[1..], modified[1..], mask[1..])
   }
 
-  function Map<A, B>(s: seq<A>, f: A -> B): seq<B>
+  function MapRow(o: seq<real>, m: seq<real>, k: seq<bool>) : seq<real>
+    requires |o| == |m| == |k|
+    ensures var r := MapRow(o, m, k);
+            |r| == |o| &&
+            forall i : nat :: i < |r| ==> if k[i] then r[i] == m[i] else r[i] == o[i]
   {
-    if |s| == 0 then []
-    else [f(s[0])] + Map(s[1..], f)
+    if |o| == 0 then []
+    else [if k[0] then m[0] else o[0]] + MapRow(o[1..], m[1..], k[1..])
   }
 
-  /* Proofs */
-  lemma ImmutableOfSameTauto()
-    ensures forall m : matrix, i :immutableS :: ImmutableHold(m, m, i)
-  {}
+  function IdxValues(row: matrow, colI: seq<idx>) : seq<real>
+    ensures var res := IdxValues(row, colI);
+            |res| == |colI| &&
+            forall i : nat :: i < |colI| ==> res[i] == row[colI[i]]
+  {
+    if |colI| == 0 then [] else [row[colI[0]]] + IdxValues(row, colI[1..])
+  }
 
 }
+
+// method Dependencies(m: mutableS) returns (res: seq<seq<idx>>)
+//   decreases *
+//   // ensures |res| == |m|
+// {
+//   var sets := Map(m, (x: mutableT) => ToSet(x.0));
+//   var merged := true;
+//   var scc := [];
+//   while merged decreases *
+//   {
+//     merged := false;
+//     while |sets| > 0 decreases *
+//     {
+//       var fst, rest := sets[0], sets[1..];
+//       sets := [];
+//       for i := 0 to |rest| {
+//         var other := rest[i];
+//         if other !! fst {
+//           sets := sets + [other];
+//         } else {
+//           merged := true;
+//           fst := fst + other;
+//         }
+//       }
+//       scc := scc + [fst];
+//     }
+//   }
+//   res := [];
+//   for i := 0 to |m| {
+//     var idx := ToSet(m[i].0);
+//     for j := 0 to |scc| {
+//       if (scc[j] !! idx) == false {
+//         idx := idx + scc[j];
+//       }
+//     }
+//     var ss := SetToSeq(idx);
+//     res := res + [ss];
+//   }
+// }
+
+  // function Map<A, B>(s: seq<A>, f: A -> B): seq<B>
+  //   ensures var r := Map(s, f); |r| == |s|
+  //   ensures var r := Map(s, f); forall i : nat :: i < |r| ==> r[i] == f(s[i])
+  // {
+  //   if |s| == 0 then [] else [f(s[0])] + Map(s[1..], f)
+  // }
+
+  // function ToSet<T>(xs: seq<T>): set<T>
+  // {
+  //   set x: T | x in xs
+  // }
+
+  // method SetToSeq<A>(s: set<A>) returns (se: seq<A>)
+  //   ensures forall i :: 0 <= i < |se| ==> se[i] in s
+  //   ensures forall x :: x in s ==> exists i : nat :: i < |se| && se[i] == x
+  // {
+  //   se := [];
+  //   var temp := s;
+  //   while temp != {}
+  //     invariant forall x :: x in s ==> x in temp || x in se
+  //     invariant forall x :: x in se ==> x in s
+  //   {
+  //     var x :| x in temp;
+  //     se := se + [x];
+  //     temp := temp - {x};
+  //   }
+  // }
