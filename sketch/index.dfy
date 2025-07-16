@@ -17,9 +17,9 @@ module VMod {
   type matrix = seq<matrow>
   type mask = seq<maskr>
 
-  predicate Correct(original: matrix, mutated: matrix, cond: mutableS, colI : immutableS)
+  predicate IsCorrect(original: matrix, mutated: matrix, cond: mutableS, imm : immutableS)
     requires |original| == |mutated| {
-    ImmutableHold(original, mutated, colI) && MutableHold(mutated, cond)
+    ImmutableHold(original, mutated, imm) && MutableHold(mutated, cond)
   }
 
   predicate MutableHold(matrix: matrix, cond : mutableS) {
@@ -34,9 +34,9 @@ module VMod {
       pred(values) && MutableHoldAtRow(row, rest)
   }
 
-  predicate ImmutableHold(original: matrix, mutated: matrix, colI: immutableS)
+  predicate ImmutableHold(original: matrix, mutated: matrix, imm: immutableS)
     requires |original| == |mutated| {
-    forall ri : nat :: ri < |original| ==> ImmutableHoldAtRow(original[ri], mutated[ri], colI)
+    forall ri : nat :: ri < |original| ==> ImmutableHoldAtRow(original[ri], mutated[ri], imm)
   }
 
   predicate ImmutableHoldAtRow(o: matrow, m: matrow, ci: immutableS) {
@@ -47,44 +47,29 @@ module VMod {
     |a| == |b| && forall i : nat :: 0 <= i < |a| ==> a[i] == b[i]
   }
 
-  class ControlledMutation {
-    const mut : mutableS
-    const imm : immutableS
-    const irow : maskr
+  method ControlledMutation(o: matrix, m: matrix, mut: mutableS, imm: immutableS) returns (corr: matrix)
+    requires |o| == |m| && MutableHold(o, mut)
+    ensures  |o| == |corr| // && Correct(final, o, mut, imm)
+  {
+    var tmp := new bool[degree](_ => true);
+    for i := 0 to degree { tmp[i] := i in imm; }
+    var irow := tmp[..];
 
-    constructor (mut: mutableS, imm: immutableS)
-      decreases *
-    {
-      this.mut := mut;
-      this.imm := imm;
-      var tmp := new bool[degree](_ => true);
-      for i := 0 to degree { tmp[i] := i in imm; }
-      this.irow := tmp[..];
-    }
-
-    method EnsureC(o: matrix, m: matrix) returns (final: matrix)
-      requires |o| == |m| && MutableHold(o, mut)
-      ensures  |o| == |final|
-      // ensures Correct(final, o, mut, imm)
-    {
-      var vmap : mask := seq(|o|, _ => irow[..]);
-      var m' := Apply(o, m, vmap);
-      // assert ImmutableHold(o, m', imm);
-      vmap := MutMask(m', mut);
-      final := Apply(o, m', vmap);
-      //assert Correct(final, o, mut, imm);
-    }
+    var vmap : mask := seq(|o|, _ => irow[..]);
+    var m' := Apply(o, m, vmap);
+    // assert ImmutableHold(o, m', imm);
+    vmap := MutMask(m', mut);
+    corr := Apply(o, m', vmap);
+    //assert IsCorrect(corr, o, mut, imm);
   }
 
   function MutMask (m: matrix, cond: mutableS) : mask
     ensures var m' := MutMask(m, cond); |m'| == |m|
   {
-    if |m| == 0 then [] else [MutRow(m[0], cond)] + MutMask(m[1..], cond)
-  }
-
-  function MutRow (m: matrow, cond: mutableS) : maskr {
-    var corr := MutableHoldAtRow(m, cond);
-    seq(degree, _ => corr) // dep only
+    if |m| == 0 then []
+    else
+      var corr := MutableHoldAtRow(m[0], cond);
+      [seq(degree, _ => corr)] + MutMask(m[1..], cond)
   }
 
   function Apply(original: matrix, modified: matrix, mask: mask) : matrix
@@ -95,7 +80,7 @@ module VMod {
   {
     if |original| == 0 then []
     else var o, m, k := original[0], modified[0], mask[0];
-    [MapRow(o, m, k)] + Apply(original[1..], modified[1..], mask[1..])
+         [MapRow(o, m, k)] + Apply(original[1..], modified[1..], mask[1..])
   }
 
   function MapRow(o: seq<real>, m: seq<real>, k: seq<bool>) : seq<real>
@@ -105,7 +90,9 @@ module VMod {
             forall i : nat :: i < |r| ==> if k[i] then r[i] == m[i] else r[i] == o[i]
   {
     if |o| == 0 then []
-    else [if k[0] then m[0] else o[0]] + MapRow(o[1..], m[1..], k[1..])
+    else
+      var fst := if k[0] then m[0] else o[0];
+      [fst] + MapRow(o[1..], m[1..], k[1..])
   }
 
   function IdxValues(row: matrow, colI: seq<idx>) : seq<real>
@@ -115,7 +102,6 @@ module VMod {
   {
     if |colI| == 0 then [] else [row[colI[0]]] + IdxValues(row, colI[1..])
   }
-
 }
 
 // method Dependencies(m: mutableS) returns (res: seq<seq<idx>>)
