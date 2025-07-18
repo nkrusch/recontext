@@ -3,11 +3,11 @@ module DomainSpec {
   const degree : nat := 5
 
   // numerical domain
-  type domain = int
-  const Default := 0
+  type domain = real
+  const Default := 0.0
 }
 
-module MyMod {
+module MutationModule {
 
   import DS = DomainSpec
   const degree := DS.degree
@@ -22,63 +22,118 @@ module MyMod {
   type immutableS = seq<idx>
   type matrow = r : seq<domain> | |r| == degree witness seq(degree, _ => DS.Default)
   type maskr = r : seq<bool> | |r| == degree witness seq(degree, _ => false)
+  type mask1 = r : maskr | forall i : idx :: r[i] == r[0] witness seq(degree, _ => false)
   type matrix = seq<matrow>
   type mask = seq<maskr>
+
+  /*********************************/
+  /* Correctness under constraints */
+  /*********************************/
 
   predicate IsCorrect(original: matrix, mutated: matrix, cond: mutableS, imm : immutableS)
     requires |original| == |mutated|
   {
-    ImmutableHold(original, mutated, imm) && MutableHold(mutated, cond)
-  }
-
-  predicate RowCorrect(o: matrow, m: matrow, cond: mutableS, imm : immutableS)
-  {
-    ImmutableHoldAtRow(o, m, imm) && MutableHoldAtRow(m, cond)
+    forall ri : nat :: ri < |original| ==> CorrectVector(original[ri], mutated[ri], cond, imm)
   }
 
   predicate MutableHold(matrix: matrix, cond : mutableS)
   {
-    forall row : nat :: row < |matrix| ==> MutableHoldAtRow(matrix[row], cond)
+    forall ri : nat :: ri < |matrix| ==> MutableVecCorrect(matrix[ri], cond)
   }
 
-  predicate MutableHoldAtRow(row: matrow, cond: mutableS)
+  predicate CorrectVector(o: matrow, m: matrow, cond: mutableS, imm : immutableS)
+  {
+    ImmutableVecCorrect(o, m, imm) && MutableVecCorrect(m, cond)
+  }
+
+  predicate ImmutableVecCorrect(o: matrow, m: matrow, ci: immutableS)
+  {
+    IdxValues(o, ci) == IdxValues(m, ci)
+  }
+
+  predicate MutableVecCorrect(row: matrow, cond: mutableS)
+    ensures
+      var b := MutableVecCorrect(row, cond);
+      (b ==> forall i : nat :: i < |cond| ==> EvalPred(row, cond[i])) &&
+      (!b ==> exists i : nat :: i < |cond| && EvalPred(row, cond[i]) == false)
   {
     if |cond| == 0 then true
     else
       var fst, rest := cond[0], cond[1..];
-      var values, pred := IdxValues(row, fst.0), fst.1;
-      pred(values) && MutableHoldAtRow(row, rest)
+      if !EvalPred(row, fst) then false
+      else MutableVecCorrect(row, rest)
   }
 
-  predicate ImmutableHold(original: matrix, mutated: matrix, imm: immutableS)
-    requires |original| == |mutated|
+  predicate EvalPred(row: matrow, cond: mutableT) {
+    var indices, pred := cond.0, cond.1;
+    var values := IdxValues(row, indices);
+    pred(values)
+  }
+
+  lemma  EquivCorrectness(r1: matrow, r2: matrow, cond: mutableS)
+    requires MutableVecCorrect(r1, cond)
+    ensures r1 == r2 ==> MutableVecCorrect(r2, cond)
+  { }
+
+  /***********************************/
+  /* Correctness preserving mutation */
+  /***********************************/
+
+  method VectMutation(o: matrow, m: matrow, mut: mutableS, imm: immutableS) returns (final: matrow)
+    requires MutableVecCorrect(o, mut)
+    ensures CorrectVector(o, final, mut, imm)
   {
-    forall ri : nat :: ri < |original| ==> ImmutableHoldAtRow(original[ri], mutated[ri], imm)
+    var m' := EnsureImmVector(o, m, imm);
+    final := EnsureMutVector(o, m', mut);
   }
 
-  predicate ImmutableHoldAtRow(o: matrow, m: matrow, ci: immutableS)
-  {
-    SeqEqual(IdxValues(o, ci), IdxValues(m, ci))
-  }
-
-  predicate SeqEqual<T(==)>(a: seq<T>, b: seq<T>) {
-    |a| == |b| && forall i : nat :: i < |a| ==> a[i] == b[i]
-  }
-
-  method ControlledMutation(o: matrix, m: matrix, mut: mutableS, imm: immutableS) returns (final: matrix)
-    requires |o| == |m|
-    requires MutableHold(o, mut)
-    ensures |o| == |final|
-    ensures ImmutableHold(o, final, imm)
-    // ensures IsCorrect(o, final, mut, imm)
+  method EnsureImmVector(o: matrow, m: matrow, imm: immutableS) returns (m': matrow)
+    ensures ImmutableVecCorrect(o, m', imm)
+    ensures forall i : idx :: m'[i] == if !(i in imm) then m[i] else o[i]
   {
     var irow := IRow(imm);
-    var imap' := seq(|o|, _ => irow);
-    var m' := Apply(o, m, imap');
-    assert ImmutableHold(o, m', imm);
-    var mmap := MutationMask(m', mut);
-    final := Apply(o, m', mmap);
-    // assert IsCorrect(o, final, mut, imm);
+    m' := MapVec(o, m, irow);
+  }
+
+  method EnsureMutVector(o: matrow, m: matrow, cond: mutableS) returns (m': matrow)
+    requires MutableVecCorrect(o, cond)
+    ensures MutableVecCorrect(m, cond) ==> m == m'
+    ensures MutableVecCorrect(m', cond)
+    ensures forall imm: immutableS :: ImmutableVecCorrect(o, m, imm) ==> ImmutableVecCorrect(o, m', imm)
+  {
+    var corr := MutableVecCorrect(m, cond);
+    var mask : mask1 := seq(degree, _ => corr);
+    m' := MapVec(o, m, mask);
+    assert MutableVecCorrect(m', cond) by {
+      if corr {
+        assert MutableVecCorrect(m, cond);
+        EquivCorrectness(m, m', cond);
+      } else {
+        EquivCorrectness(o, m', cond);
+      }
+    }
+  }
+
+  function MapVec(o: seq<domain>, m: seq<domain>, k: seq<bool>) : seq<domain>
+    requires |o| == |m| == |k|
+    ensures
+      var v := MapVec(o, m, k);
+      |v| == |o| &&
+      (forall i : nat :: i < |v| ==> v[i] == if k[i] then m[i] else o[i])
+  {
+    if |o| == 0 then []
+    else
+      var fst := if k[0] then m[0] else o[0];
+      [fst] + MapVec(o[1..], m[1..], k[1..])
+  }
+
+  function IdxValues(row: matrow, indices: seq<idx>) : seq<domain>
+    ensures
+      var res := IdxValues(row, indices);
+      |res| == |indices| &&
+      forall i : nat :: i < |indices| ==> res[i] == row[indices[i]]
+  {
+    if |indices| == 0 then [] else [row[indices[0]]] + IdxValues(row, indices[1..])
   }
 
   method IRow(imm: immutableS) returns (irow : maskr)
@@ -94,137 +149,114 @@ module MyMod {
     irow := tmp[..];
   }
 
-  function MutationMask(m: matrix, cond: mutableS) : mask
-    ensures var m' := MutationMask(m, cond); |m'| == |m|
-    ensures var m' := MutationMask(m, cond); forall ri:nat, j:idx :: ri <|m| ==>  m'[ri][0] == m'[ri][j]
-    ensures var m' := MutationMask(m, cond); forall ri : nat :: ri < |m| ==> m'[ri][0] == MutableHoldAtRow(m[ri], cond)
-  {
-    if |m| == 0 then []
-    else [MutationMaskRow(m[0], cond)] + MutationMask(m[1..], cond)
-  }
-  function MutationMaskRow(r : matrow, cond: mutableS) : maskr
-    ensures var r' := MutationMaskRow(r, cond);
-            var b := MutableHoldAtRow(r, cond);
-            forall i : idx :: r'[i] == b
-  {
-    var corr := MutableHoldAtRow(r, cond);
-    seq(degree, _ => corr)
-  }
+  /***********************************/
+  /* Mutation in 2D */
+  /***********************************/
 
-  function Apply(original: matrix, modified: matrix, mask: mask) : matrix
-    requires |original| == |modified| == |mask|
-    ensures var m := Apply(original, modified, mask); |m| == |original|
-    ensures var m := Apply(original, modified, mask);
-            forall r : nat :: r < |original| ==> forall i : idx ::
-                                  if mask[r][i] then m[r][i] == modified[r][i] else m[r][i] == original[r][i]
-  {
-    if |original| == 0 then []
-    else
-      var o, m, k := original[0], modified[0], mask[0];
-      [MapRow(o, m, k)] + Apply(original[1..], modified[1..], mask[1..])
-  }
-
-  function MapRow(o: seq<domain>, m: seq<domain>, k: seq<bool>) : seq<domain>
-    requires |o| == |m| == |k|
-    ensures var r := MapRow(o, m, k); |r| == |o|
-    ensures var r := MapRow(o, m, k); forall i : nat :: i < |r| ==> if k[i] then r[i] == m[i] else r[i] == o[i]
-  {
-    if |o| == 0 then []
-    else
-      var fst := if k[0] then m[0] else o[0];
-      [fst] + MapRow(o[1..], m[1..], k[1..])
-  }
-
-  function IdxValues(row: matrow, ii: seq<idx>) : seq<domain>
-    ensures var res := IdxValues(row, ii); |res| == |ii|
-    ensures var res := IdxValues(row, ii); forall i : nat :: i < |ii| ==> res[i] == row[ii[i]]
-  {
-    if |ii| == 0 then [] else [row[ii[0]]] + IdxValues(row, ii[1..])
-  }
-
-  lemma RowWiseCorrectness(o: matrix, m: matrix)
+  method ControlledMutation(
+    o: matrix, m: matrix, mut: mutableS, imm: immutableS
+  ) returns (final: matrix)
     requires |o| == |m|
-    ensures forall cond: mutableS, imm : immutableS ::
-              IsCorrect(o, m, cond, imm) <==> forall ri : nat :: ri < |m| ==> RowCorrect(o[ri], m[ri], cond, imm)  { }
-
+    requires MutableHold(o, mut)
+    ensures |o| == |final|
+    ensures IsCorrect(o, final, mut, imm)
+  {
+    final := [];
+    for i := 0 to |o|
+      invariant |final| == i
+      invariant forall j:nat :: 0 <= j < i ==> CorrectVector(o[j], final[j], mut, imm)
+    {
+      var nxt := VectMutation(o[i], m[i], mut, imm);
+      assert CorrectVector(o[i], nxt, mut, imm);
+      final := final + [nxt];
+    }
+  }
 }
 
 module Tests {
-  import V = MyMod
+  import V = MutationModule
   type domain = V.domain
 
-  function P(s:seq<domain>) : bool { if |s| == 2 then s[0] <= s[1] else false }
+  function P(s:seq<domain>) : bool {
+    if |s| == 2 then s[0] <= s[1] else false }
 
-  // invariants
+  // constraints (invariants)
   const imm := [0, 3, 4]
   const mut := [([1, 3], P)]
 
   // matrices
   const original : V.matrix := [
-    [-2, 0, 0, 2, 3],
-    [82, 1, 7, 4, 6]
+    [-2.0, 0.0, 0.0, 2.0, 3.0],
+    [82.0, 1.0, 7.0, 4.0, 6.0]
   ]
+  // modified
   const mutation : V.matrix := [
-    [-2, 3, 1, 2, 3],
-    [ 6, 4, 3, 4, 7]
+    [-2.0, 3.0, 1.0, 2.0, 3.0],
+    [ 6.0, 4.0, 3.0, 4.0, 7.0]
+  ]
+  // immutable (only)
+  const expectedIR : V.matrix := [
+    [-2.0, 3.0, 1.0, 2.0, 3.0],
+    [82.0, 4.0, 3.0, 4.0, 6.0]
+  ]
+  // correct mutation
+  const final : V.matrix := [
+    [-2.0, 0.0, 0.0, 2.0, 3.0],
+    [82.0, 4.0, 3.0, 4.0, 6.0]
   ]
 
   method Basics(){
     var irow := V.IRow(imm);
-    var imask :=  seq(2, _ => irow);
     assert irow == [false, true, true, false, false];
-    assert imask == [irow, irow];
 
-    assert V.IdxValues(mutation[0], [0, 1, 3]) == [-2, 3, 2];
-    assert V.IdxValues(mutation[1], [2, 4]) == [3, 7];
+    assert V.IdxValues(original[0], [0, 1, 3]) ==
+           [original[0][0], original[0][1], original[0][3]];
+    assert V.IdxValues(original[1], [2, 4]) ==
+           [original[1][2], original[1][4]];
 
     assert V.MutableHold(original, mut);
     assert V.IsCorrect(original, original, mut, imm);
     assert (V.MutableHold(mutation, mut) == false) by {
-      assert V.MutableHoldAtRow(mutation[0], mut) == false;
+      assert V.MutableVecCorrect(mutation[0], mut) == false;
     }
   }
 
-  method IRCheck()
+  method ImmutableTransfrom()
   {
-    var irow := V.IRow(imm);
-    var imask :=  seq(2, _ => irow);
-    var IR := V.Apply(original, mutation, imask);
-    var values, pred := V.IdxValues(IR[1], mut[0].0), mut[0].1;
+    var IR0 := V.EnsureImmVector(original[0], mutation[0], imm);
+    var IR1 := V.EnsureImmVector(original[1], mutation[1], imm);
 
-    assert IR[0] == [-2, 3, 1, 2, 3];
-    assert IR[1] == [82, 4, 3, 4, 6];
-    assert IR == [IR[0], IR[1]];
-    assert values == [4, 4] && pred(values);
+    assert IR0 == expectedIR[0];
+    assert IR1 == expectedIR[1];
 
-    assert V.ImmutableHold(original, IR, imm);
-    assert V.MutableHoldAtRow(IR[1], mut);
-    assert (V.MutableHold(IR, mut) == false) by {
-      assert V.MutableHoldAtRow(IR[0], mut) == false;
-    }
+    assert V.ImmutableVecCorrect(original[0], IR0, imm);
+    assert V.ImmutableVecCorrect(original[1], IR1, imm);
+
+    assert V.EvalPred(IR0, mut[0]) == false;
+    assert V.EvalPred(IR1, mut[0]) == true;
   }
 
-  method Main() {
+  // method Main() {
 
-    var irow := V.IRow(imm);
-    var imask :=  seq(2, _ => irow);
-    var IR := V.Apply(original, mutation, imask);
-    assert V.MutableHoldAtRow(IR[1], mut);
+  //   var irow := V.IRow(imm);
+  //   var imask :=  seq(2, _ => irow);
+  //   var IR := V.Apply(original, mutation, imask);
+  //   assert V.MutableHoldAtRow(IR[1], mut);
 
-    var mmask := V.MutationMask(IR, mut);
-    assert mmask[0] == [false, false, false, false, false];
-    assert mmask[1] == [true, true, true, true, true];
-    assert mmask == [mmask[0], mmask[1]];
+  //   var mmask := V.MutationMask(IR, mut);
+  //   assert mmask[0] == [false, false, false, false, false];
+  //   assert mmask[1] == [true, true, true, true, true];
+  //   assert mmask == [mmask[0], mmask[1]];
 
-    var final := V.ControlledMutation(original, mutation, mut, imm);
-    var final' := V.Apply(original, IR, mmask);
-    assert final'[0] == [-2, 0, 0, 2, 3];
-    assert final'[1] == [82, 4, 3, 4, 6];
-    assert final' == [final'[0], final'[1]];
-    assert V.SeqEqual(final'[0], [-2, 0, 0, 2, 3]);
-    assert V.ImmutableHold(original, final', imm);
-    assert V.IsCorrect(original, final', mut, imm);
-  }
+  //   var final := V.ControlledMutation(original, mutation, mut, imm);
+  //   var final' := V.Apply(original, IR, mmask);
+  //   assert final'[0] == [-2, 0, 0, 2, 3];
+  //   assert final'[1] == [82, 4, 3, 4, 6];
+  //   assert final' == [final'[0], final'[1]];
+  //   assert V.SeqEqual(final'[0], [-2, 0, 0, 2, 3]);
+  //   assert V.ImmutableHold(original, final', imm);
+  //   assert V.IsCorrect(original, final', mut, imm);
+  // }
 }
 
 
@@ -266,31 +298,37 @@ module Tests {
 //     res := res + [ss];
 //   }
 // }
+//
+// function Map<A, B>(s: seq<A>, f: A -> B): seq<B>
+//   ensures var r := Map(s, f); |r| == |s|
+//   ensures var r := Map(s, f); forall i : nat :: i < |r| ==> r[i] == f(s[i])
+// {
+//   if |s| == 0 then [] else [f(s[0])] + Map(s[1..], f)
+// }
 
-  // function Map<A, B>(s: seq<A>, f: A -> B): seq<B>
-  //   ensures var r := Map(s, f); |r| == |s|
-  //   ensures var r := Map(s, f); forall i : nat :: i < |r| ==> r[i] == f(s[i])
-  // {
-  //   if |s| == 0 then [] else [f(s[0])] + Map(s[1..], f)
-  // }
+// function ToSet<T>(xs: seq<T>): set<T>
+// {
+//   set x: T | x in xs
+// }
 
-  // function ToSet<T>(xs: seq<T>): set<T>
-  // {
-  //   set x: T | x in xs
-  // }
-
-  // method SetToSeq<A>(s: set<A>) returns (se: seq<A>)
-  //   ensures forall i :: 0 <= i < |se| ==> se[i] in s
-  //   ensures forall x :: x in s ==> exists i : nat :: i < |se| && se[i] == x
-  // {
-  //   se := [];
-  //   var temp := s;
-  //   while temp != {}
-  //     invariant forall x :: x in s ==> x in temp || x in se
-  //     invariant forall x :: x in se ==> x in s
-  //   {
-  //     var x :| x in temp;
-  //     se := se + [x];
-  //     temp := temp - {x};
-  //   }
-  // }
+// method SetToSeq<A>(s: set<A>) returns (se: seq<A>)
+//   ensures forall i :: 0 <= i < |se| ==> se[i] in s
+//   ensures forall x :: x in s ==> exists i : nat :: i < |se| && se[i] == x
+// {
+//   se := [];
+//   var temp := s;
+//   while temp != {}
+//     invariant forall x :: x in s ==> x in temp || x in se
+//     invariant forall x :: x in se ==> x in s
+//   {
+//     var x :| x in temp;
+//     se := se + [x];
+//     temp := temp - {x};
+//   }
+// }
+//
+// lemma RowWiseCorrectness(o: matrix, m: matrix)
+//   requires |o| == |m|
+//   ensures forall cond: mutableS, imm : immutableS ::
+//   IsCorrect(o, m, cond, imm) <==> forall ri : nat ::
+//   ri < |m| ==> RowCorrect(o[ri], m[ri], cond, imm)  { }
