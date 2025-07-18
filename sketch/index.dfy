@@ -79,31 +79,36 @@ module MutationModule {
   /* Correctness preserving mutation */
   /***********************************/
 
-  method VectMutation(o: matrow, m: matrow, mut: mutableS, imm: immutableS) returns (final: matrow)
+  function VectMutation(o: matrow, m: matrow, mut: mutableS, imm: immutableS) : matrow
     requires MutableVecCorrect(o, mut)
-    ensures CorrectVector(o, final, mut, imm)
+    ensures
+      var final := VectMutation(o,m,mut,imm);
+      CorrectVector(o, final, mut, imm)
   {
     var m' := EnsureImmVector(o, m, imm);
-    final := EnsureMutVector(o, m', mut);
+    EnsureMutVector(o, m', mut)
   }
 
-  method EnsureImmVector(o: matrow, m: matrow, imm: immutableS) returns (m': matrow)
-    ensures ImmutableVecCorrect(o, m', imm)
-    ensures forall i : idx :: m'[i] == if !(i in imm) then m[i] else o[i]
+  function EnsureImmVector(o: matrow, m: matrow, imm: immutableS) : matrow
+    ensures
+      var m' := EnsureImmVector(o, m, imm);
+      ImmutableVecCorrect(o, m', imm) &&
+      forall i : idx :: m'[i] == if !(i in imm) then m[i] else o[i]
   {
-    var irow := IRow(imm);
-    m' := MapVec(o, m, irow);
+    MapVec(o, m, IRow(imm))
   }
 
-  method EnsureMutVector(o: matrow, m: matrow, cond: mutableS) returns (m': matrow)
+  function EnsureMutVector(o: matrow, m: matrow, cond: mutableS) : matrow
     requires MutableVecCorrect(o, cond)
-    ensures MutableVecCorrect(m, cond) ==> m == m'
-    ensures MutableVecCorrect(m', cond)
-    ensures forall imm: immutableS :: ImmutableVecCorrect(o, m, imm) ==> ImmutableVecCorrect(o, m', imm)
+    ensures
+      var m' := EnsureMutVector(o, m, cond);
+      (MutableVecCorrect(m, cond) ==> m == m') &&
+      MutableVecCorrect(m', cond) &&
+      forall imm: immutableS :: ImmutableVecCorrect(o, m, imm) ==> ImmutableVecCorrect(o, m', imm)
   {
     var corr := MutableVecCorrect(m, cond);
     var mask : mask1 := seq(degree, _ => corr);
-    m' := MapVec(o, m, mask);
+    var m' := MapVec(o, m, mask);
     assert MutableVecCorrect(m', cond) by {
       if corr {
         assert MutableVecCorrect(m, cond);
@@ -112,6 +117,7 @@ module MutationModule {
         EquivCorrectness(o, m', cond);
       }
     }
+    m'
   }
 
   function MapVec(o: seq<domain>, m: seq<domain>, k: seq<bool>) : seq<domain>
@@ -136,17 +142,20 @@ module MutationModule {
     if |indices| == 0 then [] else [row[indices[0]]] + IdxValues(row, indices[1..])
   }
 
-  method IRow(imm: immutableS) returns (irow : maskr)
-    ensures |irow| == degree
-    ensures forall i : idx :: irow[i] == !(i in imm)
+  function IRow(imm: immutableS) : maskr
+    ensures |IRow(imm)| == degree
+    ensures var r := IRow(imm); forall i : idx :: r[i] == !(i in imm)
   {
-    var tmp := new bool[degree];
-    for i := 0 to degree
-      invariant forall j : idx :: j < i ==> tmp[j] == !(j in imm)
-    {
-      tmp[i] := !(i in imm);
-    }
-    irow := tmp[..];
+    IRowN(0, degree, imm)
+  }
+
+  function IRowN(lo: nat, hi:nat, imm: immutableS) : seq<bool>
+    decreases hi - lo
+    requires lo <= hi
+    ensures |IRowN(lo, hi, imm)| == hi - lo
+  {
+    if hi-lo == 0 then []
+    else [!(lo in imm)] + IRowN(lo+1, hi, imm)
   }
 
   /***********************************/
@@ -159,19 +168,20 @@ module MutationModule {
     requires |o| == |m|
     requires MutableHold(o, mut)
     ensures |o| == |final|
-    ensures IsCorrect(o, final, mut, imm)
+    ensures IsCorrect(o, final, mut, imm) 
   {
     final := [];
     for i := 0 to |o|
       invariant |final| == i
-      invariant forall j:nat :: 0 <= j < i ==> CorrectVector(o[j], final[j], mut, imm)
-    {
+      invariant IsCorrect(o[..i], final, mut, imm) 
+    { 
       var nxt := VectMutation(o[i], m[i], mut, imm);
       assert CorrectVector(o[i], nxt, mut, imm);
       final := final + [nxt];
+      assert final[i] == nxt;
     }
   }
-}
+} 
 
 module Tests {
   import V = MutationModule
@@ -200,7 +210,7 @@ module Tests {
     [82.0, 4.0, 3.0, 4.0, 6.0]
   ]
   // correct mutation
-  const final : V.matrix := [
+  const expected : V.matrix := [
     [-2.0, 0.0, 0.0, 2.0, 3.0],
     [82.0, 4.0, 3.0, 4.0, 6.0]
   ]
@@ -236,29 +246,11 @@ module Tests {
     assert V.EvalPred(IR1, mut[0]) == true;
   }
 
-  // method Main() {
-
-  //   var irow := V.IRow(imm);
-  //   var imask :=  seq(2, _ => irow);
-  //   var IR := V.Apply(original, mutation, imask);
-  //   assert V.MutableHoldAtRow(IR[1], mut);
-
-  //   var mmask := V.MutationMask(IR, mut);
-  //   assert mmask[0] == [false, false, false, false, false];
-  //   assert mmask[1] == [true, true, true, true, true];
-  //   assert mmask == [mmask[0], mmask[1]];
-
-  //   var final := V.ControlledMutation(original, mutation, mut, imm);
-  //   var final' := V.Apply(original, IR, mmask);
-  //   assert final'[0] == [-2, 0, 0, 2, 3];
-  //   assert final'[1] == [82, 4, 3, 4, 6];
-  //   assert final' == [final'[0], final'[1]];
-  //   assert V.SeqEqual(final'[0], [-2, 0, 0, 2, 3]);
-  //   assert V.ImmutableHold(original, final', imm);
-  //   assert V.IsCorrect(original, final', mut, imm);
-  // }
+  method Main() {
+    var final := V.ControlledMutation(original, mutation, mut, imm);
+    assert V.IsCorrect(original, final, mut, imm);
+  }
 }
-
 
 // method Dependencies(m: mutableS) returns (res: seq<seq<idx>>)
 //   decreases *
@@ -326,9 +318,3 @@ module Tests {
 //     temp := temp - {x};
 //   }
 // }
-//
-// lemma RowWiseCorrectness(o: matrix, m: matrix)
-//   requires |o| == |m|
-//   ensures forall cond: mutableS, imm : immutableS ::
-//   IsCorrect(o, m, cond, imm) <==> forall ri : nat ::
-//   ri < |m| ==> RowCorrect(o[ri], m[ri], cond, imm)  { }
