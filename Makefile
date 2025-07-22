@@ -11,12 +11,12 @@ ifndef $OUT
 OUT := ./results
 endif
 
-ifndef $TO # in seconds
+ifndef $TO # seconds
 TO := 60
 endif
 
 ifndef $LOG
-LOG := $(OUT)/log.txt
+LOG := $(OUT)/_log.txt
 endif
 
 UTILS   := utils
@@ -36,7 +36,7 @@ $(OUT)/%.dig: $(IN)/%.csv ensure_out
 
 $(OUT)/%.tacle: $(IN)/%.csv ensure_out
 	@python $(UTILS)/taclef.py $< > temp
-	@$(RUNNER) "(cd tacle && python -m tacle ../temp -g > ../$@)"
+	$(RUNNER) "cd tacle && python -m tacle ../temp -g > ../$@"
 	@rm -rf temp
 
 $(MACHINE):

@@ -23,17 +23,20 @@ Explorations of finding numerical invariants in (generic) numerical data.
 
 **Experiments.** Run all experiments at once.
 
-       make
+    make
 
 The results are written to `results`.
 
-To run an individual experiment on `inputs/FILE`
-- using DIG: `make results/FILE.dig`
-- using TaCle: `make results/FILE.tacle`
 
 ## Inputs
-
-| Filename | Invariant(s)    |
-|:---------|:----------------|
-| `xy`     | `x - y = 0`     |
-| `test`   | `2 * x + 3 = y` |
+ 
+    DATASETS (ds)                                                              
+    blink       https://archive.ics.uci.edu/dataset/754
+    iris        https://archive.ics.uci.edu/dataset/53
+    lt-fs-id    https://archive.ics.uci.edu/dataset/715
+    wine        https://archive.ics.uci.edu/dataset/109
+    
+    FUNCTIONS (f)   
+    xy          x - y = 0   
+    test        2 * x + 3 = y
+ 
