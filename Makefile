@@ -11,20 +11,20 @@ ifndef $OUT
 OUT := ./results
 endif
 
-ifndef $TO # seconds
+ifndef $TO # in seconds
 TO := 60
 endif
 
 ifndef $LOG
-LOG := log.txt
+LOG := $(OUT)/log.txt
 endif
 
+UTILS   := utils
 INPUTS  := $(wildcard $(IN)/*.csv)
 DIGEXP  := ${INPUTS:$(IN)/%.csv=$(OUT)/%.dig}
 TCLEXP  := ${INPUTS:$(IN)/%.csv=$(OUT)/%.tacle}
 MACHINE := $(OUT)/_host.txt
-UTILS   := utils
-RUNENR  := bash $(UTILS)
+RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 
 all: dig tacle
 
@@ -32,7 +32,7 @@ dig: $(DIGEXP) $(MACHINE)
 tacle: $(TCLEXP) $(MACHINE)
 
 $(OUT)/%.dig: $(IN)/%.csv ensure_out
-	@$(RUNNER) "python -O dig/src/dig.py -log 0 $< -noss -nomp > $@"
+	$(RUNNER) "python -O dig/src/dig.py -log 0 $< -noss -nomp > $@"
 
 $(OUT)/%.tacle: $(IN)/%.csv ensure_out
 	@python $(UTILS)/taclef.py $< > temp

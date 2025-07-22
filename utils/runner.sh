@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-TO="$1"
-CMD="$2"
-LOG="$3"
+TIMEOUT="$1"
+LOG="$2"
+CMD="$3"
 
 runCmdWithTimeout() {
   (eval "$2") 2>>"$3" 1>/dev/null & pid=$!
@@ -15,5 +15,5 @@ runCmdWithTimeout() {
   exit 0;
 }
 
-res=$(runCmdWithTimeout "$TO" "$CMD" "$LOG");
+res=$(runCmdWithTimeout "$TIMEOUT" "$CMD" "$LOG");
 echo -e "${res} ${CMD}\n----" >> $LOG
