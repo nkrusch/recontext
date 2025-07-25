@@ -38,8 +38,13 @@
   [exp (choose x (?? integer?) ((bop) (exp) (exp)))]   
   [bop (choose plus subs mult divs mods square cube)])
 
+;; (define (constraints p b)
+;;     (= (interpret (p b)) 25))
+;; (define (constraints p)
+;;    (= (interpret p) 25))
+
 (define (constraints p b)
-     (= (interpret (p b)) 25))
+  (= (interpret (p b)) 25))
 
 (define (prog b)
   (ex b #:depth 3))
@@ -47,10 +52,13 @@
 (solve 
   (assert 
     (constraints prog b)))
+    ;;(and (= (interpret (prog b)) 25)
+    ;;     (= (interpret (prog c)) 16))))
 
 (solve 
   (assert 
-    (= (interpret (square (plus b 2))) 25)))
+    (and (= (interpret (square (plus b 2))) 25)
+         (= (interpret (square (plus c 2))) 16))))
 
 
 ;; ; find one solution
