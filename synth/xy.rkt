@@ -10,19 +10,8 @@
 (define (INT i) (bv i int32?))
 
 ;; symbolic variables
+;; (define-symbolic x y int32?)
 (define-symbolic b c integer?)
-(define-symbolic x y int32?)
-
- ;; DSL: 2-variable invariant grammar
-(define-grammar (inv x y)  
-  [exp     ;; x | y | bop exp exp | op exp const
-     (choose x y
-             ((bop) (exp) (exp))
-             ((bop) (exp) (const)))]   
-  [bop     ;; op  :=  + | - | * | / | %
-     (choose bvadd bvsub bvmul bvsdiv bvsmod)]
-  [const   ;; c := const
-     (choose (?? int32?))])
 
 ; syntax
 (struct plus (left right) #:transparent)
@@ -45,32 +34,71 @@
     [(cube   a)  (expt (interpret a) 3)]
     [_ p]))
 
+(define-grammar (ex x)
+  [exp (choose x (?? integer?) ((bop) (exp) (exp)))]   
+  [bop (choose plus subs mult divs mods square cube)])
 
-;; find one solution
-(solve
- (assert
-  (= (interpret (mult c b)) (+ b b))))
+(define (constraints p b)
+     (= (interpret (p b)) 25))
 
-;; solution forall b
-(synthesize
-  #:forall (list b)
-  #:guarantee (assert (= (interpret (mult c b)) (+ b b))))
+(define (prog b)
+  (ex b #:depth 3))
+
+(solve 
+  (assert 
+    (constraints prog b)))
+
+(solve 
+  (assert 
+    (= (interpret (square (plus b 2))) 25)))
 
 
-;; invariant term
-(define (term a b)
-  (inv a b #:depth 3))
+;; ; find one solution
+;; (solve
+;;   (assert
+;;    (= (interpret (prog c)) c)))
+;;  
+;; ;; solution forall b
+;; (define solution
+;;   (synthesize
+;;     #:forall (list c)
+;;     #:guarantee (= (interpret (prog c)) c)))
+;; 
+;; (if (sat? solution) (print-forms solution) (print "UNSAT"))
+;; 
 
-;; Specification:
-;; invariant must satisfy trace
-(define (same fn)
-  (assert (bveq (INT 0)(fn (INT 0) (INT 0))))
-) 
-
-;(define solution
-;   (synthesize
-;    #:forall    (list x y)
-;    #:guarantee (same term x y)))
-;(if (sat? solution) (print-forms solution) (print "UNSAT"))
-
+;; ;; Specification:
+;; ;; invariant must satisfy trace
+;; (define (constraints f)
+;;     (equal? (f (INT 0)) (INT 0)))
+;;    ;; (and (= (f INT 0) INT 0) (= (f INT 1) INT 1)))
+;;    ;;      (= (f INT 3) INT 3) (= (f INT 4) INT 4)))
+;; 
+;; ;; DSL: 2-variable invariant grammar
+;; (define-grammar (invariant x)  
+;;   [exp     ;; x | y | const | bop exp exp | op exp const
+;;      (choose x (?? integer?) ;; (?? (int32?))
+;;              ((bop) (exp) (exp)))]   
+;;   [bop     ;; op  :=  + | - | * | / | %
+;;      (choose + - * / )])
+;; ;;     (choose bvadd bvsub bvmul bvsdiv bvsmod)])
+;; 
+;; ;; ;; invariant term
+;; (define (term t)
+;;   (invariant t #:depth 2))
+;;
+;; (solve
+;;    (assert (= (term b) 0)))
+;; 
+;; (define solution
+;;      (synthesize
+;;       #:forall (list b c)
+;;       #:guarantee (assert (= (term b) (+ c c)))))
+;;
+;; (define solution
+;;    (synthesize
+;;     #:forall    (list x y)
+;;     #:guarantee (constraints term x y)))
+;;  
+;;(if (sat? solution) (print-forms solution) (print "UNSAT"))
 (print "DONE")

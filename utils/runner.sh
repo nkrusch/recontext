@@ -6,9 +6,9 @@ CMD="$3"
 current_tty=$(ps -o tty= -p $$)
 
 cleanup() {
-    pkill -KILL -t $current_tty
     pkill -9 Python
     pkill -9 python
+    pkill -KILL -t $current_tty
 }
 
 runCmdWithTimeout() {
