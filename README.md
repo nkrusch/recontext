@@ -39,4 +39,7 @@ The results are written to `results`.
     FUNCTIONS (f)   
     xy          x - y = 0   
     test        2 * x + 3 = y
- 
+
+    LINEAR (l)
+    001 -- 133  see inputs.txt
+      
