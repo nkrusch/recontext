@@ -1,8 +1,3 @@
-#	                Min  Max   Mean    SD
-#   sepal length: 4.3  7.9   5.84  0.83
-#    sepal width: 2.0  4.4   3.05  0.43
-#   petal length: 1.0  6.9   3.76  1.76
-#    petal width: 0.1  2.5   1.20  0.76
 trace1; I sl; I sw; I pl; I pw
 trace1; 5.1; 3.5; 1.4; 0.2
 trace1; 4.9; 3.0; 1.4; 0.2

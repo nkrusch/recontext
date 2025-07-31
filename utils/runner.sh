@@ -8,7 +8,7 @@ current_tty=$(ps -o tty= -p $$)
 cleanup() {
     pkill -9 Python
     pkill -9 python
-    pkill -KILL -t $current_tty
+#    pkill -KILL -t $current_tty
 }
 
 runCmdWithTimeout() {
@@ -25,4 +25,4 @@ runCmdWithTimeout() {
 }
 
 res=$(runCmdWithTimeout "$TIMEOUT" "$CMD" "$LOG");
-echo -e "${res} ${CMD}\n----" >> $LOG
+echo -e "${res} ${CMD}\n----" >> "$LOG"

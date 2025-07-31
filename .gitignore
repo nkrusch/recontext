@@ -1,3 +1,4 @@
 *.rkt#*#
 results
 env
+traces/csv

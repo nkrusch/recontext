@@ -1,5 +1,5 @@
-trace1;        I x;      I y;
-trace1;          1;        0;
-trace1;         46;       10;
-trace1;       4951;      100;
-trace1;     499501;     1000;
+trace1;        I x;      I y
+trace1;          1;        0
+trace1;         46;       10
+trace1;       4951;      100
+trace1;     499501;     1000
