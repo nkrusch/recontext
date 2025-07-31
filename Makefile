@@ -4,7 +4,7 @@ SHELL := /bin/bash
 MAKEFLAGS += --no-print-directory
 
 ifndef $IN  
-IN := ./inputs
+IN := ./traces
 endif
 
 ifndef $OUT  
@@ -27,12 +27,11 @@ MACHINE := $(OUT)/_host.txt
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 
 all: dig tacle
-
 dig: $(DIGEXP) $(MACHINE)
 tacle: $(TCLEXP) $(MACHINE)
 
 $(OUT)/%.dig: $(IN)/%.csv ensure_out
-	$(RUNNER) "python -O dig/src/dig.py -log 0 $< -noss -nomp > $@"
+	$(RUNNER) "python -O dig/src/dig.py -log 0 $< -noss -nomp -nocongruences > $@"
 
 $(OUT)/%.tacle: $(IN)/%.csv ensure_out
 	@python $(UTILS)/taclef.py $< > temp
