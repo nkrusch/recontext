@@ -34,11 +34,11 @@ MACHINE := $(OUT)/_host.txt
 all:   dig tacle
 dig:   ensure_out $(DIG_EXP) $(MACHINE)
 tacle: ensure_out csv $(TCL_EXP) $(MACHINE)
-csv:   ensure_csv $(VENV) $(CSV_IN)
-check: ensure_out $(VENV) $(CHECKS)
+csv:   ensure_csv $(CSV_IN)
+check: ensure_out $(CHECKS)
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv
-	bash exec "python3 -m $(UTILS) -a csv $< > $@"
+	python3 -m $(UTILS) -a csv $< > $@
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv
 	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -nocongruences > $@"

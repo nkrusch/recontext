@@ -1,4 +1,4 @@
-trace1;  I a;  I s;  I t;  I n;  I b
+trace1; I area;  I sense;  I tsm;  I nodes;  I barr
 trace1; 5000;   15;   30;  100;   30
 trace1; 5000;   16;   32;  112;   35
 trace1; 5000;   17;   34;  124;   42
