@@ -43,5 +43,5 @@ The results are written to `results`.
     LINEAR (l)
     001 -- 133  github.com/PL-ML/code2invbenchmarks/C_instances/c
 
-See inputs/readme.txt for details.
+See `inputs/readme.txt` for details.
       
