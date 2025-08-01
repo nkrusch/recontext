@@ -8,3 +8,5 @@ numpy==1.23.4
 python-constraint
 matplotlib
 pandas
+# Me
+prettytable

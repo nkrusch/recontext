@@ -2,3 +2,6 @@
 results
 env
 traces/csv
+.venv
+*.pyc
+input/csv
