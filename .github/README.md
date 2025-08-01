@@ -41,5 +41,7 @@ The results are written to `results`.
     test        2 * x + 3 = y
 
     LINEAR (l)
-    001 -- 133  see inputs/readme.txt
+    001 -- 133  github.com/PL-ML/code2invbenchmarks/C_instances/c
+
+See inputs/readme.txt for details.
       

@@ -31,19 +31,19 @@ CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
 
-all:   dig tacle
-dig:   ensure_out $(DIG_EXP) $(MACHINE)
-tacle: ensure_out csv $(TCL_EXP) $(MACHINE)
-csv:   ensure_csv $(CSV_IN)
-check: ensure_out $(CHECKS)
+all:   csv dig tacle
+dig:   $(DIG_EXP) $(MACHINE)
+tacle: $(TCL_EXP) $(MACHINE)
+csv:   $(CSV_IN)
+check: $(CHECKS)
 
-$(IN_CSV)/%.csv: $(IN_TRC)/%.csv
+$(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 	python3 -m $(UTILS) -a csv $< > $@
 
-$(OUT)/%.dig: $(IN_TRC)/%.csv
+$(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
 	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -nocongruences > $@"
 
-$(OUT)/%.tacle: $(IN_CSV)/%.csv
+$(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
 
 $(OUT)/%.check: $(OUT)/%.dig

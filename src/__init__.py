@@ -1,6 +1,5 @@
 import re
-from itertools import product
-from os.path import isfile
+from os.path import isfile, basename, splitext, join
 from typing import List
 
 import numpy as np
@@ -14,19 +13,27 @@ ENV = {'T_DTYPE': np.int64, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
-T_DTYPE = ENV["T_DTYPE"]
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 TOKENS = re.escape('==,**,<=,>=,(,),[,],*,-,+,/,%').split(',') + [',']
-PRED_PAD = 64
+
+# Types
+P = str
+"""Predicate"""
+PT = List[str]
+"""Tokenized predicate"""
+T_DTYPE = ENV["T_DTYPE"]
+"""Type of numerical data (int, float, double)"""
 
 
 def read(fn):
+    """Reads a file into memory."""
     with open(fn, 'r') as fp:
         raw = fp.read()
     return raw
 
 
-def read_trace(path) -> np.array:
+def read_trace(path: str) -> Tuple[np.array, List[str]]:
+    """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
     idx_slice, variables = [], []
     for i, c in enumerate(df.columns):
@@ -40,12 +47,14 @@ def read_trace(path) -> np.array:
 
 
 def trace_to_csv(input_file: str):
+    """Convert a DIG trace to a CSV file."""
     data, var = read_trace(input_file)
     data = np.vstack([np.array(var), data])
     np.savetxt(sys.stdout, data, delimiter=C_SEP, fmt='%s')
 
 
 def csv_to_trace(input_file: str):
+    """Convert a CSV file to a DIG trace."""
     init = pd.read_csv(input_file, sep=',')
     var = [f'{T_PREFIX}{x}' for x in init.columns]
     data = np.vstack([np.array(var), np.array(init.values)])
@@ -54,39 +63,39 @@ def csv_to_trace(input_file: str):
     np.savetxt(sys.stdout, data, delimiter=T_SEP, fmt='%s')
 
 
-def flow(taken: List[str], init: List[str] = None):
-    """[f]irst [low]ercase char sequence not in taken"""
-    cmap = [c for c in list(map(chr, range(ord('a'), ord('z') + 1)))]
-    cmap = [f'{c}{d}' for c, d in product(cmap, init)] if init else cmap
-    first = [c for c in cmap if c not in taken]
-    return first[0] if first else flow(taken, cmap)
-
-
 def parse_dig_result(input_file):
+    """Extract invariants from a DIG result file."""
     temp = read(input_file).strip().split('\n')[1:]
     return [x.split('.', 1)[1].strip() for x in temp]
 
 
-def result_source(result_file):
-    base_name = os.path.basename(result_file)
-    fn = os.path.splitext(base_name)[0]
-    return os.path.join(IN_DIR, f'{fn}.csv')
-
-
-def negpos(x: str) -> bool:
-    """expression is negative or positive number"""
+def is_num(x: str) -> bool:
+    """Test if expression is a negative or positive number."""
     return (x[1:] if x and x[0] == '-' else x).isnumeric()
 
 
-def tokenize(str_input, tokens):
-    exists = [x for x in tokens if re.search(x, str_input)]
-    terms = str_input.split(' ')
+def tokenize(plain: str, tokens: List[str]) -> PT:
+    """Splits a plaintext string by tokens.
+    
+    Example:
+        Input `x + y == 0` and given tokens `['+', '==']`
+        produces ['x', '+', 'y', '==', '0'].
+        
+    Arguments:
+        plain: Plaintext input.
+        tokens: List of tokens.
+
+    Returns:
+        The tokenized string.               
+    """
+    exists = [x for x in tokens if re.search(x, plain)]
+    terms = plain.split(' ')
     for x in exists:
         tmp = terms
         n = len(terms) - 1
         for i in range(n, -1, -1):
             curr = terms[i]
-            terminal = curr in tokens or negpos(curr)
+            terminal = curr in tokens or is_num(curr)
             if not terminal and re.search(x, curr):
                 parts = [p for p in re.split(f'({x})', curr) if p]
                 before = tmp[:i] if i > 0 else []
@@ -96,47 +105,62 @@ def tokenize(str_input, tokens):
     return terms
 
 
-def val_fmt(value):
+def val_fmt(value: T_DTYPE) -> str | T_DTYPE:
+    """Express all real values as Q(n, d)."""
     if T_DTYPE != np.int64:
         frac = Fraction(str(value))
         return f'Q({frac.numerator},{frac.denominator})'
     return value
 
 
-def to_assert(values, keys, tkn_pred):
-    _dct = dict(zip(keys, values))
-    subst = [(val_fmt(_dct[x]) if x in _dct else x) for x in tkn_pred]
-    return (''.join([str(s) for s in subst])).ljust(PRED_PAD, ' ')
+def to_assert(data: List[T_DTYPE], keys: List[str], pred: PT) -> P:
+    """Construct a numerical assertion.
+
+    Arguments:
+        data: an array of numerical values.
+        keys: variable names that match data in shape.
+        pred: a tokenized assertion.
+
+    Returns:
+        A string expression where all variables are replaced with
+        numerical values.
+    """
+    dct = dict(zip(keys, data))
+    subst = [(val_fmt(dct[x]) if x in dct else x) for x in pred]
+    return ''.join([str(s) for s in subst])
 
 
-def find_cex(pred, limit=3):
+def find_cex(pred: List[P], limit: int = 3) -> List[P]:
+    """Find (at most limit) failing assertions."""
     cex, solver = [], Solver()
     for lit in pred:
         solver.reset()
         solver.add(eval(lit))
         if solver.check() != sat:
-            cex.append(lit.strip())
+            cex.append(lit)
         if len(cex) == limit:
             break
     return cex
 
 
-def check(input_file: str) -> bool:
-    """Confirm invariants are valid.
+def check(dig_result: str) -> bool:
+    """Sanity check to confirm DIG invariants are valid.
 
-    Checks that the inferred DIG invariants are valid for the input
-    data. Displays at the screen the evaluation result for every
-    inferred invariant.
+    Checks that DIG invariants are valid for the input data. Displays,
+    at stdout, the evaluation result for every invariant.
 
     Arguments:
-        input_file (str): path to a results file.
+        dig_result (str): path to the results file to check.
+
+    Returns:
+        True if all invariants are satisfactory; otherwise False.
     """
-    src = result_source(input_file)
-    if not (input_file.endswith('.dig') and isfile(src) and
-            isfile(input_file)):
-        print('Something is wrong here:', src, '->', input_file)
+    src = join(IN_DIR, f'{splitext(basename(dig_result))[0]}.csv')
+    if not (dig_result.endswith('.dig') and isfile(src) and
+            isfile(dig_result)):
+        print('Something is wrong here:', src, '=>', dig_result)
         return False
-    predicates = parse_dig_result(input_file)
+    predicates = parse_dig_result(dig_result)
     if not predicates:
         return True
 
@@ -150,11 +174,11 @@ def check(input_file: str) -> bool:
         pred, cex = tokenize(p, TOKENS), ''
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
         values = np.unique(data[:, idx], axis=0)
-        res = np.apply_along_axis(to_assert, 1, values, occ, pred)
-        [solver.add(eval(lit)) for lit in res]
+        for lit in map(lambda val: to_assert(val, occ, pred), values):
+            solver.add(eval(lit))
         if (sc := solver.check()) != sat:
-            cex = ' '.join(find_cex(pred))
             all_true = False
+            cex = ' '.join(find_cex(pred))
         table.add_row([p, sc, cex])
     print(table)
     return all_true

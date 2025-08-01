@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void vassume(int b){}
+//void vassume(int b){}
 void vtrace1(int x, int y, int z){}
 
 int mainQ(int y, int z) {
