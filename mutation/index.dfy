@@ -2,7 +2,7 @@ module DomainSpec {
   // data dimensionality
   const degree : nat := 5
 
-  // numerical domain
+  // type of numerica data
   type domain = real
   const Default := 0.0
 }

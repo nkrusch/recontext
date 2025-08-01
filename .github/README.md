@@ -4,7 +4,7 @@ Explorations of finding numerical invariants in numerical data.
 
 ## Running various tools
 
-**Prerequisites**
+**Prerequisites.** &nbsp; 
 [git](https://git-scm.com/downloads), 
 [make](https://www.gnu.org/software/make/), and 
 [Python](https://www.python.org/downloads/).
