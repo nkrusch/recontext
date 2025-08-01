@@ -14,9 +14,9 @@ ENV = {'T_DTYPE': np.int64, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
-T_PREFIX, T_LABEL = 'I ', 'trace1'
-TOKENS = re.escape('==,**,<=,>=,(,),[,],*,-,+,/,%').split(',')
 T_DTYPE = ENV["T_DTYPE"]
+T_PREFIX, T_LABEL = 'I ', 'trace1'
+TOKENS = re.escape('==,**,<=,>=,(,),[,],*,-,+,/,%').split(',') + [',']
 PRED_PAD = 64
 
 
@@ -62,17 +62,6 @@ def flow(taken: List[str], init: List[str] = None):
     return first[0] if first else flow(taken, cmap)
 
 
-def to_lambda(text, *variables) -> str:
-    # generate array identifier
-    xc = flow(list(variables))
-    # replace all variables by x -> arr[i]
-    for t in sorted(variables, key=len, reverse=True):
-        i = variables.index(t)
-        # FIXME: with such naive replace max(x) becomes maa[0](a[0])
-        text = text.replace(t, f'{xc}[{i}]')
-    return f'lambda {xc}: {text}'.strip()
-
-
 def parse_dig_result(input_file):
     temp = read(input_file).strip().split('\n')[1:]
     return [x.split('.', 1)[1].strip() for x in temp]
@@ -84,8 +73,9 @@ def result_source(result_file):
     return os.path.join(IN_DIR, f'{fn}.csv')
 
 
-def negpos(x):
-    return x and (x.isnumeric() or x[0] == '-' and x[1:].isnumeric())
+def negpos(x: str) -> bool:
+    """expression is negative or positive number"""
+    return (x[1:] if x and x[0] == '-' else x).isnumeric()
 
 
 def tokenize(str_input, tokens):
@@ -96,8 +86,8 @@ def tokenize(str_input, tokens):
         n = len(terms) - 1
         for i in range(n, -1, -1):
             curr = terms[i]
-            if (not (curr in tokens or negpos(curr))
-                    and re.search(x, curr)):
+            terminal = curr in tokens or negpos(curr)
+            if not terminal and re.search(x, curr):
                 parts = [p for p in re.split(f'({x})', curr) if p]
                 before = tmp[:i] if i > 0 else []
                 after = tmp[i + 1:] if i < n else []
@@ -113,7 +103,7 @@ def val_fmt(value):
     return value
 
 
-def literalize(values, keys, tkn_pred):
+def to_assert(values, keys, tkn_pred):
     _dct = dict(zip(keys, values))
     subst = [(val_fmt(_dct[x]) if x in _dct else x) for x in tkn_pred]
     return (''.join([str(s) for s in subst])).ljust(PRED_PAD, ' ')
@@ -131,7 +121,7 @@ def find_cex(pred, limit=3):
     return cex
 
 
-def check(input_file: str) -> None:
+def check(input_file: str) -> bool:
     """Confirm invariants are valid.
 
     Checks that the inferred DIG invariants are valid for the input
@@ -142,26 +132,29 @@ def check(input_file: str) -> None:
         input_file (str): path to a results file.
     """
     src = result_source(input_file)
-    if not (isfile(src) and isfile(input_file) and
-            input_file.endswith('.dig')):
-        print('Invalid:', src, '->', input_file)
-        return
+    if not (input_file.endswith('.dig') and isfile(src) and
+            isfile(input_file)):
+        print('Something is wrong here:', src, '->', input_file)
+        return False
     predicates = parse_dig_result(input_file)
     if not predicates:
-        return
+        return True
 
     data, var = read_trace(src)
     table = PrettyTable(["P(…)", "eval(P)", "CEX"])
     solver = Solver()
+    all_true = True
 
     for p in predicates:
-        tkn_p, cex = tokenize(p, TOKENS), '---'
-        idx, occ = zip(*[c for c in enumerate(var) if c[1] in tkn_p])
-        values = np.unique(data[:, idx], axis=0)
-        pred = np.apply_along_axis(literalize, 1, values, occ, tkn_p)
         solver.reset()
-        [solver.add(eval(lit)) for lit in pred]
+        pred, cex = tokenize(p, TOKENS), ''
+        idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
+        values = np.unique(data[:, idx], axis=0)
+        res = np.apply_along_axis(to_assert, 1, values, occ, pred)
+        [solver.add(eval(lit)) for lit in res]
         if (sc := solver.check()) != sat:
             cex = ' '.join(find_cex(pred))
+            all_true = False
         table.add_row([p, sc, cex])
     print(table)
+    return all_true
