@@ -1,0 +1,6 @@
+xxy:
+  vin:
+    x: [0, 100]
+  vout: y
+  f: "lambda x: x * x"
+  n: 10

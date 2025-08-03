@@ -38,7 +38,8 @@ The results are written to `results`.
     
     FUNCTIONS (f)   
     xy          x - y = 0   
-    test        2 * x + 3 = y
+    xxy         x² = y   
+    2x3y        2 * x + 3 = y
 
     LINEAR (l)
     001 -- 133  github.com/PL-ML/code2invbenchmarks/C_instances/c

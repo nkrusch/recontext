@@ -10,7 +10,6 @@ Initially the suite has 133 benchmarks.
 *  9 are invalid                  => removed
 This leaves 49 benchmarks.
 
-====
 
 001 [x, y] [0 ≤ y < 100000]
 

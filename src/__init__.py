@@ -1,9 +1,11 @@
 import re
+from argparse import Namespace
 from os.path import isfile, basename, splitext, join
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
+import yaml
 from prettytable import PrettyTable
 from z3 import *
 
@@ -28,20 +30,25 @@ T_DTYPE = ENV["T_DTYPE"]
 def read(fn):
     """Reads a file into memory."""
     with open(fn, 'r') as fp:
-        raw = fp.read()
-    return raw
+        return fp.read()
+
+
+def read_yaml(path):
+    """Read (and parse) a yaml file"""
+    with open(path, 'r', encoding='utf-8') as yml:
+        return yaml.safe_load(yml)
+
 
 
 def read_trace(path: str) -> Tuple[np.array, List[str]]:
     """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
     idx_slice, variables = [], []
-    for i, c in enumerate(df.columns):
-        if i == 0 or c.startswith('Unnamed:'):
-            continue
-        if c2 := str(c).strip().replace(T_PREFIX, ''):
-            idx_slice.append(i)
-            variables.append(c2)
+    for i, c in enumerate(df.columns)[1:]:
+        if not c.lower().startswith('unnamed:'):
+            if c2 := str(c).strip().replace(T_PREFIX, ''):
+                idx_slice.append(i + 1)
+                variables.append(c2)
     data = np.array(df.values[:, idx_slice], dtype=T_DTYPE)
     return data, variables
 
@@ -158,8 +165,7 @@ def check(dig_result: str) -> bool:
     src = join(IN_DIR, f'{splitext(basename(dig_result))[0]}.csv')
     if not (dig_result.endswith('.dig') and isfile(src) and
             isfile(dig_result)):
-        print('Something is wrong here:', src, '=>', dig_result)
-        return False
+        raise Exception(f'Invalid: {src} => {dig_result}')
     predicates = parse_dig_result(dig_result)
     if not predicates:
         return True
@@ -182,3 +188,16 @@ def check(dig_result: str) -> bool:
         table.add_row([p, sc, cex])
     print(table)
     return all_true
+
+
+def gen(config_path):
+    if not isfile(config_path):
+        raise Exception(f'Not a file: {config}')
+    conf = read_yaml(config_path)
+    for f_name, params in list(conf.items()):
+        fun = Namespace(**params)
+        variables = list(fun.vin.keys()) + [fun.vout]
+        exec_f = eval(fun.f)
+        print(f_name, variables, fun.f, fun.n)
+
+

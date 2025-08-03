@@ -163,12 +163,6 @@ module MutationModule {
     else [f(lo)] + IdxMap(lo + 1, hi, f)
   }
 
-  lemma MutationFact1(o: vec, m: vec, cond: mutables, imm: immutables)
-    requires MutableVecCorrect(o, cond)
-    ensures var ir := EnsureImmVector(o, m, imm);
-            MutableVecCorrect(ir, cond) ==> ir == VectMutation(o, m, cond, imm)
-  {}
-
   //================
   // Mutation in 2D
   //================
@@ -271,5 +265,3 @@ module Tests {
         == expected[1] == o[1];
   }
 }
-
-
