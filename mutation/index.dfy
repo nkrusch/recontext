@@ -1,28 +1,28 @@
 module MutationModule {
 
-  /** specs of numerical data */
+  // specs of numerical data
   import DS = DomainSpec
   /** data dimensionality */
   const degree := DS.degree
-  /** data value type */
+  /** type of data values */
   type D = DS.domain
 
-  /** sequence initializer */
+  // sequence initializer
   function init<T>(id: T): seq<T> { seq(degree, _ => id) }
 
-  /** constraint types */
+  // constraint types
   type idx = x: nat | x < degree witness 0
   type pred = seq<D> -> bool
   type immutables = seq<idx>
   type mutableT = (seq<idx>, pred)
   type mutables = seq<mutableT>
 
-  /** vector (data row) types */
+  // vector (data row) types
   type vec = r: seq<D> | |r| == degree witness init(DS.Default)
   type mask = r: seq<bool> | |r| == degree witness init(false)
   type mask1 = r: mask | forall i: idx :: r[i] == r[0] witness init(false)
 
-  /** 2D types */
+  // 2D types
   type matrix = seq<vec>
   type masks = seq<mask>
 
@@ -30,8 +30,8 @@ module MutationModule {
   // Correctness under constraints
   //===============================
 
-  /** Mutation correctness: A mutation (of original) is permissible if it satisfies, 
-      row-wise, all predicates and preserves immutable values. */
+  /** Mutation correctness: A matrix mutation (of original) is permissible 
+      if it satisfies all predicates and preserves immutable values. */
   predicate IsCorrect(original: matrix, mutated: matrix, cond: mutables, imm: immutables)
     requires |original| == |mutated|
   {
@@ -72,7 +72,7 @@ module MutationModule {
     P(values)
   }
 
-  /** For a matrix, predicates hold for all vectors */
+  /** Predicates hold for all vectors */
   predicate MutableHold(matrix: matrix, cond: mutables)
   {
     forall ri : nat :: ri < |matrix| ==> MutableVecCorrect(matrix[ri], cond)
@@ -84,56 +84,34 @@ module MutationModule {
   { }
 
   //=================================
-  // Correctness preserving mutation 
+  // Correctness preserving mutation
   //=================================
 
-  function VectMutation(o: vec, m: vec, mut: mutables, imm: immutables): vec
-    requires MutableVecCorrect(o, mut)
-    ensures
-      var final := VectMutation(o,m,mut,imm);
-      CorrectVector(o, final, mut, imm)
+  function VectMutation(o: vec, m: vec, cond: mutables, imm: immutables): vec
+    requires MutableVecCorrect(o, cond)
+    ensures var m' := VectMutation(o, m, cond, imm);
+            CorrectVector(o, m', cond, imm) // result is always correct
+            && (CorrectVector(o, m, cond, imm) ==> m == m') // progress if correct
+            && forall i: idx :: m'[i] in [o[i], m[i]] // result is a choice of o, m
   {
-    var m' := EnsureImmVector(o, m, imm);
-    EnsureMutVector(o, m', mut)
+    var ir := EnsureImmVector(o, m, imm);
+    assert ImmutableVecCorrect(o, m, imm) ==> ir == m;
+    EnsureMutVector(o, ir, cond)
   }
 
   function EnsureImmVector(o: vec, m: vec, imm: immutables): vec
-    ensures
-      var m' := EnsureImmVector(o, m, imm);
-      ImmutableVecCorrect(o, m', imm) &&
-      forall i: idx :: m'[i] == if !(i in imm) then m[i] else o[i]
+    ensures var m' := EnsureImmVector(o, m, imm);
+            ImmutableVecCorrect(o, m', imm) &&
+            forall i: idx :: m'[i] == if i in imm then o[i] else m[i]
   {
     MapVec(o, m, IRow(imm))
   }
 
-  function EnsureMutVector(o: vec, m: vec, cond: mutables): vec
-    requires MutableVecCorrect(o, cond)
-    ensures
-      var m' := EnsureMutVector(o, m, cond);
-      (MutableVecCorrect(m, cond) ==> m == m') &&
-      MutableVecCorrect(m', cond) &&
-      forall imm: immutables :: ImmutableVecCorrect(o, m, imm) ==> ImmutableVecCorrect(o, m', imm)
-  {
-    var corr := MutableVecCorrect(m, cond);
-    var mask : mask1 := seq(degree, _ => corr);
-    var m' := MapVec(o, m, mask);
-    assert MutableVecCorrect(m', cond) by {
-      if corr {
-        assert MutableVecCorrect(m, cond);
-        EquivCorrectness(m, m', cond);
-      } else {
-        EquivCorrectness(o, m', cond);
-      }
-    }
-    m'
-  }
-
   function MapVec(o: seq<D>, m: seq<D>, k: seq<bool>): seq<D>
     requires |o| == |m| == |k|
-    ensures
-      var v := MapVec(o, m, k);
-      |v| == |o| &&
-      (forall i : nat :: i < |v| ==> v[i] == if k[i] then m[i] else o[i])
+    ensures |o| == |MapVec(o, m, k)|
+    ensures var v := MapVec(o, m, k);
+            forall i: nat :: i < |v| ==> v[i] == if k[i] then m[i] else o[i]
   {
     if |o| == 0 then []
     else
@@ -141,38 +119,58 @@ module MutationModule {
       [fst] + MapVec(o[1..], m[1..], k[1..])
   }
 
-  function IdxValues(row: vec, indices: seq<idx>): seq<D>
-    ensures
-      var res := IdxValues(row, indices);
-      |res| == |indices| &&
-      forall i: nat :: i < |indices| ==> res[i] == row[indices[i]]
+  function EnsureMutVector(o: vec, m: vec, cond: mutables): vec
+    requires MutableVecCorrect(o, cond)
+    ensures var m' := EnsureMutVector(o, m, cond);
+            MutableVecCorrect(m', cond)
+            && (if MutableVecCorrect(m, cond) then m == m' else o == m')
+            && (forall imm: immutables ::
+                  ImmutableVecCorrect(o, m, imm) ==>
+                    ImmutableVecCorrect(o, m', imm))
   {
-    if |indices| == 0 then [] else [row[indices[0]]] + IdxValues(row, indices[1..])
+    var corr := MutableVecCorrect(m, cond);
+    var mask : mask1 := seq(degree, _ => corr);
+    var m' := MapVec(o, m, mask);
+    EquivCorrectness(if corr then m else o, m', cond);
+    m'
+  }
+
+  function IdxValues(row: vec, indices: seq<idx>): seq<D>
+    ensures |indices| == |IdxValues(row, indices)|
+    ensures var r := IdxValues(row, indices);
+            forall i: nat :: i < |indices| ==> r[i] == row[indices[i]]
+  {
+    if |indices| == 0 then []
+    else [row[indices[0]]] + IdxValues(row, indices[1..])
   }
 
   function IRow(imm: immutables): mask
     ensures |IRow(imm)| == degree
-    ensures var r := IRow(imm); forall i : idx :: r[i] == !(i in imm)
+    ensures var r := IRow(imm);
+            forall i: idx :: r[i] == !(i in imm)
   {
-    IRowN(0, degree, imm)
+    var f := i => !(i in imm);
+    IdxMap(0, degree, f)
   }
 
-  function IRowN(lo: nat, hi:nat, imm: immutables): seq<bool>
+  function IdxMap(lo: nat, hi:nat, f: nat-> bool): seq<bool>
     decreases hi - lo
     requires lo <= hi
-    ensures |IRowN(lo, hi, imm)| == hi - lo
+    ensures |IdxMap(lo, hi, f)| == hi - lo
+    ensures var r := IdxMap(lo, hi, f);
+            forall i: nat :: i < |r| ==> r[i] == f(i + lo)
   {
-    if hi-lo == 0 then []
-    else [!(lo in imm)] + IRowN(lo+1, hi, imm)
+    if hi - lo == 0 then []
+    else [f(lo)] + IdxMap(lo + 1, hi, f)
   }
 
-  /***********************************/
-  /* Mutation in 2D */
-  /***********************************/
+  //================
+  // Mutation in 2D
+  //================
 
-  method ControlledMutation(
-    o: matrix, m: matrix, mut: mutables, imm: immutables
-  ) returns (final: matrix)
+  /** Ensures matrix mutation satisfies constraints */
+  method ControlledMutation(o: matrix, m: matrix, mut: mutables, imm: immutables)
+    returns (final: matrix)
     requires |o| == |m|
     requires MutableHold(o, mut)
     ensures |o| == |final|
@@ -186,7 +184,6 @@ module MutationModule {
       var nxt := VectMutation(o[i], m[i], mut, imm);
       assert CorrectVector(o[i], nxt, mut, imm);
       final := final + [nxt];
-      assert final[i] == nxt;
     }
   }
 }
@@ -201,11 +198,15 @@ module DomainSpec {
 }
 
 module Tests {
+  
   import V = MutationModule
   type domain = V.D
 
-  function P(s:seq<domain>): bool {
-    if |s| == 2 then s[0] <= s[1] else false }
+  type values = seq<domain>
+
+  predicate P(s: values) {
+    if |s| == 2 then s[0] <= s[1] else false
+  }
 
   // constraints (invariants)
   const imm := [0, 3, 4]
@@ -221,7 +222,7 @@ module Tests {
     [-2.0, 3.0, 1.0, 2.0, 3.0],
     [ 6.0, 4.0, 3.0, 4.0, 7.0]
   ]
-  // immutable (only)
+  // immutable (only
   const expectedIR: V.matrix := [
     [-2.0, 3.0, 1.0, 2.0, 3.0],
     [82.0, 4.0, 3.0, 4.0, 6.0]
