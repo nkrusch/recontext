@@ -1,6 +1,9 @@
 import re
 from argparse import Namespace
+# noinspection PyUnresolvedReferences
+from math import *
 from os.path import isfile, basename, splitext, join
+from random import randint
 from typing import List, Tuple
 
 import numpy as np
@@ -11,12 +14,16 @@ from z3 import *
 
 # Path to traces
 IN_DIR = 'input/traces'
+F_CONFIG = 'inputs.yaml'
 ENV = {'T_DTYPE': np.int64, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
-TOKENS = re.escape('==,**,<=,>=,(,),[,],*,-,+,/,%').split(',') + [',']
+
+# How to tokenize invariant expressions
+__tkn = 'if,else,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%,'
+TOKENS = (re.escape(__tkn)).split(',') + [',']
 
 # Types
 P = str
@@ -24,7 +31,7 @@ P = str
 PT = List[str]
 """Tokenized predicate"""
 T_DTYPE = ENV["T_DTYPE"]
-"""Type of numerical data (int, float, double)"""
+"""Type of numerical data (int, double)"""
 
 
 def read(fn):
@@ -39,18 +46,27 @@ def read_yaml(path):
         return yaml.safe_load(yml)
 
 
-
 def read_trace(path: str) -> Tuple[np.array, List[str]]:
     """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
     idx_slice, variables = [], []
-    for i, c in enumerate(df.columns)[1:]:
+    for i, c in enumerate(df.columns[1:]):
         if not c.lower().startswith('unnamed:'):
             if c2 := str(c).strip().replace(T_PREFIX, ''):
                 idx_slice.append(i + 1)
                 variables.append(c2)
     data = np.array(df.values[:, idx_slice], dtype=T_DTYPE)
     return data, variables
+
+
+def input_csv(bench_name):
+    """Construct input data path."""
+    return join(IN_DIR, f'{bench_name}.csv')
+
+
+def b_name(file_path):
+    """file name without path and extension."""
+    return splitext(basename(file_path))[0]
 
 
 def trace_to_csv(input_file: str):
@@ -63,8 +79,15 @@ def trace_to_csv(input_file: str):
 def csv_to_trace(input_file: str):
     """Convert a CSV file to a DIG trace."""
     init = pd.read_csv(input_file, sep=',')
-    var = [f'{T_PREFIX}{x}' for x in init.columns]
-    data = np.vstack([np.array(var), np.array(init.values)])
+    construct_trace(init.columns, init.values)
+
+
+def construct_trace(vars_: List[str], values):
+    np_val = np.array(values)
+    int_test = np_val.astype(int)
+    data = int_test if np.all(np_val == int_test) else np_val
+    var = [f'{T_PREFIX}{x}' for x in vars_]
+    data = np.vstack([np.array(var), data])
     prefix = np.full((data.shape[0], 1), T_LABEL)
     data = np.hstack([prefix, data])
     np.savetxt(sys.stdout, data, delimiter=T_SEP, fmt='%s')
@@ -112,28 +135,32 @@ def tokenize(plain: str, tokens: List[str]) -> PT:
     return terms
 
 
-def val_fmt(value: T_DTYPE) -> str | T_DTYPE:
-    """Express all real values as Q(n, d)."""
-    if T_DTYPE != np.int64:
-        frac = Fraction(str(value))
-        return f'Q({frac.numerator},{frac.denominator})'
-    return value
+def qt_fmt(value: T_DTYPE):
+    """Express values as Q(n, d)."""
+    frac = Fraction(str(value))
+    return (frac.numerator if frac.denominator == 1 else
+            f'Q({frac.numerator},{frac.denominator})')
 
 
-def to_assert(data: List[T_DTYPE], keys: List[str], pred: PT) -> P:
+def to_assert(
+        var: List[str], val: List[T_DTYPE], pred: PT,
+        fmt: Callable = None
+) -> P:
     """Construct a numerical assertion.
 
     Arguments:
-        data: an array of numerical values.
-        keys: variable names that match data in shape.
+        var: variable names.
+        val: variable values.
         pred: a tokenized assertion.
+        fmt: value formatter
 
     Returns:
         A string expression where all variables are replaced with
         numerical values.
     """
-    dct = dict(zip(keys, data))
-    subst = [(val_fmt(dct[x]) if x in dct else x) for x in pred]
+    fmt_ = fmt or (lambda x: x)
+    dct = dict(zip(var, val))
+    subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
     return ''.join([str(s) for s in subst])
 
 
@@ -162,7 +189,7 @@ def check(dig_result: str) -> bool:
     Returns:
         True if all invariants are satisfactory; otherwise False.
     """
-    src = join(IN_DIR, f'{splitext(basename(dig_result))[0]}.csv')
+    src = input_csv(b_name(dig_result))
     if not (dig_result.endswith('.dig') and isfile(src) and
             isfile(dig_result)):
         raise Exception(f'Invalid: {src} => {dig_result}')
@@ -174,15 +201,19 @@ def check(dig_result: str) -> bool:
     table = PrettyTable(["P(…)", "eval(P)", "CEX"])
     solver = Solver()
     all_true = True
+    fmt = qt_fmt if T_DTYPE == 'd' else None
 
     for p in predicates:
         solver.reset()
-        pred, cex = tokenize(p, TOKENS), ''
+        pred, cex, sc = tokenize(p, TOKENS), '', None
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
-        values = np.unique(data[:, idx], axis=0)
-        for lit in map(lambda val: to_assert(val, occ, pred), values):
-            solver.add(eval(lit))
-        if (sc := solver.check()) != sat:
+        for val in np.unique(data[:, idx], axis=0):
+            lit = to_assert(occ, val, pred, fmt=fmt)
+            try:
+                solver.add(eval(lit))
+            except z3types.Z3Exception:
+                sc, cex = '⚠ symbolic', lit
+        if not sc and (sc := solver.check()) != sat:
             all_true = False
             cex = ' '.join(find_cex(pred))
         table.add_row([p, sc, cex])
@@ -190,14 +221,38 @@ def check(dig_result: str) -> bool:
     return all_true
 
 
-def gen(config_path):
-    if not isfile(config_path):
-        raise Exception(f'Not a file: {config}')
-    conf = read_yaml(config_path)
-    for f_name, params in list(conf.items()):
-        fun = Namespace(**params)
-        variables = list(fun.vin.keys()) + [fun.vout]
-        exec_f = eval(fun.f)
-        print(f_name, variables, fun.f, fun.n)
+def rand_data(in_vars, ranges, expr):
+    """Calculate value of a function for random inputs.
+
+    Given an expression with variables,
+        1. Choose random value for each variable.
+        2. Substitute all variables in expression with values.
+        3. Evaluate the expression to get output value.
+
+    Arguments:
+        in_vars: input variables that occur in expr.
+        ranges: (min, max) of each variable.
+        expr: literal (str) of a function to evaluate.
+
+    Raises:
+        Exception: if `expr` contains variables not in `in_vars`
+            or other expressions outside the Python math stdlib.
+
+    Returns:
+        A row of data, of selected inputs and the calculated output.
+    """
+    data = list(map(lambda nx: randint(*nx), ranges))
+    result = eval(to_assert(in_vars, data, expr))
+    return data + [result]
 
 
+def gen(f_name):
+    """Generate random function traces based on config template."""
+    conf = read_yaml(F_CONFIG)
+    if f_name not in conf:
+        raise Exception(f'No generator known for {f_name}')
+    fun = Namespace(**conf[f_name])
+    pred = tokenize(fun.expr, TOKENS)
+    vin, ranges = list(fun.vin.keys()), list(fun.vin.values())
+    data = [rand_data(vin, ranges, pred) for _ in range(fun.n)]
+    construct_trace(vin + [fun.vo], data)

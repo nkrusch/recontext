@@ -49,6 +49,10 @@ $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 $(OUT)/%.check: $(OUT)/%.dig
 	python3 -m $(UTILS) -a check $< > $@
 
+gen/%:
+	$(eval fname := $(subst gen/,,$@))
+	python3 -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
+
 $(VENV):
 	@test -d .venv || python3 -m venv .venv;
 	@source .venv/bin/activate;

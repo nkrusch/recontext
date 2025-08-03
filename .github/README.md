@@ -27,8 +27,9 @@ Explorations of finding numerical invariants in numerical data.
 
 The results are written to `results`.
 
-
 ## Inputs
+
+See `inputs.yaml` for detailed information.
  
     DATASETS (ds)                                                              
     blink       https://archive.ics.uci.edu/dataset/754
@@ -37,12 +38,16 @@ The results are written to `results`.
     wine        https://archive.ics.uci.edu/dataset/109
     
     FUNCTIONS (f)   
-    xy          x - y = 0   
-    xxy         x² = y   
-    2x3y        2 * x + 3 = y
+    f_***       math functions 
 
     LINEAR (l)
-    001 -- 133  github.com/PL-ML/code2invbenchmarks/C_instances/c
+    001 -- 133  progam traces, from github.com/PL-ML/code2invbenchmarks/C_instances/c
 
-See `inputs/readme.txt` for details.
-      
+
+Initially the Linear suite has 133 benchmarks, but we keep 49.
+* 37 differ only on postcondition (combined)
+* 38 are duplicates (removed)
+* 9 are invalid (removed)
+* 1|2, 3|4|5 - differ only on some variable range (combined)
+
+       

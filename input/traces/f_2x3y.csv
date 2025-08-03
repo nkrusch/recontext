@@ -1,21 +1,21 @@
-trace1; I x; I y
-trace1;   3;   9
-trace1;  -2;  -1
-trace1;  -9; -15
-trace1;  -3;  -3
-trace1;   7;  17
-trace1;   8;  19
-trace1;  -1;   1
-trace1;   7;  17
-trace1;  -8; -13
-trace1;  -3;  -3
-trace1;  -3;  -3
-trace1;   1;   5
-trace1;   1;   5
-trace1;   8;  19
-trace1;  -4;  -5
-trace1;   9;  21
-trace1;   0;   3
-trace1;  -7; -11
-trace1;  -7; -11
-trace1;   0;   3
+trace1;I x;I y
+trace1;22;47
+trace1;52;107
+trace1;86;175
+trace1;89;181
+trace1;17;37
+trace1;1;5
+trace1;7;17
+trace1;64;131
+trace1;71;145
+trace1;48;99
+trace1;9;21
+trace1;14;31
+trace1;86;175
+trace1;-2;-1
+trace1;83;169
+trace1;73;149
+trace1;85;173
+trace1;15;33
+trace1;6;15
+trace1;38;79

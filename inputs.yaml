@@ -1,0 +1,72 @@
+# ==================================================================
+#   INTRODUCTION
+# ==================================================================
+# This file defines how to generate traces to use as inputs.
+# Every problem has the following form.
+#
+#  problem_name:                 # Unique name/filename.
+#    description: [str]          # Plaintext description.
+#    expr: [str]                 # Python expression that can be
+#                                  evaluated dynamically.
+#    vo: [str]                   # Output variable name, e.g.,
+#                                  in f(x)=y, the output is y.
+#    vin: Dict[str, (int,int)]   # Input variables <k, v> where
+#                                  k is a variable name, and
+#                                  v is value range [min, max].
+#    n: [nat]                    # Number of instances.
+#
+# To generate an input trace, run:   make gen/problem_name
+# ==================================================================
+
+# ======================
+#   MATH FUNCTIONS
+# ======================
+f_xxy:
+  description: "x² = y"
+  expr: "x * x"
+  vo: y
+  vin:
+    x: [ -20, 100 ]
+  n: 20
+f_xy:
+  description: "x = y"
+  expr: "x"
+  vo: y
+  vin:
+    x: [ 0, 100 ]
+  n: 10
+f_2x3y:
+  description: "2 * x + 3 = y"
+  expr: "2 * x + 3"
+  vo: y
+  vin:
+    x: [ -20, 100 ]
+  n: 20
+f_logx:
+  description: "log x = y"
+  expr: "log(x)"
+  vo: y
+  vin:
+    x: [ 0, 1000 ]
+  n: 10
+
+# ======================
+#   LINEAR PROBLEMS
+# ======================
+l_001002:
+  description: |
+    x == 1 + (y*y - y)/2
+    alternatively 2x == 2 + (y^2 - y)
+  expr: "1 + (y*y - y)/2"
+  vo: x
+  vin:
+    y: [ 0, 100000 ]
+  n: 10
+l_003004005:
+  description: x == 0 ∨ y ≤ z
+  expr: "randint(-100,100) if (x == 0) else (min(randint(-100,100), z))"
+  vo: y
+  vin:
+    x: [ 0, 100 ]
+    z: [ -100, 100 ]
+  n: 30

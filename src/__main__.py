@@ -8,25 +8,23 @@ TRACE, CSV, CHECK, GEN = 'trace,csv,check,gen'.split(',')
 def main():
     parser = argparse.ArgumentParser(
         prog="utils", description="Helpful operations")
-    parser.add_argument(
-        'input_file',
-        help="input file")
+    parser.add_argument('file', help="the file on which to operate")
     parser.add_argument(
         '-a', '--action',
-        action='store',
         choices=(TRACE, CSV, CHECK, GEN),
+        action='store',
         dest='action',
-        help='action to perform on input file'
+        help='action to perform on file'
     )
     args = parser.parse_args()
     if args.action == TRACE:
-        csv_to_trace(args.input_file)
+        csv_to_trace(args.file)
     elif args.action == CSV:
-        trace_to_csv(args.input_file)
+        trace_to_csv(args.file)
     elif args.action == CHECK:
-        check(args.input_file)
+        check(args.file)
     elif args.action == GEN:
-        gen(args.input_file)
+        gen(args.file)
     else:
         raise Exception('Unknown action')
 
