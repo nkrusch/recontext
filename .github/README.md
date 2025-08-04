@@ -41,13 +41,7 @@ See `inputs.yaml` for detailed information.
     f_***       math functions 
 
     LINEAR (l)
-    001 -- 133  progam traces, from github.com/PL-ML/code2invbenchmarks/C_instances/c
+    001 -- 133  progam traces
 
-
-Initially the Linear suite has 133 benchmarks, but we keep 49.
-* 37 differ only on postcondition (combined)
-* 38 are duplicates (removed)
-* 9 are invalid (removed)
-* 1|2, 3|4|5 - differ only on some variable range (combined)
 
        

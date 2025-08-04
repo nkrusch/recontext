@@ -221,7 +221,7 @@ def check(dig_result: str) -> bool:
     return all_true
 
 
-def rand_data(in_vars, ranges, expr):
+def rand_data(in_vars, ranges, expr, n_out):
     """Calculate value of a function for random inputs.
 
     Given an expression with variables,
@@ -233,6 +233,7 @@ def rand_data(in_vars, ranges, expr):
         in_vars: input variables that occur in expr.
         ranges: (min, max) of each variable.
         expr: literal (str) of a function to evaluate.
+        n_out: number of outputs
 
     Raises:
         Exception: if `expr` contains variables not in `in_vars`
@@ -242,8 +243,11 @@ def rand_data(in_vars, ranges, expr):
         A row of data, of selected inputs and the calculated output.
     """
     data = list(map(lambda nx: randint(*nx), ranges))
-    result = eval(to_assert(in_vars, data, expr))
-    return data + [result]
+    if n_out > 0:
+        result = eval(to_assert(in_vars, data, expr))
+        result = list(result) if isinstance(result, tuple) else [result]
+        data += result
+    return data
 
 
 def gen(f_name):
@@ -253,6 +257,10 @@ def gen(f_name):
         raise Exception(f'No generator known for {f_name}')
     fun = Namespace(**conf[f_name])
     pred = tokenize(fun.expr, TOKENS)
-    vin, ranges = list(fun.vin.keys()), list(fun.vin.values())
-    data = [rand_data(vin, ranges, pred) for _ in range(fun.n)]
-    construct_trace(vin + [fun.vo], data)
+    f_in = fun.vin if fun.vin else {}
+    vin, ranges = list(f_in.keys()), list(f_in.values())
+    v_out = (fun.vo if isinstance(fun.vo, list)
+             else [fun.vo] if fun.vo else [])
+    data = [rand_data(vin, ranges, pred, len(v_out))
+            for _ in range(fun.n)]
+    construct_trace(vin + v_out, data)

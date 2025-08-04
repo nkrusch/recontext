@@ -8,26 +8,18 @@
 #    description: [str]          # Plaintext description.
 #    expr: [str]                 # Python expression that can be
 #                                  evaluated dynamically.
-#    vo: [str]                   # Output variable name, e.g.,
+#    vo: [str | list[str]]       # Output variable name, e.g.,
 #                                  in f(x)=y, the output is y.
 #    vin: Dict[str, (int,int)]   # Input variables <k, v> where
 #                                  k is a variable name, and
 #                                  v is value range [min, max].
 #    n: [nat]                    # Number of instances.
+#    comment: [str]              # optional comments
 #
 # To generate an input trace, run:   make gen/problem_name
 # ==================================================================
-
-# ======================
 #   MATH FUNCTIONS
-# ======================
-f_xxy:
-  description: "x² = y"
-  expr: "x * x"
-  vo: y
-  vin:
-    x: [ -20, 100 ]
-  n: 20
+# ==================================================================
 f_xy:
   description: "x = y"
   expr: "x"
@@ -35,6 +27,13 @@ f_xy:
   vin:
     x: [ 0, 100 ]
   n: 10
+f_xxy:
+  description: "x² = y"
+  expr: "x * x"
+  vo: y
+  vin:
+    x: [ -20, 100 ]
+  n: 20
 f_2x3y:
   description: "2 * x + 3 = y"
   expr: "2 * x + 3"
@@ -50,19 +49,28 @@ f_logx:
     x: [ 0, 1000 ]
   n: 10
 
-# ======================
+# ==================================================================
 #   LINEAR PROBLEMS
-# ======================
-l_001002:
-  description: |
-    x == 1 + (y*y - y)/2
-    alternatively 2x == 2 + (y^2 - y)
-  expr: "1 + (y*y - y)/2"
+# ==================================================================
+# source: https://github.com/PL-ML/code2inv/tree/master/benchmarks/C_instances/c
+#
+# Initially the Linear suite has 133 benchmarks, but we keep (49).
+#  (37) differ only on numeric range or postcondition => combined
+#  38 duplicates => removed
+#       6 11 12 13 14 19 20 21 22 33 34 53 54 55 58 59 60 69 74 76 80
+#       81 82 86 89 90 92 104 105 112 113 116 117 122 123 126 127 129
+#   9 invalid => removed
+
+l_001:
+  comment: "combines problem #2"
+  description: 2x == 2 + (y^2 - y)
+  expr: "1 + (y * y - y) / 2"
   vo: x
   vin:
     y: [ 0, 100000 ]
   n: 10
-l_003004005:
+l_003:
+  comment: "combines problems #4, #5"
   description: x == 0 ∨ y ≤ z
   expr: "randint(-100,100) if (x == 0) else (min(randint(-100,100), z))"
   vo: y
@@ -70,3 +78,297 @@ l_003004005:
     x: [ 0, 100 ]
     z: [ -100, 100 ]
   n: 30
+l_007:
+  comment: "combines problems #7, #8"
+  description: (x == a + n * 10) ∧ (y == b + n * 10)
+  expr: "(a + (n * 10)), (b + (n * 10))"
+  vo: [x, y]
+  vin:
+    a: [ 0, 11 ]
+    b: [ 0, 11 ]
+    n: [ 0, 100 ]
+  n: 30
+l_009:
+  comment: "combines problems #9, #10"
+  description: (x == a + n * 2) ∧ (y == b + n * 2)
+  expr: "(a + (n * 2)), (b + (n * 2))"
+  vo: [x, y]
+  vin:
+    a: [ 0, 11 ]
+    b: [ 0, 11 ]
+    n: [ 0, 100 ]
+  n: 30
+l_015:
+  comment: "combines problems #15, #16, #17, #18"
+  description: m ≤ w ≤ z
+  expr: "min(w, randint(0, 100)), max(w, randint(0, 100))"
+  vo: [m, z]
+  vin:
+    w: [ 0, 100 ]
+  n: 20
+l_023:
+  description: i == (1 + 2 * n) ∧ j == (20 - n)
+  expr: "(1 + 2 * n), (20 - n)"
+  vo: [i, j]
+  vin:
+    n: [0, 8]
+  n: 12
+l_024:
+  description: i == (1 + 2 * n) ∧ j == (10 - n)
+  expr: "(1 + 2 * n), (10 - n)"
+  vo: [i, j]
+  vin:
+    n: [0, 5]
+  n: 10
+l_025:
+  comment: "combines problems #25, #30"
+  description: 0 ≤ x ≤ 100
+  expr: "x"
+  vo:
+  vin:
+    x : [ 0, 100 ]
+  n: 20
+l_028:
+  comment: "combines problems #28, #29"
+  description: (w < 0 ∧ x == w) ∨ (0 ≤ x ≤ w)
+  expr: "(w) if (w < 0) else (min(w, randint(0, 100)))"
+  vo: x
+  vin:
+    w: [ -100, 100 ]
+  n: 20
+l_035:
+  comment: "combines problems #35, #36, #37"
+  description: 0 ≤ c ≤ 40
+  expr: "c"
+  vo:
+  vin:
+    c : [ 0, 41 ]
+  n: 20
+l_038:
+  comment: "combines problems #38, #39"
+  description: 0 ≤ c ≤ w
+  expr: "randint(0, 55), 54"
+  vo: [c, w]
+  vin:
+  n: 20
+l_040:
+  comment: "combines problems #40, #41, #42, #43, #44, #56, #57"
+  description: c == 0
+  expr: "0"
+  vo: c
+  vin:
+  n: 3
+l_045:
+  comment: "combines problems #45, #46, #47, #48, #49"
+  description: 0 ≤ c ≤ w
+  expr: "randint(0, 73), 72"
+  vo: [c, w]
+  vin:
+  n: 20
+l_050:
+  comment: "combines problems #50, #51, #52"
+  description: 0 ≤ c ≤ 4
+  expr: "c"
+  vo:
+  vin:
+    c: [0, 5]
+  n: 10
+l_063:
+  comment: "combines problems #63, #64"
+  description: x == 1 ∨ y == 11 - x
+  expr: "randint(-20,20) if (x == 1) else (11 - x)"
+  vo: y
+  vin:
+    x: [1, 11]
+  n: 20
+l_065:
+  comment: "combines problems #65, #66"
+  description: x == 1 ∨ y == 101 - x
+  expr: "randint(-100, 100) if (x == 1) else (101 - x)"
+  vo: y
+  vin:
+    x: [1, 101]
+  n: 20
+l_067:
+  comment: "combines problems #67, #68, #70"
+  description: x == 1 ∨ y == n + 1 - x
+  expr: "50, randint(0, 100) if (x==1) else (50 + 1 - x)"
+  vo: [w, y]
+  vin:
+    x: [1, 51]
+  n: 20
+l_071:
+  comment: "combines problems #71, #73"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_077:
+  comment: "combines problems #77, #78, #79"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_083:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_084:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_085:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_087:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_088:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_091:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_093:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_094:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_095:
+  comment: "combines problems #95, #96"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_097:
+  comment: "combines problems #97, #98"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_099:
+  comment: "combines problems #99, #100"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_101:
+  comment: "combines problems #101, #102"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_103:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_107:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_108:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_109:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_110:
+  comment: "combines problems #110, #111"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_114:
+  comment: "combines problems #114, #115"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_118:
+  comment: "combines problems #118, #119"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_120:
+  comment: "combines problems #120, #121"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_124:
+  comment: "combines problems #124, #125"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_128:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_130:
+  comment: "combines problems #130, #131"
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_132:
+  description:
+  expr:
+  vo:
+  vin:
+  n: 20
+l_133:
+  comment: "affix n=42"
+  description: 0 ≤ x ≤ n
+  expr: "randint(0, 43), 42"
+  vo: [x, n]
+  vin:
+  n: 20
