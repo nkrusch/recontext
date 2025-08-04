@@ -7,11 +7,10 @@
 #  problem_name:                 : Unique name/filename.
 #    description: [str]          : Plaintext description.
 #    expr: [str]                 : Python expression.
-#    vo: [str | list[str]]       : Output variable name.
+#    vo: [str|list[str]]         : Output variable name.
 #    vin:                        : Input variables <k, v>
 #      Dict[str, int|[int,int]]    - k is variable name
-#                                  - val is a range [min, max]
-#                                    or a constant.
+#                                  - val is [min, max] or const.
 #    n: [nat]                    : Number of instances.
 #    comment: [str]              : Optional comments.
 #
@@ -142,7 +141,7 @@ l_035:
   expr: "c"
   vo:
   vin:
-    c : [ 0, 41 ]
+    c : [ 0, 40 ]
   n: 20
 l_038:
   comment: "combines problems #38, #39"
