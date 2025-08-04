@@ -8,7 +8,8 @@ invariants needed to prove functional correctness.
 predicate Nat(x: int) { x >= 0 }
 
 function Pow(base: nat, exp: nat): nat
-  requires  base > 0 ensures 1 <= Pow(base, exp) {
+  requires  base > 0 ensures 1 <= Pow(base, exp)
+{
   if exp == 0 then 1 else base * Pow(base, exp-1)
 }
 
@@ -187,7 +188,8 @@ method Linear40_41_42_43_44_56_57(n: int)
 
 method Linear45_46_47_48_49(n: int)
   requires n > 0
-  decreases * {
+  decreases *
+{
   var c := 0;
   while *
     invariant 0 <= c <= n
@@ -246,7 +248,8 @@ method Linear65_66(a: int)
   }
 }
 
-method Linear67_68_70(n: int, a: int){
+method Linear67_68_70(n: int, a: int)
+{
   var x, y := 1, a;
   while x <= n
     invariant x == 1 || y == n + 1 - x
@@ -258,7 +261,8 @@ method Linear67_68_70(n: int, a: int){
 
 method Linear71_73(y: int)
   requires y >= 127
-  decreases * {
+  decreases *
+{
   var c, z := 0, 36 * y;
   assert z >= 0;
   while *
@@ -300,8 +304,9 @@ method Linear83(a: nat)
   }
 }
 
-method Linear84(a: int)
-  requires a > 0 {
+method Linear84(a: nat)
+  requires a > 0
+{
   var x, y: nat :=  -50, a;
   while x < 0
     invariant x == (y * y - y)/2 - (a * a - a)/2 - 50
@@ -312,23 +317,22 @@ method Linear84(a: int)
   }
 }
 
-method Linear85(y: int)
-  decreases * {
-  var x', x, y' := -15000, -15000, y;
-  ghost var n := 0;
-  while x' < 0
-    invariant x' >= 0 ==> y' > 0
-    invariant y <= y' <= y + n
-    decreases * {
-    x' := x' + y';
-    y' := y' + 1;
-    n := n + 1;
+method Linear85(a: int)
+  requires a > 0
+{
+  var x, y: nat := -15000, a;
+  while x < 0
+    invariant x == (y * y - y)/2 - (a * a - a)/2 - 15000
+    decreases -x {
+    x := x + y;
+    y := y + 1;
   }
 }
 
 method Linear87(x: int, y: int)
   requires x == y
-  decreases *  {
+  decreases *
+{
   var x', y', lock', lock := x, y, 1, 1;
   ghost var n := 0;
   while (x' != y')
@@ -592,41 +596,37 @@ method Linear128(y: int){
   }
 }
 
-method Linear130_131(x2: int, x3: int)
-  decreases * {
-  var d1', d1, d2', d2, d3', d3 := 1, 1, 1, 1, 1, 1;
-  var x1', x2', x3' := 1, x2, x3;
-  while x1' > 0
-    invariant x2' <= x3' ==> 0 <= x1' <= 1
-    invariant x1' == 0 ==> x2' >= 0 && x3' >= 0
-    invariant x3 < x2 ==> x2' > x3'
-    invariant x3 < x2 && x3' > 0 ==> x2' > 1
-    decreases * {
-    if x2' > 0 {
-      if x3' > 0 {
-        x1' := x1' - d1';
-        x2' := x2' - d2';
-        x3' := x3' - d3';
+method Linear130_131(a: int, b: int)
+  decreases *
+{
+  var d1, d2, d3 := 1, 1, 1;
+  var x1, x2, x3 := 1, a, b;
+  while x1 > 0
+    decreases *
+  {
+    if x2 > 0 {
+      if x3 > 0 {
+        x1 := x1 - d1;
+        x2 := x2 - d2;
+        x3 := x3 - d3;
       }
     }
   }
 }
 
-method Linear132(c: int, j: int, t: int)
-  decreases * {
-  var j', t', i', c' := j, t, 0, c;
-  ghost var n := 0;
+method Linear132(a: int, b: int, c: int)
+  decreases *
+{
+  var i, j, t := 0, a, b;
   while *
-    invariant c' == c && 48 < c' < 57 ==> c' - 48 != 0
-    invariant t' == t || t' == c' - 48
-    invariant i' == 0 || i' == j' + t'
+    invariant t == b || 1 <= t <= 8
+    invariant i == 0 || i == j + t
     decreases * {
-    if c' > 48 {
-      if c' < 57 {
-        j' := i' + i';
-        t' := c' - 48;
-        i' := j' + t';
-        n := n + 1;
+    if c > 48 {
+      if c < 57 {
+        j := i + i;
+        t := c - 48;
+        i := j + t;
       }
     }
   }

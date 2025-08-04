@@ -374,9 +374,9 @@ l_132:
   vin:
   n: 20
 l_133:
-  comment: "affix n=42"
-  description: 0 ≤ x ≤ n
-  expr: "randint(0, 43), 42"
-  vo: [x, n]
+  description: 0 ≤ x ≤ w
+  expr: "randint(0, w+1)"
+  vo: x
   vin:
+    w: 42
   n: 20
