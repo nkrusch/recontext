@@ -329,10 +329,12 @@ method Linear85(a: int)
   }
 }
 
-method Linear87(a: int)
+method Linear87_88(a: int, b: int)
+  requires a == b || a + 1 == b
   decreases *
 {
-  var x, y, lock := a, a, 1;
+  var x, y := a, b; 
+  var lock := if (a == b) then 1 else 0;
   while (x != y)
     invariant lock == 1 <==> x == y
     invariant lock == 0 <==> x == y - 1
@@ -344,30 +346,6 @@ method Linear87(a: int)
       lock := 0;
       x := y;
       y := y + 1; 
-    }
-  }
-}
-
-method Linear88(x: int, y: int)
-  requires y == x + 1
-  decreases * {
-  var x', y', lock', lock := x, y, 0, 0;
-  assert x' + 1 == y';
-  ghost var n := 0;
-  while x' != y'
-    invariant y' == y + n
-    invariant lock' == 1 <==> x' == y'
-    invariant lock' == 0 <==> x' == y' - 1
-    decreases *
-  {
-    if * {
-      lock' := 1;
-      x' := y';
-    } else {
-      lock' := 0;
-      x' := y';
-      y' := y' + 1;
-      n := n + 1;
     }
   }
 }
