@@ -261,8 +261,8 @@ method Linear71_73(y: int)
   decreases * {
   var c, z := 0, 36 * y;
   assert z >= 0;
-  while * 
-    invariant 36 * y <= z <= 36 * y + c
+  while *
+    invariant z == 36 * y + c
     decreases *
   {
     if c < 36 {
@@ -272,44 +272,43 @@ method Linear71_73(y: int)
   }
 }
 
-method Linear77_78_79(x: int, y: int)
-  requires y >= 0 && x >= 0 && x >= y
-  decreases * {
-  var i', i := 0, 0;
+method Linear77_78_79(x: nat, y: nat)
+  requires x >= y
+  decreases *
+{
+  var i := 0;
   while *
-    invariant i <= i' <= i + y
-    decreases * {
-    if i' < y {
-      i' := i' + 1; }
+    invariant i <= y <= x
+    decreases *
+  {
+    if i < y {
+      i := i + 1;
+    }
   }
 }
 
-method Linear83(y: int)
-  decreases * {
-  var x', x, y' := -5000, -5000, y;
-  ghost var n := 0;
-  while x' < 0
-    invariant x' >= 0 ==> y' > 0
-    invariant y <= y' <= y + n
-    decreases * {
-    x' := x' + y';
-    y' := y' + 1;
-    n := n + 1;
+method Linear83(a: nat)
+  requires a > 0
+{
+  var y: nat, x := a, -5000;
+  while x < 0
+    invariant x == (y * y - y)/2 - (a * a - a)/2 - 5000
+    decreases -x
+  {
+    x := x + y;
+    y := y + 1;
   }
 }
 
-method Linear84(y: int)
-  decreases * {
-  var x', x, y' := -50, -50, y;
-  ghost var n := 0;
-  while x' < 0
-    invariant y <= y' <= y + n
-    invariant x' >= 0 ==> y' > 0
-    invariant n > 0 ==> y' > y
-    decreases * {
-    x' := x' + y';
-    y' := y' + 1;
-    n := n + 1;
+method Linear84(a: int)
+  requires a > 0 {
+  var x, y: nat :=  -50, a;
+  while x < 0
+    invariant x == (y * y - y)/2 - (a * a - a)/2 - 50
+    decreases -x
+  {
+    x := x + y;
+    y := y + 1;
   }
 }
 

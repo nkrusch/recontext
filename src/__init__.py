@@ -242,7 +242,8 @@ def rand_data(in_vars, ranges, expr, n_out):
     Returns:
         A row of data, of selected inputs and the calculated output.
     """
-    data = list(map(lambda nx: randint(*nx), ranges))
+    dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
+    data = list(map(dt_v, ranges))
     if n_out > 0:
         result = eval(to_assert(in_vars, data, expr))
         result = list(result) if isinstance(result, tuple) else [result]
