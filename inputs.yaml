@@ -250,51 +250,60 @@ l_087:
     lock: [0, 1]
   n: 20
 l_091:
-  description: "y == n"
-  expr: "n"
+  description: (y == 0) ∧ (x = 0)
+  expr: "0"
   vo: y
   vin:
     x: 0
-    n: [0, 100]
-  n: 20
+  n: 3
 l_093:
-  description:
-  expr:
-  vo:
+  description: (x ≤ 2i) ∧ (y ≤ 2i) ∧ (x + y == 3i)
+  expr: ""
+  vo: [x, y]
   vin:
+    n: 100
+    i: [0, 100]
   n: 20
 l_094:
-  description:
-  expr:
-  vo:
+  description: (2j == i² + i) ∧ (i ≤ n + 1)
+  expr: "(i * i + i)/2"
+  vo: j
   vin:
+    n: 122
+    i: [0, 123]
   n: 20
 l_095:
   comment: "combines problems #95, #96"
-  description:
-  expr:
-  vo:
+  description: (x < 0) ∨ (i ≤ x + 1 ∧ j == i * y)
+  expr: "(0, 0) if (x < 0) else (randint(0, x + 1),)*2"
+  vo: [i, j]
   vin:
-  n: 20
+    y: 1
+    x: [-50, 100]
+  n: 30
 l_097:
   comment: "combines problems #97, #98"
-  description:
-  expr:
-  vo:
+  description: (x < 0) ∨ (i ≤ x + 1 ∧ j == 2i)
+  expr: "" #"[1, 2] * ((0) if (x < 0) else (randint(0, x + 1)))"
+  vo: [i, j]
   vin:
-  n: 20
+    y: 2
+    x: [-50, 100]
+  n: 30
 l_099:
   comment: "combines problems #99, #100"
-  description:
-  expr:
-  vo:
+  description: "y == n - x"
+  expr: "n - x"
+  vo: y
   vin:
+    n: 256
+    x: [0, 256]
   n: 20
 l_101:
   comment: "combines problems #101, #102"
   description: (m < 0) ∨ (0 ≤ x ≤ m)
   expr: "randint(0, m)"
-  vo:
+  vo: x
   vin:
     m: 100
   n: 20

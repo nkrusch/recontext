@@ -352,84 +352,72 @@ method Linear87_88(a: int, b: int)
 
 method Linear91()
   decreases * {
-  var x', x, y', y := 0, 0, 0, 0;
+  var x, y := 0, 0;
   while *
-    invariant y' >= 0
-    invariant x' == x
-    invariant x' == 0 ==> y' == 0
+    invariant y == 0
     decreases * {
-    y' := y' + x';
+      y := y + x;
   }
 }
 
 method Linear93(n: nat) {
-  var n' := n;
-  var i', i, x', x, y', y := 0, 0, 0, 0, 0, 0;
-  while i' < n'
-    invariant x' + y' == 3 * i'
-    invariant i <= i' <= n
-    invariant x <= x' <= i' * 2
-    invariant y <= y' <= i' * 2
+  var i, x, y := 0, 0, 0;
+  while i < n
+    invariant x + y == 3 * i
+    invariant x <= i * 2
+    invariant y <= i * 2
   {
-    i' := i' + 1;
+    i := i + 1;
     if * {
-      x' := x' + 1;
-      y' := y' + 2;
+      x := x + 1;
+      y := y + 2;
     } else {
-      x' := x' + 2;
-      y' := y' + 1;
+      x := x + 2;
+      y := y + 1;
     }
   }
 }
 
-method Linear94(k: nat, n: nat) {
-  var i', i, j', j, k', n' := 0, 0, 0, 0, k, n;
-  while i' <= n'
-    invariant i <= i' <= n + 1
-    invariant 2 * j' == i' * i' + i'
+method Linear94(n: nat) {
+  var i, j := 0, 0;
+  while i <= n
+    invariant 0 <= i <= n + 1
+    invariant 2 * j == i * i + i
   {
-    i' := i' + 1;
-    j' := j' + i';
+    i := i + 1;
+    j := j + i;
   }
 }
 
 method Linear95_96(x: int) {
-  var i, j, y := 0, 0, 1;
-  var i', j', y', x' := i, j, y, x;
-  while i' <= x'
-    invariant i' == j' && y' == y && x' == x
-    invariant x >= 0 ==> i <= i' <= x + 1
-    invariant x >= 0 ==> j' == j + i' * y
+  var i, j, y := 0, 0, 1; 
+  while i <= x
+    invariant j == i 
   {
-    i' := i' + 1;
-    j' := j' + y';
+    i := i + 1;
+    j := j + y;
   }
 }
 
 method Linear97_98(x: int) {
   var i, j, y : int := 0, 0, 2;
-  var i', j', y', x' : int := i, j, y, x;
-  while i' <= x'
-    invariant y' == y == 2 && x' == x
-    invariant j' % y == 0
-    invariant x < 0 ==> i' == i && j' == j
-    invariant Nat(x) ==> 0 <= i' <= x + 1
-    invariant j' == j + i' * y
+  while i <= x 
+    invariant j == i * 2
   {
-    i' := i' + 1;
-    j' := j' + y';
+    i := i + 1;
+    j := j + y;
   }
 }
 
-method Linear99_100(n: int)
-  requires n >= 0 {
-  var x', x, y', y := n, n, 0, 0;
-  while x' > 0
-    invariant 0 <= x' <= n
-    invariant y' == n - x'
+method Linear99_100(n: nat)
+{
+  var x, y := n, 0;
+  while x > 0
+    invariant 0 <= x <= n
+    invariant y == n - x
   {
-    y' := y' + 1;
-    x' := x' - 1;
+    y := y + 1;
+    x := x - 1;
   }
 }
 
