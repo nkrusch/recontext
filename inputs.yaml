@@ -15,7 +15,8 @@
 #    comment: [str]              : Optional comments.
 #
 # Generate an input trace by running:   make gen/problem_name
-#
+# ==================================================================
+
 # ==================================================================
 #   MATH FUNCTIONS
 # ==================================================================
@@ -59,6 +60,7 @@ f_logx:
 #       6 11 12 13 14 19 20 21 22 33 34 53 54 55 58 59 60 69 74 76 80
 #       81 82 86 89 90 92 104 105 112 113 116 117 122 123 126 127 129
 #  9 invalid => removed
+# ==================================================================
 
 l_001:
   comment: "combines problem #2"
@@ -248,10 +250,12 @@ l_087:
     lock: [0, 1]
   n: 20
 l_091:
-  description:
-  expr:
-  vo:
+  description: "y == n"
+  expr: "n"
+  vo: y
   vin:
+    x: 0
+    n: [0, 100]
   n: 20
 l_093:
   description:
@@ -288,16 +292,18 @@ l_099:
   n: 20
 l_101:
   comment: "combines problems #101, #102"
-  description:
-  expr:
+  description: (m < 0) ∨ (0 ≤ x ≤ m)
+  expr: "randint(0, m)"
   vo:
   vin:
+    m: 100
   n: 20
 l_103:
-  description:
-  expr:
+  description: 0 ≤ x ≤ 100
+  expr: "x"
   vo:
   vin:
+    x : [ 0, 100 ]
   n: 20
 l_107:
   description:

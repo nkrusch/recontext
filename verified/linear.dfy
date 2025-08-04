@@ -434,18 +434,18 @@ method Linear99_100(n: int)
 }
 
 method Linear101_102(n: int){
-  var x', x, n' := 0, 0, n;
-  while x' < n'
-    invariant n < 0 || 0 <= x' <= n
+  var x := 0;
+  while x < n
+    invariant n < 0 || 0 <= x <= n
   {
-    x' := x' + 1;
+    x := x + 1;
   }
 }
 
 method Linear103(){
-  var x', x := 0, 0;
-  while x' < 100 {
-    x' := x' + 1;
+  var x := 0;
+  while x < 100 {
+    x := x + 1;
   }
 }
 
