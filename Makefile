@@ -19,6 +19,8 @@ ifndef $LOG
 LOG := $(OUT)/_log.txt
 endif
 
+TRACES := 001 003 007 009 015 023 024 025 028 035 038 040 045 050 063 065 067 071 077 083 084 085 087 133
+
 UTILS   := src
 VENV	:= .venv
 IN_CSV	:= $(IN)/csv
@@ -27,6 +29,7 @@ INPUTS  := $(wildcard $(IN_TRC)/*.csv)
 DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 TCL_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
+GEN_TRC := ${TRACES:%=gen/l_%}
 CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
@@ -36,6 +39,7 @@ dig:   $(DIG_EXP) $(MACHINE)
 tacle: $(TCL_EXP) $(MACHINE)
 csv:   $(CSV_IN)
 check: $(CHECKS)
+trc:   $(GEN_TRC)
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 	python3 -m $(UTILS) -a csv $< > $@

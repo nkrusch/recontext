@@ -22,7 +22,7 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # How to tokenize invariant expressions
-__tkn = 'if,else,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%,'
+__tkn = 'if,else,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%'
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 
 # Types

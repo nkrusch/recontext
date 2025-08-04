@@ -329,26 +329,21 @@ method Linear85(a: int)
   }
 }
 
-method Linear87(x: int, y: int)
-  requires x == y
+method Linear87(a: int)
   decreases *
 {
-  var x', y', lock', lock := x, y, 1, 1;
-  ghost var n := 0;
-  while (x' != y')
-    invariant lock' == 1 <==> x' == y'
-    invariant lock' == 0 <==> x' == y' - 1
-    invariant x' >= x && y' >= y
-    invariant y' == y + n
+  var x, y, lock := a, a, 1;
+  while (x != y)
+    invariant lock == 1 <==> x == y
+    invariant lock == 0 <==> x == y - 1
     decreases * {
     if * {
-      lock' := 1;
-      x' := y';
+      lock := 1;
+      x := y;
     } else {
-      lock' := 0;
-      x' := y';
-      y' := y' + 1;
-      n := n + 1;
+      lock := 0;
+      x := y;
+      y := y + 1; 
     }
   }
 }

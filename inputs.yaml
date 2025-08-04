@@ -1,22 +1,22 @@
 # ==================================================================
 #   INTRODUCTION
 # ==================================================================
-# This file defines how to generate traces to use as inputs.
-# Every problem has the following form.
+# This file defines how to generate input traces. Every problem has
+# the following structure.
 #
-#  problem_name:                 # Unique name/filename.
-#    description: [str]          # Plaintext description.
-#    expr: [str]                 # Python expression that can be
-#                                  evaluated dynamically.
-#    vo: [str | list[str]]       # Output variable name, e.g.,
-#                                  in f(x)=y, the output is y.
-#    vin: Dict[str, (int,int)]   # Input variables <k, v> where
-#                                  k is a variable name, and
-#                                  v is value range [min, max].
-#    n: [nat]                    # Number of instances.
-#    comment: [str]              # optional comments
+#  problem_name:                 : Unique name/filename.
+#    description: [str]          : Plaintext description.
+#    expr: [str]                 : Python expression.
+#    vo: [str | list[str]]       : Output variable name.
+#    vin:                        : Input variables <k, v>
+#      Dict[str, int|[int,int]]    - k is variable name
+#                                  - val is a range [min, max]
+#                                    or a constant.
+#    n: [nat]                    : Number of instances.
+#    comment: [str]              : Optional comments.
 #
-# To generate an input trace, run:   make gen/problem_name
+# Generate an input trace by running:   make gen/problem_name
+#
 # ==================================================================
 #   MATH FUNCTIONS
 # ==================================================================
@@ -52,10 +52,10 @@ f_logx:
 # ==================================================================
 #   LINEAR PROBLEMS
 # ==================================================================
-# source: https://github.com/PL-ML/code2inv/tree/master/benchmarks/C_instances/c
+# source: https://github.com/PL-ML/code2inv
 #
 # Initially the Linear suite has 133 benchmarks, but we keep (49).
-#  (37) differ only on numeric range or postcondition => combined
+#  (37) differ only on numeric range or assertion => combined
 #  38 duplicates => removed
 #       6 11 12 13 14 19 20 21 22 33 34 53 54 55 58 59 60 69 74 76 80
 #       81 82 86 89 90 92 104 105 112 113 116 117 122 123 126 127 129
@@ -147,9 +147,10 @@ l_035:
 l_038:
   comment: "combines problems #38, #39"
   description: 0 ≤ c ≤ w
-  expr: "randint(0, 55), 54"
-  vo: [c, w]
+  expr: "randint(0, w+1)"
+  vo: c
   vin:
+    w: 54
   n: 20
 l_040:
   comment: "combines problems #40, #41, #42, #43, #44, #56, #57"
@@ -161,9 +162,10 @@ l_040:
 l_045:
   comment: "combines problems #45, #46, #47, #48, #49"
   description: 0 ≤ c ≤ w
-  expr: "randint(0, 73), 72"
-  vo: [c, w]
+  expr: "randint(0, w+1)"
+  vo: c
   vin:
+    w: 72
   n: 20
 l_050:
   comment: "combines problems #50, #51, #52"
@@ -171,7 +173,7 @@ l_050:
   expr: "c"
   vo:
   vin:
-    c: [0, 5]
+    c: [0, 4]
   n: 10
 l_063:
   comment: "combines problems #63, #64"
@@ -179,7 +181,7 @@ l_063:
   expr: "randint(-20,20) if (x == 1) else (11 - x)"
   vo: y
   vin:
-    x: [1, 11]
+    x: [1, 10]
   n: 20
 l_065:
   comment: "combines problems #65, #66"
@@ -187,7 +189,7 @@ l_065:
   expr: "randint(-100, 100) if (x == 1) else (101 - x)"
   vo: y
   vin:
-    x: [1, 101]
+    x: [1, 100]
   n: 20
 l_067:
   comment: "combines problems #67, #68, #70"
@@ -195,7 +197,7 @@ l_067:
   expr: "50, randint(0, 100) if (x==1) else (50 + 1 - x)"
   vo: [w, y]
   vin:
-    x: [1, 51]
+    x: [1, 50]
   n: 20
 l_071:
   comment: "combines problems #71, #73"
@@ -214,7 +216,7 @@ l_077:
   vin:
   n: 20
 l_083:
-  description: "x == ((y² - y) - (a² - a))/2 - 5000"
+  description: x == ((y² - y) - (a² - a))/2 - 5000
   expr: "((y * y - y)/2) - ((a * a - a)/2) - 5000"
   vo: x
   vin:
@@ -222,7 +224,7 @@ l_083:
     y: [48, 99]
   n: 30
 l_084:
-  description: "x == ((y² - y) - (a² - a))/2 - 50"
+  description: x == ((y² - y) - (a² - a))/2 - 50
   expr: "((y * y - y)/2) - ((a * a - a)/2) - 50"
   vo: x
   vin:
@@ -230,7 +232,7 @@ l_084:
     y: [4, 11]
   n: 30
 l_085:
-  description: "x == ((y² - y) - (a² - a))/2 - 15000"
+  description: x == ((y² - y) - (a² - a))/2 - 15000
   expr: "((y * y - y)/2) - ((a * a - a)/2) - 15000"
   vo: x
   vin:
@@ -238,16 +240,13 @@ l_085:
     y: [112, 189]
   n: 30
 l_087:
-  description:
-  expr:
-  vo:
+  comment: "combines problems #87, #88"
+  description: (lock == 1 ∧ x == y) ∨ (lock == 0 ∧ x == y - 1)
+  expr: "(x) if (lock==1) else (x-1)"
+  vo: y
   vin:
-  n: 20
-l_088:
-  description:
-  expr:
-  vo:
-  vin:
+    x: [0, 100]
+    lock: [0, 1]
   n: 20
 l_091:
   description:
