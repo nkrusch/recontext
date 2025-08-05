@@ -7,6 +7,11 @@ invariants needed to prove functional correctness.
 
 predicate Nat(x: int) { x >= 0 }
 
+function Max(a: int, b: int): int
+{
+  if a > b then a else b
+}
+
 function Pow(base: nat, exp: nat): nat
   requires  base > 0 ensures 1 <= Pow(base, exp)
 {
@@ -333,7 +338,7 @@ method Linear87_88(a: int, b: int)
   requires a == b || a + 1 == b
   decreases *
 {
-  var x, y := a, b; 
+  var x, y := a, b;
   var lock := if (a == b) then 1 else 0;
   while (x != y)
     invariant lock == 1 <==> x == y
@@ -345,22 +350,24 @@ method Linear87_88(a: int, b: int)
     } else {
       lock := 0;
       x := y;
-      y := y + 1; 
+      y := y + 1;
     }
   }
 }
 
 method Linear91()
-  decreases * {
+  decreases *
+{
   var x, y := 0, 0;
   while *
     invariant y == 0
     decreases * {
-      y := y + x;
+    y := y + x;
   }
 }
 
-method Linear93(n: nat) {
+method Linear93(n: nat)
+{
   var i, x, y := 0, 0, 0;
   while i < n
     invariant x + y == 3 * i
@@ -378,7 +385,8 @@ method Linear93(n: nat) {
   }
 }
 
-method Linear94(n: nat) {
+method Linear94(n: nat)
+{
   var i, j := 0, 0;
   while i <= n
     invariant 0 <= i <= n + 1
@@ -389,19 +397,21 @@ method Linear94(n: nat) {
   }
 }
 
-method Linear95_96(x: int) {
-  var i, j, y := 0, 0, 1; 
+method Linear95_96(x: int)
+{
+  var i, j, y := 0, 0, 1;
   while i <= x
-    invariant j == i 
+    invariant j == i
   {
     i := i + 1;
     j := j + y;
   }
 }
 
-method Linear97_98(x: int) {
+method Linear97_98(x: int)
+{
   var i, j, y : int := 0, 0, 2;
-  while i <= x 
+  while i <= x
     invariant j == i * 2
   {
     i := i + 1;
@@ -421,7 +431,8 @@ method Linear99_100(n: nat)
   }
 }
 
-method Linear101_102(n: int){
+method Linear101_102(n: int)
+{
   var x := 0;
   while x < n
     invariant n < 0 || 0 <= x <= n
@@ -430,67 +441,63 @@ method Linear101_102(n: int){
   }
 }
 
-method Linear103(){
+method Linear103()
+{
   var x := 0;
   while x < 100 {
     x := x + 1;
   }
 }
 
-method Linear107(a: int, m: int){
-  var k', k, m', a' := 0, 0, m, a;
-  while (k' < 1)
-    invariant a' == a
-    invariant k' in [k, 1]
-    invariant m' in [m, a]
-    invariant k' > 0 ==> a <= m'
+method Linear107(a: int, b: int)
+{
+  var k, m := 0, b;
+  while (k < 1)
+    invariant k == 0 ==> m == b
+    invariant k == 1 ==> m == Max(a,b)
   {
-    if m' < a' {
-      m' := a';
+    if m < a {
+      m := a;
     }
-    k' := k' + 1;
+    k := k + 1;
   }
 }
 
-method Linear108(a: int, c: int, m: int)
-  requires a <= m {
-  var a', c', m', k', k := a, c, m, 0, 0;
-  while k' < c'
-    invariant c' == c && a' == a
-    invariant c < 0 || 0 <= k' <= c
-    invariant c <= 0 ==> m' == m && k' == k
-    invariant m' in [m, a]
+method Linear108(a: int, b: int, c: int)
+  requires a <= b
+{
+  var k, m := 0, b;
+  while k < c
+    invariant (c <= 0 && k == 0) || 0 <= k <= c
+    invariant m == b
   {
-    if m' < a' {
-      m' := a';
+    if m < a {
+      m := a;
     }
-    k' := k' + 1;
+    k := k + 1;
   }
 }
 
-method Linear109(a: int, c: int, m: int) {
-  var a', c', m', k', k := a, c, m, 0, 0;
-  while k' < c'
-    invariant a' == a && c' == c && m' >= m
-    invariant k' > 0 ==> a <= m' && k <= k' <= c
-    invariant m' in [m, a]
+method Linear109(a: int, b: int, c: int)
+{
+  var k, m := 0, b;
+  while k < c
+    invariant (k == 0 && m == b) || (1 <= k <= c && m == Max(a, b))
   {
-    if m' < a' {
-      m' := a';
+    if m < a {
+      m := a;
     }
-    k' := k' + 1;
+    k := k + 1;
   }
 }
 
 method Linear110_111(n: int)
-  requires n >= 1 {
-  var sn0, i0 := 0, 1;
-  var sn, i := sn0, i0;
-  while (i <= n)
-    invariant 0 <= i <= n + 1
-    invariant 0 <= sn < i
-    invariant i > 1 && n > 1 ==> sn == i - 1
-    invariant n > 0 ==> 0 <= sn <= n
+  requires n > 0
+{
+  var sn, i := 0, 1;
+  while i <= n
+    invariant 0 <= sn < i <= n + 1
+    invariant sn == i - 1
   {
     i := i + 1;
     sn := sn + 1;
@@ -498,19 +505,20 @@ method Linear110_111(n: int)
 }
 
 method Linear114_115()
-  decreases * {
-  var sn', sn, x', x := 0, 0, 0, 0;
-  ghost var n := 0;
+  decreases *
+{
+  var sn, x := 0, 0;
   while *
-    invariant sn' == x' == n
-    decreases * {
-    x' := x' + 1;
-    sn' := sn' + 1;
-    n := n + 1;
+    invariant sn == x
+    decreases *
+  {
+    x := x + 1;
+    sn := sn + 1;
   }
 }
 
-method Linear118_119(size: int) {
+method Linear118_119(size: int)
+{
   var size', sn', sn, i', i := size, 0, 0, 1, 1;
   while i' <= size'
     invariant sn' == sn || 1 <= i' <= size' + 1
@@ -521,7 +529,8 @@ method Linear118_119(size: int) {
   }
 }
 
-method Linear120_121(){
+method Linear120_121()
+{
   var sn', sn, i', i := 0, 0, 1, 1;
   while i' <= 8
     invariant i <= i' <= 9
@@ -532,7 +541,8 @@ method Linear120_121(){
   }
 }
 
-method Linear124_125(i: nat, j: int) {
+method Linear124_125(i: nat, j: int)
+{
   var x', x, y', y, i', j' := i, i, j, j, i, j;
   while x' != 0
     invariant i' == i && j' == j
@@ -545,7 +555,8 @@ method Linear124_125(i: nat, j: int) {
   }
 }
 
-method Linear128(y: int){
+method Linear128(y: int)
+{
   var x', x, y' := 1, 1, y;
   ghost var n := 0;
   while x' < y'
