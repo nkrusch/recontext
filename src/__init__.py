@@ -22,7 +22,8 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # How to tokenize invariant expressions
-__tkn = 'if,else,for,in,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%'
+__tkn = ('if,else,for,in,or,and,not,max,min,randint,'
+         '==,**,<=,>=,(,),[,],*,-,+,/,%')
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 WSP = '↡'  # symbol to mark spaces
 

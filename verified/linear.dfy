@@ -7,6 +7,11 @@ invariants needed to prove functional correctness.
 
 predicate Nat(x: int) { x >= 0 }
 
+function Min(a: int, b: int): int
+{
+  if a < b then a else b
+}
+
 function Max(a: int, b: int): int
 {
   if a > b then a else b
@@ -30,9 +35,9 @@ method Linear1_2(n: nat)
   }
 }
 
-method Linear3_4_5(r1: int, r2: int, n: int)
+method Linear3_4_5(a: int, b: int, n: int)
 {
-  var x, y, z := 0, r1, r2;
+  var x, y, z := 0, a, b;
   while x < n
     invariant x == 0 || y <= z
   {
@@ -411,7 +416,7 @@ method Linear95_96(x: int)
 method Linear97_98(x: int)
 {
   var i, j, y : int := 0, 0, 2;
-  while i <= x 
+  while i <= x
     invariant j == i * 2
   {
     i := i + 1;
@@ -571,7 +576,7 @@ method Linear130_131(a: int, b: int)
   var d1, d2, d3 := 1, 1, 1;
   var x1, x2, x3 := 1, a, b;
   while x1 > 0
-    invariant
+    invariant 
       (x1 == 1 && x2 == a && x3 == b) ||
       (x1 == 1 - 1 && x2 == a - 1 && x3 == b - 1)
     decreases *
@@ -586,21 +591,22 @@ method Linear130_131(a: int, b: int)
   }
 }
 
-method Linear132(a: int, b: int, c: int)
+method Linear132(c: int)
+  requires 49 <= c <= 56
   decreases *
 {
-  var i, j, t := 0, a, b;
-  ghost var n := 0;
-  var loop := 49 <= c <= 56;
+  var i, j, t := 0, 48 - c, c - 48;
+  ghost var n := 0; 
   while *
-    invariant (i == 0 && t == b && j == a) || (0 < t < 9  && i == j + t) 
-    // invariant (n > 0 && loop) ==> j == 2 * (Pow(2, n) * t - t) // it is true but prove it
+    invariant 0 < t < 9 && t == c - 48 && i == j + t
+    // it is true, but prove it!
+    // invariant n > 0 ==> j == Pow(2, n) * 2 * t - 2 * t
     decreases * {
     if c > 48 {
       if c < 57 {
         j := i + i; 
         t := c - 48;
-        i := j + t; 
+        i := j + t;
         n := n + 1;
       }
     }
