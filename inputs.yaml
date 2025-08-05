@@ -54,12 +54,12 @@ f_logx:
 # ==================================================================
 # source: https://github.com/PL-ML/code2inv
 #
-# Initially the Linear suite has 133 benchmarks, but we keep (49).
-#  (37) differ only on numeric range or assertion => combined
-#  38 duplicates => removed
+# Initially the suite has 133 benchmarks, but we keep 43.
+#  9 are invalid => removed
+#  38 are duplicates => removed
 #       6 11 12 13 14 19 20 21 22 33 34 53 54 55 58 59 60 69 74 76 80
 #       81 82 86 89 90 92 104 105 112 113 116 117 122 123 126 127 129
-#  9 invalid => removed
+#  43 differ only on numeric range or assertion => combined.
 # ==================================================================
 
 l_001:
@@ -258,7 +258,7 @@ l_091:
   n: 3
 l_093:
   description: (x ≤ 2i) ∧ (y ≤ 2i) ∧ (x + y == 3i)
-  expr: ""
+  expr: "[abs(x - y) for (x, y) in (zip([0,3*i], 2*[randint(i,2*i)]))]"
   vo: [x, y]
   vin:
     n: 100
@@ -284,7 +284,7 @@ l_095:
 l_097:
   comment: "combines problems #97, #98"
   description: (x < 0) ∨ (i ≤ x + 1 ∧ j == 2i)
-  expr: ""  #  [1, 2] *   0 if (x < 0) else randint(0, x)
+  expr: "[(w * z) for (w, z) in (zip([1,2], 2*[(0) if (x < 0) else (randint(0, x))]))]"
   vo: [i, j]
   vin:
     y: 2
@@ -361,7 +361,7 @@ l_114:
 l_118:
   comment: "combines problems #118, #119"
   description: (sn + 1 == i) ∧ ((size < 1) ∨ (i ≤ size + 1)
-  expr: "tuple([(x + y) for (x, y) in (zip([0, 1], 2*[(0) if (size <= 0) else (randint(1, size))]))])"
+  expr: "[(x + y) for (x, y) in (zip([0, 1], 2*[(0) if (size <= 0) else (randint(1, size))]))]"
   vo: [sn, i]
   vin:
     size: [-100, 200]
@@ -377,25 +377,27 @@ l_120:
 l_124:
   comment: "combines problems #124, #125"
   description: (0 ≤ x ≤ k) ∧ (y == j - k + x)
-  expr: "tuple([(x + y) for (x, y) in (zip([0,j-k], 2*[randint(0, k)]))])"
+  expr: "[(x + y) for (x, y) in (zip([0,j-k], 2*[randint(0, k)]))]"
   vo: [x, y]
   vin:
     k: [    0, 100 ]
     j: [ -100, 100 ]
   n: 20
 l_128:
-  description: x == 2ⁿ
-  expr: "2 ** n"
+  description: exist n, (x == 2ⁿ) ∧ (2ⁿ⁻¹ < y)
+  expr: "2 ** randint(1, 10)"
   vo: x
   vin:
-    n: [1, 10]
+    y: 1024
   n: 20
 l_130:
   comment: "combines problems #130, #131"
-  description:
-  expr:
-  vo:
+  description: (x₁ == 1 ∧ x₂ == z ∧ x₃ == b) ∨ (x₁ == 0 ∧ x₂ == z-1 ∧ x₃ == b-1)
+  expr: "[(x - y) for (x, y) in (zip([1,z,b], 3*[randint(0, 1)]))]"
+  vo: [x1,x2,x3]
   vin:
+    z: [-20, 100]
+    b: [-20, 100]
   n: 20
 l_132:
   description:

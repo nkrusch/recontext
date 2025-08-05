@@ -371,8 +371,8 @@ method Linear93(n: nat)
   var i, x, y := 0, 0, 0;
   while i < n
     invariant x + y == 3 * i
-    invariant x <= i * 2
-    invariant y <= i * 2
+    invariant i <= x <= i * 2
+    invariant i <= y <= i * 2
   {
     i := i + 1;
     if * {
@@ -545,8 +545,8 @@ method Linear124_125(i: nat, j: int)
 {
   var x, y := i, j;
   while x != 0
-    invariant 0 <= x <= i 
-    invariant y == j - i + x 
+    invariant 0 <= x <= i
+    invariant y == j - i + x
   {
     x := x - 1;
     y := y - 1;
@@ -571,6 +571,9 @@ method Linear130_131(a: int, b: int)
   var d1, d2, d3 := 1, 1, 1;
   var x1, x2, x3 := 1, a, b;
   while x1 > 0
+    invariant
+      (x1 == 1 && x2 == a && x3 == b) ||
+      (x1 == 1 - 1 && x2 == a - 1 && x3 == b - 1)
     decreases *
   {
     if x2 > 0 {
@@ -587,7 +590,10 @@ method Linear132(a: int, b: int, c: int)
   decreases *
 {
   var i, j, t := 0, a, b;
+  ghost var n := 0;
   while *
+    invariant n == 0 ==> j == a 
+    // invariant n == 1 ==> i == t    
     invariant t == b || 1 <= t <= 8
     invariant i == 0 || i == j + t
     decreases * {
@@ -596,6 +602,7 @@ method Linear132(a: int, b: int, c: int)
         j := i + i;
         t := c - 48;
         i := j + t;
+        n := n + 1;
       }
     }
   }

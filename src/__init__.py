@@ -5,6 +5,7 @@ from math import *
 from os.path import isfile, basename, splitext, join
 from random import randint
 from typing import List, Tuple
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
@@ -246,7 +247,7 @@ def rand_data(in_vars, ranges, expr, n_out):
     data = list(map(dt_v, ranges))
     if n_out > 0:
         result = eval(to_assert(in_vars, data, expr))
-        result = list(result) if isinstance(result, tuple) else [result]
+        result = list(result) if isinstance(result, Iterable) else [result]
         data += result
     return data
 
