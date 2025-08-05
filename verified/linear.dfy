@@ -519,51 +519,48 @@ method Linear114_115()
 
 method Linear118_119(size: int)
 {
-  var size', sn', sn, i', i := size, 0, 0, 1, 1;
-  while i' <= size'
-    invariant sn' == sn || 1 <= i' <= size' + 1
-    invariant sn' + 1 == i'
+  var  sn,  i :=  0, 1;
+  while i <= size
+    invariant size < 1 || 0 <= sn < i <= size + 1
+    invariant sn + 1 == i
   {
-    i' := i' + 1;
-    sn' := sn' + 1;
+    i := i + 1;
+    sn := sn + 1;
   }
 }
 
 method Linear120_121()
 {
-  var sn', sn, i', i := 0, 0, 1, 1;
-  while i' <= 8
-    invariant i <= i' <= 9
-    invariant sn' + 1 == i'
+  var sn, i := 0, 1;
+  while i <= 8
+    invariant 0 <= i <= 9
+    invariant sn + 1 == i
   {
-    i' := i' + 1;
-    sn' := sn' + 1;
+    i := i + 1;
+    sn := sn + 1;
   }
 }
 
 method Linear124_125(i: nat, j: int)
 {
-  var x', x, y', y, i', j' := i, i, j, j, i, j;
-  while x' != 0
-    invariant i' == i && j' == j
-    invariant 0 <= x' <= i
-    invariant i == j ==> x' == y'
-    invariant y' <= j && x' <= i
+  var x, y := i, j;
+  while x != 0
+    invariant 0 <= x <= i 
+    invariant y == j - i + x 
   {
-    x' := x' - 1;
-    y' := y' - 1;
+    x := x - 1;
+    y := y - 1;
   }
 }
 
 method Linear128(y: int)
 {
-  var x', x, y' := 1, 1, y;
+  var x := 1;
   ghost var n := 0;
-  while x' < y'
-    invariant y' == y
-    invariant x' == Pow(2, n)
+  while x < y
+    invariant x == Pow(2, n)
   {
-    x' := x' + x';
+    x := x + x;
     n := n + 1;
   }
 }

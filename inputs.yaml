@@ -360,30 +360,35 @@ l_114:
   n: 20
 l_118:
   comment: "combines problems #118, #119"
-  description:
-  expr:
-  vo:
+  description: (sn + 1 == i) ∧ ((size < 1) ∨ (i ≤ size + 1)
+  expr: "tuple([(x + y) for (x, y) in (zip([0, 1], 2*[(0) if (size <= 0) else (randint(1, size))]))])"
+  vo: [sn, i]
   vin:
+    size: [-100, 200]
   n: 20
 l_120:
   comment: "combines problems #120, #121"
-  description:
-  expr:
-  vo:
+  description: (sn + 1 == i) ∧ (0 ≤ i ≤ 9)
+  expr: "i - 1"
+  vo: sn
   vin:
+    i: [0, 9]
   n: 20
 l_124:
   comment: "combines problems #124, #125"
-  description:
-  expr:
-  vo:
+  description: (0 ≤ x ≤ k) ∧ (y == j - k + x)
+  expr: "tuple([(x + y) for (x, y) in (zip([0,j-k], 2*[randint(0, k)]))])"
+  vo: [x, y]
   vin:
+    k: [    0, 100 ]
+    j: [ -100, 100 ]
   n: 20
 l_128:
-  description:
-  expr:
-  vo:
+  description: x == 2ⁿ
+  expr: "2 ** n"
+  vo: x
   vin:
+    n: [1, 10]
   n: 20
 l_130:
   comment: "combines problems #130, #131"
