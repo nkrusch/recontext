@@ -401,11 +401,14 @@ l_130:
     b: [-20, 100]
   n: 20
 l_132:
-  formula:
-  expr:
-  vo:
+  formula: (w = b ∧ j = a ∧ i = 0) ∨ ((0 < w < 9) ∧ (j = 2w2ᵏ - 2w) ∧ (i = j + w))
+  expr: "(2*w*(2**k)-w-w, 2*w*(2**k)-w) if (49 <= c <= 56) else (randint(-100,100), 0)"
+  vo: [j, i]
   vin:
-  n: 20
+    c: [40, 60]
+    w: [1, 8]
+    k: [0, 10]
+  n: 50
 l_133:
   formula: 0 ≤ x ≤ w
   expr: "randint(0, w + 1)"

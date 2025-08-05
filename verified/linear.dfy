@@ -411,8 +411,7 @@ method Linear95_96(x: int)
 method Linear97_98(x: int)
 {
   var i, j, y : int := 0, 0, 2;
-  while i <= x
-    invariant x < 0 ==> i == j == 0
+  while i <= x 
     invariant j == i * 2
   {
     i := i + 1;
@@ -592,17 +591,16 @@ method Linear132(a: int, b: int, c: int)
 {
   var i, j, t := 0, a, b;
   ghost var n := 0;
+  var loop := 49 <= c <= 56;
   while *
-    invariant n == 0 ==> j == a 
-    // invariant n == 1 ==> i == t    
-    invariant t == b || 1 <= t <= 8
-    invariant i == 0 || i == j + t
+    invariant (i == 0 && t == b && j == a) || (0 < t < 9  && i == j + t) 
+    // invariant (n > 0 && loop) ==> j == 2 * (Pow(2, n) * t - t) // it is true but prove it
     decreases * {
     if c > 48 {
       if c < 57 {
-        j := i + i;
+        j := i + i; 
         t := c - 48;
-        i := j + t;
+        i := j + t; 
         n := n + 1;
       }
     }
