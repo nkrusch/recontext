@@ -5,7 +5,6 @@ from math import *
 from os.path import isfile, basename, splitext, join
 from random import randint
 from typing import List, Tuple
-from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
@@ -23,8 +22,9 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # How to tokenize invariant expressions
-__tkn = 'if,else,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%'
+__tkn = 'if,else,for,in,or,and,not,==,**,<=,>=,(,),[,],*,-,+,/,%'
 TOKENS = (re.escape(__tkn)).split(',') + [',']
+WSP = '↡'  # symbol to mark spaces
 
 # Types
 P = str
@@ -120,7 +120,7 @@ def tokenize(plain: str, tokens: List[str]) -> PT:
         The tokenized string.               
     """
     exists = [x for x in tokens if re.search(x, plain)]
-    terms = plain.split(' ')
+    terms = re.split(f'({WSP})', plain.replace(' ', WSP))
     for x in exists:
         tmp = terms
         n = len(terms) - 1
@@ -162,6 +162,7 @@ def to_assert(
     fmt_ = fmt or (lambda x: x)
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
+    subst = [' ' if x == WSP else x for x in subst]
     return ''.join([str(s) for s in subst])
 
 
@@ -246,8 +247,11 @@ def rand_data(in_vars, ranges, expr, n_out):
     dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
     data = list(map(dt_v, ranges))
     if n_out > 0:
-        result = eval(to_assert(in_vars, data, expr))
-        result = list(result) if isinstance(result, Iterable) else [result]
+        assert_ = to_assert(in_vars, data, expr)
+
+        result = eval(assert_)
+        result = list(result) if isinstance(result, Iterable) else [
+            result]
         data += result
     return data
 

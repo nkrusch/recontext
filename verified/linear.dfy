@@ -412,6 +412,7 @@ method Linear97_98(x: int)
 {
   var i, j, y : int := 0, 0, 2;
   while i <= x
+    invariant x < 0 ==> i == j == 0
     invariant j == i * 2
   {
     i := i + 1;
