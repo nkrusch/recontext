@@ -21,11 +21,11 @@ ENV = {'T_DTYPE': np.int64, **os.environ}
 T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
-# How to tokenize invariant expressions
+# Tokenization of invariant expressions(in order)
 __tkn = ('else,for,and,not,max,min,randint,if,in,or,'
          '==,**,<=,>=,(,),[,],*,-,+,/,%')
 TOKENS = (re.escape(__tkn)).split(',') + [',']
-WSP = '↡'  # symbol to mark spaces
+WSP = '↡'  # a special symbol to mark spaces
 
 # Types
 P = str

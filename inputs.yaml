@@ -8,15 +8,13 @@
 #    comment: [str]              : Optional comments.
 #    formula: [str]              : Math formula.
 #    expr: [str]                 : Evaluable Python expression.
-#    vo: [str|list[str]]         : Output variable name.
+#    vo: [str|list[str]]         : Output variable name(s).
 #    vin:                        : Input variables <k, v>
 #      Dict[str, int|[int,int]]    - k is variable name
-#                                  - val is [min, max] or const.
+#                                  - v is [min, max] or constant.
 #    n: [nat]                    : Number of instances.
 #
 # Generate an input trace by running:   make gen/problem_name
-# ==================================================================
-
 # ==================================================================
 #   MATH FUNCTIONS
 # ==================================================================
