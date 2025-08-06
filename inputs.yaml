@@ -4,15 +4,15 @@
 # This file defines how to generate input traces. Every problem has
 # the following structure.
 #
-#  problem_name:                 : Unique name/filename.
-#    comment: [str]              : Optional comments.
-#    formula: [str]              : Math formula.
-#    expr: [str]                 : Evaluable Python expression.
-#    vo: [str|list[str]]         : Output variable name(s).
-#    vin:                        : Input variables <k, v>
-#      Dict[str, int|[int,int]]    - k is variable name
+#  problem_name:                  : Unique name/filename.
+#    comment: [str]               : Optional comments.
+#    formula: [str]               : Math formula.
+#    expr: [str]                  : Evaluable Python expression.
+#    vin: Dict[str,int|[int,int]] : Input variables <k, v>
+#                                  - k is variable name
 #                                  - v is [min, max] or constant.
-#    n: [nat]                    : Number of instances.
+#    vo: [str|list[str]]          : Output variable name(s).
+#    n: [nat]                     : Number of instances.
 #
 # Generate an input trace by running:   make gen/problem_name
 # ==================================================================
