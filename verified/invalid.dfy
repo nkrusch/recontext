@@ -54,7 +54,8 @@ method Linear32(n: int)
 
 method Linear61(n: int)
   requires n > 0
-  decreases * {
+  decreases *
+{
   assume {:axiom} n == 1;
   var c := 0;
   while *
@@ -75,10 +76,12 @@ method Linear61(n: int)
 
 method Linear62(n: int)
   requires n > 0
-  decreases * {
+  decreases *
+{
   assume {:axiom} n == 1;
   var c := 0;
   while *
+    invariant c == 0 || c == n
     decreases * {
     if * {
       if c != n {
@@ -96,7 +99,8 @@ method Linear62(n: int)
 
 method Linear72(y: int)
   requires y >= 127
-  decreases * {
+  decreases *
+{
   assume {:axiom} y == 128;
   var c, z := 0, 36 * y;
   while *
@@ -118,7 +122,8 @@ method Linear72(y: int)
 
 method Linear75(y: int)
   requires y >= 127
-  decreases * {
+  decreases *
+{
   assume {:axiom} y == 128;
   var c, z := 0, 36 * y;
   while *
@@ -138,7 +143,8 @@ method Linear75(y: int)
   assert c < 36 && !(z < 4608);
 }
 
-method Linear106(a: int, j: int, m0: int) {
+method Linear106(a: int, j: int, m0: int)
+{
   assume {:axiom} a == 0;
   assume {:axiom} m0 == 1;
   var k, m := 0, m0;

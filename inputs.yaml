@@ -54,6 +54,7 @@ f_logx:
 #
 # Initially the suite has 133 benchmarks, but we keep 43.
 #  9 are invalid => removed
+#     see: verified/invalid.dfy
 #  38 are duplicates => removed
 #     6 11 12 13 14 19 20 21 22 33 34 53 54 55 58 59 60 69 74 76 80
 #     81 82 86 89 90 92 104 105 112 113 116 117 122 123 126 127 129
