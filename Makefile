@@ -33,7 +33,7 @@ DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 TCL_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
 GEN_TRC := ${MATH_F:%=gen/f_%} ${LINEAR:%=gen/l_%}
-CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
+CHECKS  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.check}
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
 

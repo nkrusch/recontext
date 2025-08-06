@@ -22,7 +22,7 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # How to tokenize invariant expressions
-__tkn = ('if,else,for,in,or,and,not,max,min,randint,'
+__tkn = ('else,for,and,not,max,min,randint,if,in,or,'
          '==,**,<=,>=,(,),[,],*,-,+,/,%')
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 WSP = '↡'  # symbol to mark spaces
@@ -137,10 +137,15 @@ def tokenize(plain: str, tokens: List[str]) -> PT:
     return terms
 
 
+def pad_neg(value: T_DTYPE) -> str:
+    """Parenthesize negative values."""
+    return f'({value})' if value < 0 else str(value)
+
+
 def qt_fmt(value: T_DTYPE):
     """Express values as Q(n, d)."""
     frac = Fraction(str(value))
-    return (frac.numerator if frac.denominator == 1 else
+    return (pad_neg(frac.numerator) if frac.denominator == 1 else
             f'Q({frac.numerator},{frac.denominator})')
 
 
@@ -160,7 +165,7 @@ def to_assert(
         A string expression where all variables are replaced with
         numerical values.
     """
-    fmt_ = fmt or (lambda x: x)
+    fmt_ = fmt or pad_neg
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
     subst = [' ' if x == WSP else x for x in subst]
@@ -210,15 +215,17 @@ def check(dig_result: str) -> bool:
         solver.reset()
         pred, cex, sc = tokenize(p, TOKENS), '', None
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
+        literals = []
         for val in np.unique(data[:, idx], axis=0):
             lit = to_assert(occ, val, pred, fmt=fmt)
+            literals.append(lit)
             try:
                 solver.add(eval(lit))
             except z3types.Z3Exception:
                 sc, cex = '⚠ symbolic', lit
         if not sc and (sc := solver.check()) != sat:
             all_true = False
-            cex = ' '.join(find_cex(pred))
+            cex = ' '.join(find_cex(literals))
         table.add_row([p, sc, cex])
     print(table)
     return all_true
