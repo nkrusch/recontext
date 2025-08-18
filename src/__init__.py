@@ -268,7 +268,8 @@ def gen(f_name):
     """Generate random function traces based on config template."""
     conf = read_yaml(F_CONFIG)
     if f_name not in conf:
-        raise Exception(f'No generator known for {f_name}')
+        raise Exception(f'No generator known for {f_name}\n'
+                        'Likely mismatch b/w Makefile and inputs')
     fun = Namespace(**conf[f_name])
     pred = tokenize(fun.expr, TOKENS)
     f_in = fun.vin if fun.vin else {}

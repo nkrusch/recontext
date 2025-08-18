@@ -30,7 +30,14 @@ f_xxy:
   expr: "x * x"
   vo: y
   vin:
-    x: [ -20, 100 ]
+    x: [ -10, 100 ]
+  n: 20
+f_xxxy:
+  formula: x³ = y
+  expr: "x * x * x"
+  vo: y
+  vin:
+    x: [ -1, 100 ]
   n: 20
 f_2x3y:
   formula: 2x + 3 = y
@@ -46,6 +53,14 @@ f_logx:
   vin:
     x: [ 0, 1000 ]
   n: 10
+f_fact:
+  formula: x! = y
+  expr: "factorial(x)"
+  vo: y
+  vin:
+    x: [ 0, 20 ]
+  n: 10
+
 
 # ==================================================================
 #   LINEAR PROBLEMS
