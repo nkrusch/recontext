@@ -39,6 +39,20 @@ f_xxxy:
   vin:
     x: [ -1, 100 ]
   n: 20
+f_2xy:
+  formula: 2^x = y
+  expr: "2 ** x"
+  vo: y
+  vin:
+    x: [ -10, 50 ]
+  n: 20
+f_3xy:
+  formula: 3^x = y
+  expr: "3 ** x"
+  vo: y
+  vin:
+    x: [ -20, 20 ]
+  n: 20
 f_2x3y:
   formula: 2x + 3 = y
   expr: "2 * x + 3"
@@ -46,14 +60,43 @@ f_2x3y:
   vin:
     x: [ -20, 100 ]
   n: 20
-f_logx:
+f_axby:
+  formula: ax + b = y
+  expr: "a * x + b"
+  vo: y
+  vin:
+    x: [ -100, 100 ]
+    a: [ -100, 100 ]
+    b: [ -100, 100 ]
+  n: 20
+f_axbycz:
+  formula: ax + by + c = z
+  expr: "a * x + b * y + c"
+  vo: z
+  vin:
+    x: [ -100, 100 ]
+    y: [ -100, 100 ]
+    a: [ -100, 100 ]
+    b: [ -100, 100 ]
+    c: [ -100, 100 ]
+  n: 20
+f_xymodba:
+  formula: (x + y) % b = a
+  expr: "(x + y) % b"
+  vo: a
+  vin:
+    x: [ -100, 100 ]
+    y: [ -100, 100 ]
+    b: [    1, 100 ]
+  n: 20
+f_logxy:
   formula: log x = y
   expr: "log(x)"
   vo: y
   vin:
     x: [ 0, 1000 ]
   n: 10
-f_fact:
+f_factxy:
   formula: x! = y
   expr: "factorial(x)"
   vo: y

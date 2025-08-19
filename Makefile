@@ -19,7 +19,7 @@ ifndef $LOG
 LOG := $(OUT)/_log.txt
 endif
 
-MATH_F := xy xxy xxxy 2x3y logx fact
+MATH_F := xy xxy xxxy 2xy 3xy 2x3y axby axbycz xymodba logxy factxy
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 040 045 050 063 065 067 \
           071 077 083 084 085 087 091 093 094 095 097 099 101 103 107 108 109 \
           110 114 118 120 124 128 130 132 133
@@ -32,7 +32,8 @@ INPUTS  := $(wildcard $(IN_TRC)/*.csv)
 DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 TCL_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
-GEN_TRC := ${MATH_F:%=gen/f_%} ${LINEAR:%=gen/l_%}
+GEN_F   := ${MATH_F:%=gen/f_%}
+GEN_L   := ${LINEAR:%=gen/l_%}
 CHECKS  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.check}
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
@@ -42,13 +43,15 @@ dig:   $(DIG_EXP) $(MACHINE)
 tacle: $(TCL_EXP) $(MACHINE)
 csv:   $(CSV_IN)
 check: $(CHECKS)
-trc:   $(GEN_TRC)
+trcf:  $(GEN_F)
+trcl:  $(GEN_L)
+trc:   trcf trcl
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 	python3 -m $(UTILS) -a csv $< > $@
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
-	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -nocongruences > $@"
+	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp > $@"
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"

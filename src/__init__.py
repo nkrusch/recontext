@@ -269,7 +269,7 @@ def gen(f_name):
     conf = read_yaml(F_CONFIG)
     if f_name not in conf:
         raise Exception(f'No generator known for {f_name}\n'
-                        'Likely mismatch b/w Makefile and inputs')
+                        'Likely mismatch in Makefile vs. inputs')
     fun = Namespace(**conf[f_name])
     pred = tokenize(fun.expr, TOKENS)
     f_in = fun.vin if fun.vin else {}
@@ -279,3 +279,5 @@ def gen(f_name):
     data = [rand_data(vin, ranges, pred, len(v_out))
             for _ in range(fun.n)]
     construct_trace(vin + v_out, data)
+
+def stats():

@@ -24,4 +24,4 @@ runCmdWithTimeout() {
 }
 
 res=$(runCmdWithTimeout "$TIMEOUT" "$CMD" "$LOG");
-echo -e "${res} ${CMD}\n----" >> "$LOG"
+echo -e "$(date '+%Y-%m-%d %H:%M:%S') ${res} ${CMD}\n----" >> "$LOG"
