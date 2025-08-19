@@ -280,4 +280,9 @@ def gen(f_name):
             for _ in range(fun.n)]
     construct_trace(vin + v_out, data)
 
+
 def stats():
+    # for file in IN_DIR
+    # number of problems (by kind: ds, f, l)
+    # number of variables (min, max, ave)
+    pass
