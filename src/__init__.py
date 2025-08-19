@@ -281,6 +281,13 @@ def gen(f_name):
     construct_trace(vin + v_out, data)
 
 
+def score():
+    """Given the known invariant, and the inferred candidates,
+    test how many correct invariants are recovered."""
+    # this will require some equivalence checking which
+    # should be doable with SMT.
+
+
 def stats():
     # for file in IN_DIR
     # number of problems (by kind: ds, f, l)
