@@ -314,22 +314,26 @@ def stats(dir_path):
         for n in range(mn, mx + 1):
             table.add_row([n, 0 if n not in ct else ct[n]])
         print(table)
+
     # result statistics
     files = [f for f in listdir(dir_path) if f.endswith(".dig")]
     if files:
-        table = PrettyTable(['Benchmark', '∑', '=', '≤', '%'])
+        table = PrettyTable(['Benchmark', '∑', '=', '≤', '%', '↕'])
         for f in sorted(files):
-            eqv, inq, mod = 0, 0, 0
+            eqv, inq, mod, mx = 0, 0, 0, 0
             res = parse_dig_result(join(dir_path, f))
             for term in res:
                 if '<=' in term:
                     inq += 1
-                elif '===' in term:
-                    mod += 1
                 elif '==' in term:
                     eqv += 1
-            table.add_row([f, len(res), eqv, inq, mod])
-            assert len(res) == eqv + inq + mod
+                pred = tokenize(term, TOKENS)
+                mod += pred.count('%')
+                mins = pred.count('min')
+                maxs = pred.count('max')
+                mx += (mins + maxs)
+            table.add_row([f, len(res), eqv, inq, mod, mx])
+            assert len(res) == eqv + inq
         print(table)
 
 
