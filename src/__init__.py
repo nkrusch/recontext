@@ -24,8 +24,8 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # Tokenization of invariant expressions(in order)
-__tkn = ('else,for,and,not,max,min,randint,if,in,or,'
-         '==,**,<=,>=,(,),[,],*,-,+,/,%')
+__tkn = ('randint,else,for,and,not,max,min,mod,if,in,or,'
+         '===,==,**,<=,>=,(,),[,],*,-,+,/,%')
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 WSP = '↡'  # a special symbol to mark spaces
 
@@ -100,7 +100,8 @@ def construct_trace(vars_: List[str], values):
 def parse_dig_result(input_file):
     """Extract invariants from a DIG result file."""
     temp = read(input_file).strip().split('\n')[1:]
-    return [x.split('.', 1)[1].strip() for x in temp]
+    preds = [x.split('.', 1)[1].strip() for x in temp]
+    return [dig_mod_repair(p) for p in preds]
 
 
 def is_num(x: str) -> bool:
@@ -149,6 +150,17 @@ def qt_fmt(value: T_DTYPE):
     frac = Fraction(str(value))
     return (pad_neg(frac.numerator) if frac.denominator == 1 else
             f'Q({frac.numerator},{frac.denominator})')
+
+
+def dig_mod_repair(expr):
+    """Rewrites a DIG modulo to a Python/SMT-compat format."""
+    if '===' and 'mod' in expr:
+        pre, post = expr.split('===', 1)  # ___, X (mod Y)
+        post = post.replace('(', '').replace(')', '')  # ___ mod ___
+        eqv, cong = post.split('mod', 1)
+        pre, cong, eqv = [x.strip() for x in (pre, cong, eqv)]
+        return f'({pre}) % {cong} == {eqv}'  # construct term
+    return expr
 
 
 def to_assert(
@@ -284,20 +296,41 @@ def gen(f_name):
 
 
 def stats(dir_path):
-    """Print statistics of input directory."""
+    """Print statistics of a directory."""
+    # input statistics
     files = [f for f in listdir(dir_path) if f.endswith(".csv")]
-    cats = [f.split('_', 1)[0] for f in files]
-    vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
-    pt = Counter(cats)
-    ct = Counter(vl)
-    mn, mx = min(vl), max(vl)
-    table = PrettyTable(['Desc.', 'Count'])
-    table.add_row(['Kind', '-' * 7])
-    table.add_rows([(k.upper(), y) for k, y in pt.items()])
-    table.add_row(['Variables', '-' * 7])
-    for n in range(mn, mx + 1):
-        table.add_row([n, 0 if n not in ct else ct[n]])
-    print(table)
+    if files:
+        cats = [f.split('_', 1)[0] for f in files]
+        vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
+        pt = Counter(cats)
+        ct = Counter(vl)
+        mn, mx = min(vl), max(vl)
+
+        table = PrettyTable(['Kind', 'Count'])
+        table.add_rows([(k.upper(), y) for k, y in pt.items()])
+        print(table)
+
+        table = PrettyTable(['Variables', 'Count'])
+        for n in range(mn, mx + 1):
+            table.add_row([n, 0 if n not in ct else ct[n]])
+        print(table)
+    # result statistics
+    files = [f for f in listdir(dir_path) if f.endswith(".dig")]
+    if files:
+        table = PrettyTable(['Benchmark', '∑', '=', '≤', '%'])
+        for f in sorted(files):
+            eqv, inq, mod = 0, 0, 0
+            res = parse_dig_result(join(dir_path, f))
+            for term in res:
+                if '<=' in term:
+                    inq += 1
+                elif '===' in term:
+                    mod += 1
+                elif '==' in term:
+                    eqv += 1
+            table.add_row([f, len(res), eqv, inq, mod])
+            assert len(res) == eqv + inq + mod
+        print(table)
 
 
 def score():
