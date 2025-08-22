@@ -1,7 +1,9 @@
 import re
 from argparse import Namespace
+from collections import Counter
 # noinspection PyUnresolvedReferences
 from math import *
+from os import listdir
 from os.path import isfile, basename, splitext, join
 from random import randint
 from typing import List, Tuple
@@ -281,15 +283,25 @@ def gen(f_name):
     construct_trace(vin + v_out, data)
 
 
+def stats(dir_path):
+    """Print statistics of input directory."""
+    files = [f for f in listdir(dir_path) if f.endswith(".csv")]
+    cats = [f.split('_', 1)[0] for f in files]
+    vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
+    pt = Counter(cats)
+    ct = Counter(vl)
+    mn, mx = min(vl), max(vl)
+    table = PrettyTable(['Desc.', 'Count'])
+    table.add_row(['Kind', '-' * 7])
+    table.add_rows([(k.upper(), y) for k, y in pt.items()])
+    table.add_row(['Variables', '-' * 7])
+    for n in range(mn, mx + 1):
+        table.add_row([n, 0 if n not in ct else ct[n]])
+    print(table)
+
+
 def score():
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
     # this will require some equivalence checking which
     # should be doable with SMT.
-
-
-def stats():
-    # for file in IN_DIR
-    # number of problems (by kind: ds, f, l)
-    # number of variables (min, max, ave)
-    pass
