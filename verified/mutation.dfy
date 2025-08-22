@@ -10,29 +10,30 @@ module MutationModule {
   // sequence initializer
   function init<T>(id: T): seq<T> { seq(degree, _ => id) }
 
-  // constraint types
+  // invariant types
   type idx = x: nat | x < degree witness 0
-  type pred = seq<D> -> bool
-  type immutables = seq<idx>
+  type values = seq<D>
+  type pred = values -> bool
+  type immutableT = idx
   type mutableT = (seq<idx>, pred)
+  type immutables = seq<immutableT>
   type mutables = seq<mutableT>
 
-  // vector (data row) types
-  type vec = r: seq<D> | |r| == degree witness init(DS.Default)
+  // vector types
+  type vec = r: values | |r| == degree witness init(DS.Default)
   type mask = r: seq<bool> | |r| == degree witness init(false)
   type mask1 = r: mask | forall i: idx :: r[i] == r[0] witness init(false)
 
   // 2D types
-  type matrix = seq<vec>
+  type trace = seq<vec>
   type masks = seq<mask>
 
   //===============================
-  // Correctness under constraints
+  // Correctness with invariants
   //===============================
 
-  /** Mutation correctness: A matrix mutation (of original) is permissible 
-      if it satisfies all predicates and preserves immutable values. */
-  predicate IsCorrect(original: matrix, mutated: matrix, cond: mutables, imm: immutables)
+  /** Trace mutation is permissible if it satisfies all invariants. */
+  predicate IsCorrect(original: trace, mutated: trace, cond: mutables, imm: immutables)
     requires |original| == |mutated|
   {
     forall ri: nat ::
@@ -40,23 +41,22 @@ module MutationModule {
         CorrectVector(original[ri], mutated[ri], cond, imm)
   }
 
-  /** A vector (row of data) is correct is it satisfied all constraints. */
+  /** A vector is correct is it satisfied all invariants. */
   predicate CorrectVector(o: vec, m: vec, cond: mutables, imm: immutables)
   {
     ImmutableVecCorrect(o, m, imm) && MutableVecCorrect(m, cond)
   }
 
-  /** Immutability constaint holds when values are unchanged. */
+  /** Immutability invariant holds when values are unchanged. */
   predicate ImmutableVecCorrect(o: vec, m: vec, imm: immutables)
   {
     IdxValues(o, imm) == IdxValues(m, imm)
   }
 
-  /** For a vector, all predicates must be true. */
+  /** Mutation requries all predicates are true. */
   predicate MutableVecCorrect(row: vec, cond: mutables)
-    ensures
-      MutableVecCorrect(row, cond) ==>
-        forall i: nat :: i < |cond| ==> EvalPred(row, cond[i])
+    ensures MutableVecCorrect(row, cond) ==>
+              forall i: nat :: i < |cond| ==> EvalPred(row, cond[i])
   {
     if |cond| == 0 then true
     else
@@ -73,7 +73,7 @@ module MutationModule {
   }
 
   /** Predicates hold for all vectors */
-  predicate MutableHold(matrix: matrix, cond: mutables)
+  predicate MutableHold(matrix: trace, cond: mutables)
   {
     forall ri : nat :: ri < |matrix| ==> MutableVecCorrect(matrix[ri], cond)
   }
@@ -83,17 +83,22 @@ module MutationModule {
     ensures r1 == r2 ==> MutableVecCorrect(r2, cond)
   { }
 
-  //=================================
-  // Correctness preserving mutation
-  //=================================
+  //===================================
+  // Invariant preserving mutation (1D)
+  //===================================
 
-  /** Controlled mutation of a data vector that preserves constraints. */
+  /** 
+    * Controlled mutation of a vector that preserves invariants 
+    * (using naive reset strategy).
+    */
   function VectMutation(o: vec, m: vec, cond: mutables, imm: immutables): vec
     requires MutableVecCorrect(o, cond)
-    ensures CorrectVector(o, m, cond, imm) ==> m == VectMutation(o, m, cond, imm)
-    ensures var m' := VectMutation(o, m, cond, imm); CorrectVector(o, m', cond, imm)
+    ensures var m' := VectMutation(o, m, cond, imm);
+            CorrectVector(o, m', cond, imm) // correctness
+            && (CorrectVector(o, m, cond, imm) ==> m == m') // progress
     ensures var ir :=  EnsureImmVector(o, m, imm);
-            VectMutation(o, m, cond, imm) == if MutableVecCorrect(ir, cond) then ir else o
+            VectMutation(o, m, cond, imm) ==
+            if MutableVecCorrect(ir, cond) then ir else o
   {
     var ir := EnsureImmVector(o, m, imm);
     EnsureMutVector(o, ir, cond)
@@ -123,9 +128,12 @@ module MutationModule {
   function EnsureMutVector(o: vec, m: vec, cond: mutables): vec
     requires MutableVecCorrect(o, cond)
     ensures MutableVecCorrect(EnsureMutVector(o, m, cond), cond)
-    ensures EnsureMutVector(o, m, cond) == if MutableVecCorrect(m, cond) then m else o
+    ensures EnsureMutVector(o, m, cond) ==
+            if MutableVecCorrect(m, cond) then m else o
     ensures var m' := EnsureMutVector(o, m, cond);
-            forall imm: immutables :: ImmutableVecCorrect(o, m, imm) ==> ImmutableVecCorrect(o, m', imm)
+            forall imm: immutables ::
+              ImmutableVecCorrect(o, m, imm) ==>
+                ImmutableVecCorrect(o, m', imm)
   {
     var corr := MutableVecCorrect(m, cond);
     var mask : mask1 := seq(degree, _ => corr);
@@ -168,7 +176,7 @@ module MutationModule {
   //================
 
   function ControlledMutation(
-    o: matrix, m: matrix, mut: mutables, imm: immutables) : matrix
+    o: trace, m: trace, mut: mutables, imm: immutables) : trace
     requires |o| == |m|
     requires MutableHold(o, mut)
     ensures |o| == |ControlledMutation(o, m, mut, imm)|
@@ -178,10 +186,13 @@ module MutationModule {
       (forall i : nat :: i < |o| ==> m'[i] == VectMutation(o[i], m[i], mut, imm))
   {
     if |o| == 0 then []
-    else [VectMutation(o[0], m[0], mut, imm)] + ControlledMutation(o[1..], m[1..], mut, imm)
+    else [VectMutation(o[0], m[0], mut, imm)] +
+         ControlledMutation(o[1..], m[1..], mut, imm)
   }
 }
 
+// To configure value type and dimensionality
+//
 module DomainSpec {
   // dimensionality of numerical data
   const degree: nat := 5
@@ -196,13 +207,14 @@ module Tests {
   import V = MutationModule
   type domain = V.D
 
+  // for some reason |s| > 1 is easier than |s| == 2
   predicate P(s: seq<domain>) {
     |s| > 1 && s[0] <= s[1]
   }
 
-  // constraints (invariants)
+  // Invariants
   const imm := [0, 3, 4]
-  const cond := [([1, 3], P)]
+  const mut := [([1, 3], P)]
 
   const RealSample := (
     [[-2.3, 1.8, 5.0, 4.1, 7.2], [82.2, 1.3, 7.6, 4.8, 6.3]],
@@ -217,51 +229,50 @@ module Tests {
     [[-2, 2, 5, 7, -3], [11, 2, -7, 5, 3]])
 
   const source := RealSample
-  const original := source.0
-  const mutation := source.1
-  const IR := source.2
-  const expected := source.3
+  const X := source.0
+  const Y := source.1
+  const T := source.2
+  const E := source.3 // expected
 
   method Basics()
   {
-    assert V.MutableHold(original, cond);
+    assert V.MutableHold(X, mut);
 
-    assert (V.MutableHold(mutation, cond) == false) by {
-      assert V.MutableVecCorrect(mutation[1], cond) == false;
+    assert (V.MutableHold(Y, mut) == false) by {
+      assert V.MutableVecCorrect(Y[1], mut) == false;
     }
   }
 
   method ImmutableTransfrom()
   {
-    var IR0 := V.EnsureImmVector(original[0], mutation[0], imm);
-    var IR1 := V.EnsureImmVector(original[1], mutation[1], imm);
-    assert IR0 == IR[0] && IR1 == IR[1];
+    var T0 := V.EnsureImmVector(X[0], Y[0], imm);
+    var T1 := V.EnsureImmVector(X[1], Y[1], imm);
+    assert T0 == T[0] && T1 == T[1];
 
-    assert V.ImmutableVecCorrect(original[0], IR0, imm);
-    assert V.ImmutableVecCorrect(original[1], IR1, imm);
+    assert V.ImmutableVecCorrect(X[0], T0, imm);
+    assert V.ImmutableVecCorrect(X[1], T1, imm);
 
-    assert V.EvalPred(IR0, cond[0]) == true;
-    assert V.EvalPred(IR1, cond[0]) == false;
+    assert V.EvalPred(T0, mut[0]) == true;
+    assert V.EvalPred(T1, mut[0]) == false;
   }
 
   method Main() {
-    var o, m := original, mutation;
 
-    var final := V.ControlledMutation(o, m, cond, imm);
-    assert V.IsCorrect(o, final, cond, imm);
+    var Y' := V.ControlledMutation(X, Y, mut, imm);
+    assert V.IsCorrect(X, Y', mut, imm);
 
-    var ir0 := V.EnsureImmVector(o[0], m[0], imm);
-    assert V.MutableVecCorrect(ir0, cond);
-    assert final[0]
-        == V.VectMutation(o[0], m[0], cond, imm)
-        == V.EnsureMutVector(o[0], ir0, cond)
-        == expected[0] == ir0;
+    var T0 := V.EnsureImmVector(X[0], Y[0], imm);
+    assert V.MutableVecCorrect(T0, mut);
+    assert Y'[0]
+        == V.VectMutation(X[0], Y[0], mut, imm)
+        == V.EnsureMutVector(X[0], T0, mut)
+        == E[0] == T0;
 
-    var ir1 := V.EnsureImmVector(o[1], m[1], imm);
-    assert V.MutableVecCorrect(ir1, cond) == false;
-    assert final[1]
-        == V.VectMutation(o[1], m[1], cond, imm)
-        == V.EnsureMutVector(o[1], ir1, cond)
-        == expected[1] == o[1];
+    var T1 := V.EnsureImmVector(X[1], Y[1], imm);
+    assert V.MutableVecCorrect(T1, mut) == false;
+    assert Y'[1]
+        == V.VectMutation(X[1], Y[1], mut, imm)
+        == V.EnsureMutVector(X[1], T1, mut)
+        == E[1] == X[1];
   }
 }
