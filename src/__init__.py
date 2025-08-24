@@ -77,6 +77,7 @@ def trace_to_csv(input_file: str):
     """Convert a DIG trace to a CSV file."""
     data, var = read_trace(input_file)
     data = np.vstack([np.array(var), data])
+    # noinspection PyTypeChecker
     np.savetxt(sys.stdout, data, delimiter=C_SEP, fmt='%s')
 
 
@@ -94,6 +95,7 @@ def construct_trace(vars_: List[str], values):
     data = np.vstack([np.array(var), data])
     prefix = np.full((data.shape[0], 1), T_LABEL)
     data = np.hstack([prefix, data])
+    # noinspection PyTypeChecker
     np.savetxt(sys.stdout, data, delimiter=T_SEP, fmt='%s')
 
 
@@ -278,7 +280,7 @@ def rand_data(in_vars, ranges, expr, n_out):
     return data
 
 
-def gen(f_name):
+def generate(f_name):
     """Generate random function traces based on config template."""
     conf = read_yaml(F_CONFIG)
     if f_name not in conf:
@@ -295,9 +297,14 @@ def gen(f_name):
     construct_trace(vin + v_out, data)
 
 
+def basic_table(*headers):
+    table = PrettyTable(headers, align='r')
+    table.align[table.field_names[0]] = 'l'
+    return table
+
+
 def stats(dir_path):
     """Print statistics of a directory."""
-    # input statistics
     files = [f for f in listdir(dir_path) if f.endswith(".csv")]
     if files:
         cats = [f.split('_', 1)[0] for f in files]
@@ -306,39 +313,39 @@ def stats(dir_path):
         ct = Counter(vl)
         mn, mx = min(vl), max(vl)
 
-        table = PrettyTable(['Kind', 'Count'])
-        table.add_rows([(k.upper(), y) for k, y in pt.items()])
-        print(table)
+        table = basic_table('Kind', 'Count')
+        rows = [list((f'trace {k.upper()}', y)) for k, y in pt.items()]
+        table.add_rows(rows)
+        table.add_row(['TOTAL', sum(pt.values())])
+        print(table, '\n')
 
-        table = PrettyTable(['Variables', 'Count'])
+        table = basic_table('Variables', 'Freq')
         for n in range(mn, mx + 1):
-            table.add_row([n, 0 if n not in ct else ct[n]])
-        print(table)
-
-    # result statistics
-    files = [f for f in listdir(dir_path) if f.endswith(".dig")]
-    if files:
-        table = PrettyTable(['Benchmark', '∑', '=', '≤', '%', '↕'])
-        for f in sorted(files):
-            eqv, inq, mod, mx = 0, 0, 0, 0
-            res = parse_dig_result(join(dir_path, f))
-            for term in res:
-                if '<=' in term:
-                    inq += 1
-                elif '==' in term:
-                    eqv += 1
-                pred = tokenize(term, TOKENS)
-                mod += pred.count('%')
-                mins = pred.count('min')
-                maxs = pred.count('max')
-                mx += (mins + maxs)
-            table.add_row([f, len(res), eqv, inq, mod, mx])
-            assert len(res) == eqv + inq
+            table.add_row([f'count {n}', 0 if n not in ct else ct[n]])
+        table.add_row(['TOTAL', sum(vl)])
         print(table)
 
 
-def score():
+def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
     # this will require some equivalence checking which
     # should be doable with SMT.
+    files = [f for f in listdir(dir_path) if f.endswith(".dig")]
+    if files:
+        table = PrettyTable(
+            ['Benchmark', 'V', '∑', '=', '≤', '%', '↕'])
+        for f in sorted(files):
+            src = input_csv(b_name(f))
+            v_count = len(read_trace(src)[1])
+            eqv, inq, mod, mx = 0, 0, 0, 0
+            res = parse_dig_result(join(dir_path, f))
+            for term in res:
+                pred = tokenize(term, TOKENS)
+                inq += 1 if '<=' in pred else 0
+                eqv += 1 if '==' in pred else 0
+                mod += pred.count('%')
+                mx += (pred.count('min') + pred.count('max'))
+            table.add_row([f, v_count, len(res), eqv, inq, mod, mx])
+            assert len(res) == eqv + inq
+        print(table)
