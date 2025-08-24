@@ -5,6 +5,7 @@ from collections import Counter
 from math import *
 from os import listdir
 from os.path import isfile, basename, splitext, join
+from pathlib import Path
 from random import randint
 from typing import List, Tuple
 
@@ -144,7 +145,8 @@ def tokenize(plain: str, tokens: List[str]) -> PT:
 
 def pad_neg(value: T_DTYPE) -> str:
     """Parenthesize negative values."""
-    return f'({value})' if value < 0 else str(value)
+    return f'({value})' if \
+        str(value).isnumeric() and value < 0 else str(value)
 
 
 def qt_fmt(value: T_DTYPE):
@@ -165,10 +167,7 @@ def dig_mod_repair(expr):
     return expr
 
 
-def to_assert(
-        var: List[str], val: List[T_DTYPE], pred: PT,
-        fmt: Callable = None
-) -> P:
+def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
     """Construct a numerical assertion.
 
     Arguments:
@@ -184,7 +183,7 @@ def to_assert(
     fmt_ = fmt or pad_neg
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
-    subst = [' ' if x == WSP else x for x in subst]
+    subst = [' ' if str(x) == WSP else x for x in subst]
     return ''.join([str(s) for s in subst])
 
 
@@ -305,39 +304,48 @@ def basic_table(*headers):
 
 def stats(dir_path):
     """Print statistics of a directory."""
-    files = [f for f in listdir(dir_path) if f.endswith(".csv")]
+    files = [f for f in listdir(dir_path)
+             if f.endswith(".csv") and '_' in f]
     if files:
         cats = [f.split('_', 1)[0] for f in files]
         vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
-        pt = Counter(cats)
-        ct = Counter(vl)
+        pt, ct = Counter(cats), Counter(vl)
         mn, mx = min(vl), max(vl)
 
-        table = basic_table('Kind', 'Count')
-        rows = [list((f'trace {k.upper()}', y)) for k, y in pt.items()]
-        table.add_rows(rows)
-        table.add_row(['TOTAL', sum(pt.values())])
-        print(table, '\n')
+        table1 = basic_table('Kind', 'Count')
+        rows = [list((f'trace {k.upper()}', y))
+                for k, y in pt.items()]
+        table1.add_rows(rows)
+        table1.add_row(['TOTAL', sum(pt.values())])
 
-        table = basic_table('Variables', 'Freq')
-        for n in range(mn, mx + 1):
-            table.add_row([f'count {n}', 0 if n not in ct else ct[n]])
-        table.add_row(['TOTAL', sum(vl)])
-        print(table)
+        table2 = basic_table('Variables', 'Freq')
+        rows = [list((f'count {n}', 0 if n not in ct else ct[n]))
+                for n in range(mn, mx + 1)]
+        table2.add_rows(rows)
+        table2.add_row(['TOTAL', sum(vl)])
+
+        print(table1)
+        print(table2)
 
 
 def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
-    # this will require some equivalence checking which
-    # should be doable with SMT.
     files = [f for f in listdir(dir_path) if f.endswith(".dig")]
     if files:
-        table = PrettyTable(
-            ['Benchmark', 'V', '∑', '=', '≤', '%', '↕'])
+        headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
+        table = basic_table(*headers.split(','))
+        conf = read_yaml(F_CONFIG)
+        solver = Solver()
+        fmt = qt_fmt if T_DTYPE == 'd' else None
         for f in sorted(files):
+            name = Path(f).stem
             src = input_csv(b_name(f))
-            v_count = len(read_trace(src)[1])
+            vrs = read_trace(src)[1]
+            row_data = [name]
+            expect = conf[name]['goal']
+
+            # statistics
             eqv, inq, mod, mx = 0, 0, 0, 0
             res = parse_dig_result(join(dir_path, f))
             for term in res:
@@ -346,6 +354,32 @@ def score(dir_path):
                 eqv += 1 if '==' in pred else 0
                 mod += pred.count('%')
                 mx += (pred.count('min') + pred.count('max'))
-            table.add_row([f, v_count, len(res), eqv, inq, mod, mx])
+            row_data += [len(vrs), len(res), eqv, inq, mod, mx]
             assert len(res) == eqv + inq
+
+            # equivalence check
+            z3vars = [Int(vr) for vr in vrs]
+            val = [f'z3vars[{i}]' for i in range(len(vrs))]
+            goal = tokenize(expect, TOKENS)
+            g = to_assert(vrs, val, goal, fmt=fmt)
+            match, pool, resp = False, res[:], '✗'
+
+            while pool and not match:
+                res, term = None, pool.pop()
+                solver.reset()
+                try:
+                    tkn_exp = tokenize(term, TOKENS)
+                    f = to_assert(vrs, val, tkn_exp, fmt=fmt)
+                    solver.add(Not(eval(g) == eval(f)))
+                    res = solver.check()
+                    if res == unsat:
+                        match = True
+                    elif res == unknown:
+                        resp = '?'
+                    # else => we have a cex
+                except:
+                    # print('failed', term)
+                    pass
+            row_data.append('✔' if match else resp)
+            table.add_row(row_data)
         print(table)

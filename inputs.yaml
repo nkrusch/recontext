@@ -20,6 +20,7 @@
 # ==================================================================
 f_xy:
   formula: x = y
+  goal: "x == y"
   expr: "x"
   vo: y
   vin:
@@ -27,6 +28,7 @@ f_xy:
   n: 10
 f_xxy:
   formula: x² = y
+  goal: "x * x == y"
   expr: "x * x"
   vo: y
   vin:
@@ -34,6 +36,7 @@ f_xxy:
   n: 20
 f_xxxy:
   formula: x³ = y
+  goal: "x * x * x == y"
   expr: "x * x * x"
   vo: y
   vin:
@@ -41,6 +44,7 @@ f_xxxy:
   n: 20
 f_2xy:
   formula: 2^x = y
+  goal: "2 ** x == y"
   expr: "2 ** x"
   vo: y
   vin:
@@ -48,6 +52,7 @@ f_2xy:
   n: 20
 f_3xy:
   formula: 3^x = y
+  goal: "3 ** x == y"
   expr: "3 ** x"
   vo: y
   vin:
@@ -55,6 +60,7 @@ f_3xy:
   n: 20
 f_2x3y:
   formula: 2x + 3 = y
+  goal: "2 * x + 3 == y"
   expr: "2 * x + 3"
   vo: y
   vin:
@@ -62,6 +68,7 @@ f_2x3y:
   n: 20
 f_axby:
   formula: ax + b = y
+  goal: "a * x + b == y"
   expr: "a * x + b"
   vo: y
   vin:
@@ -71,6 +78,7 @@ f_axby:
   n: 20
 f_axbycz:
   formula: ax + by + c = z
+  goal: "a * x + b * y + c == z"
   expr: "a * x + b * y + c"
   vo: z
   vin:
@@ -82,6 +90,7 @@ f_axbycz:
   n: 20
 f_xymodba:
   formula: (x + y) % b = a
+  goal: "(x + y) % b == a"
   expr: "(x + y) % b"
   vo: a
   vin:
@@ -89,20 +98,6 @@ f_xymodba:
     y: [ -100, 100 ]
     b: [    1, 100 ]
   n: 20
-f_logxy:
-  formula: log x = y
-  expr: "log(x)"
-  vo: y
-  vin:
-    x: [ 0, 1000 ]
-  n: 10
-f_factxy:
-  formula: x! = y
-  expr: "factorial(x)"
-  vo: y
-  vin:
-    x: [ 0, 20 ]
-  n: 10
 
 
 # ==================================================================

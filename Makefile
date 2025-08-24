@@ -3,9 +3,6 @@ SHELL := /bin/bash
 # supress Make output
 MAKEFLAGS += --no-print-directory
 
-ifndef $IN  
-IN := ./input
-endif
 
 ifndef $OUT  
 OUT := ./results
@@ -23,16 +20,20 @@ ifndef $LOG
 LOG := $(OUT)/_log.txt
 endif
 
-MATH_F := xy xxy xxxy 2xy 3xy 2x3y axby axbycz xymodba logxy factxy
+ifndef $PYTHON
+PYTHON := python3
+endif
+
+
+MATH_F := xy xxy xxxy 2xy 3xy 2x3y axby axbycz xymodba
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 040 045 050 063 \
 		  065 067 071 077 083 084 085 087 091 093 094 095 097 099 101 \
 		  103 107 108 109 110 114 118 120 124 128 130 132 133
 
 # paths
 UTILS   := src
-VENV	:= .venv
-IN_CSV	:= $(IN)/csv
-IN_TRC	:= $(IN)/traces
+IN_CSV	:= ./input/csv
+IN_TRC	:= ./input/traces
 RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
 STATS   := $(OUT)/_inputs.txt
@@ -76,7 +77,7 @@ trc_l: $(GEN_L)
 
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
-	python3 -m $(UTILS) -a csv $< > $@
+	$(PYTHON) -m $(UTILS) -a csv $< > $@
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
 	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -noarrays $(DOPT) > $@"
@@ -85,25 +86,20 @@ $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
 
 $(OUT)/%.check:
-	python3 -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
+	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
 
 gen/%:
 	$(eval fname := $(subst gen/,,$@))
-	python3 -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
-
-#$(VENV):
-#	@test -d .venv || python3 -m venv .venv;
-#	@source .venv/bin/activate;
-#	@pip3 install -q -r requirements.txt
+	$(PYTHON) -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
 
 $(MACHINE):
 	@bash $(UTILS)/machine.sh > $@
 
 $(STATS):
-	python3 -m $(UTILS) -a stats $(IN_TRC) > $@
+	@$(PYTHON) -m $(UTILS) -a stats $(IN_TRC) > $@
 
 $(SCORE):
-	python3 -m $(UTILS) -a score $(OUT) > $@
+	$(PYTHON) -m $(UTILS) -a score $(OUT) > $@
 
 ensure_out:
 	@mkdir -p $(OUT)
@@ -119,3 +115,10 @@ clean:
 
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE)
+
+
+#VENV	:= .venv
+#$(VENV):
+#	@test -d .venv || python3 -m venv .venv;
+#	@source .venv/bin/activate;
+#	@pip3 install -q -r requirements.txt
