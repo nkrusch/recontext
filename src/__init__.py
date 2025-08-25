@@ -18,7 +18,7 @@ from z3 import *
 # Path to traces
 IN_DIR = 'input/traces'
 F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 10, **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
@@ -188,10 +188,7 @@ def sym_minmax(term: str):
     return term
 
 
-def to_assert(
-        var: List[str], val, pred: PT,
-        fmt: Callable = None, smt: bool = False
-) -> P:
+def to_assert(var: List[str], val, pred: PT, smt: bool = False) -> P:
     """Construct a numerical assertion.
 
     Arguments:
@@ -205,7 +202,7 @@ def to_assert(
         A string expression where all variables are replaced with
         numerical values.
     """
-    fmt_ = fmt or pad_neg
+    fmt_ = qt_fmt if T_DTYPE == 'd' else pad_neg
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
     subst = [sym_minmax(x) for x in subst] if smt else subst
@@ -250,7 +247,6 @@ def check(dig_result: str) -> bool:
     table = PrettyTable(["P(…)", "eval(P)", "CEX"])
     solver = Solver()
     all_true = True
-    fmt = qt_fmt if T_DTYPE == 'd' else None
 
     for p in predicates:
         solver.reset()
@@ -258,7 +254,7 @@ def check(dig_result: str) -> bool:
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
         literals = []
         for val in np.unique(data[:, idx], axis=0):
-            lit = to_assert(occ, val, pred, fmt=fmt)
+            lit = to_assert(occ, val, pred)
             literals.append(lit)
             try:
                 print(lit)
@@ -369,7 +365,7 @@ def score(dir_path):
             vrs = read_trace(src)[1]
             row_data = [name]
             goal = conf[name]['goal']
-            goals = goal if(isinstance(goal, list)) else [goal]
+            goals = goal if (isinstance(goal, list)) else [goal]
 
             # result statistics
             eqv, inq, mod, mx = 0, 0, 0, 0
@@ -411,10 +407,11 @@ def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
         * If no, the model will be a counterexample.
     """
     fmt = qt_fmt if T_DTYPE == 'd' else pad_neg
+    # noinspection PyUnusedLocal
     z3v = [Int(vr) for vr in var_list]
     values = [f'z3v[{i}]' for i in range(len(var_list))]
-    g = to_assert(var_list, values, tokenize(t1), fmt=fmt, smt=True)
-    f = to_assert(var_list, values, tokenize(t2), fmt=fmt, smt=True)
+    g = to_assert(var_list, values, tokenize(t1), smt=True)
+    f = to_assert(var_list, values, tokenize(t2), smt=True)
     solver = Solver()
     solver.set('timeout', ENV['Z3_TO'])
     solver.add(Not(eval(g) == eval(f)))

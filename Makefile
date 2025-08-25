@@ -69,8 +69,8 @@ csv:   $(CSV_IN)
 # debugging
 dig_f: $(DIG_MTH)
 dig_l: $(DIG_LIN)
-math: clean dig_f score
-linr: clean dig_l score
+math: dig_f score
+linr: dig_l score
 check: $(CHECKS)
 
 # trace generators

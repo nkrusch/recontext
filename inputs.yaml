@@ -27,7 +27,7 @@ f_xy:
   vo: y
   vin:
     x: [ 0, 100 ]
-  n: 20
+  n: 100
 f_xxy:
   formula: x² = y
   goal: "x * x == y"
@@ -35,7 +35,7 @@ f_xxy:
   vo: y
   vin:
     x: [ -10, 50 ]
-  n: 20
+  n: 100
 f_xxxy:
   formula: x³ = y
   goal: "x * x * x == y"
@@ -43,7 +43,7 @@ f_xxxy:
   vo: y
   vin:
     x: [ -10, 50 ]
-  n: 20
+  n: 100
 f_2xy+:
   formula: 2^x = y
   goal: "2 ** x == y"
@@ -51,7 +51,7 @@ f_2xy+:
   vo: y
   vin:
     x: [ 0, 30 ]
-  n: 20
+  n: 100
 f_2xy:
   formula: 2^x = y
   goal: "2 ** x == y"
@@ -59,7 +59,7 @@ f_2xy:
   vo: y
   vin:
     x: [ -10, 50 ]
-  n: 20
+  n: 100
 f_3xy:
   formula: 3^x = y
   goal: "3 ** x == y"
@@ -67,7 +67,7 @@ f_3xy:
   vo: y
   vin:
     x: [ -20, 20 ]
-  n: 20
+  n: 100
 f_2x3y:
   formula: 2x + 3 = y
   goal: "2 * x + 3 == y"
@@ -75,7 +75,7 @@ f_2x3y:
   vo: y
   vin:
     x: [ -20, 100 ]
-  n: 20
+  n: 100
 f_axby:
   formula: ax + b = y
   goal: "a * x + b == y"
@@ -85,7 +85,7 @@ f_axby:
     x: [ -100, 100 ]
     a: [ -100, 100 ]
     b: [ -100, 100 ]
-  n: 20
+  n: 100
 f_axbycz:
   formula: ax + by + c = z
   goal: "a * x + b * y + c == z"
@@ -97,7 +97,7 @@ f_axbycz:
     a: [ -100, 100 ]
     b: [ -100, 100 ]
     c: [ -100, 100 ]
-  n: 20
+  n: 100
 f_xm20:
   formula: x % 2 = 0
   goal: "x % 2 == 0"
@@ -140,7 +140,6 @@ f_xymba:
     b: [ 1,  20 ]
   n: 100
 
-
 # ==================================================================
 #   LINEAR PROBLEMS
 # ==================================================================
@@ -163,7 +162,7 @@ l_001:
   vo: x
   vin:
     y: [ 0, 100000 ]
-  n: 10
+  n: 100
 l_003:
   comment: "combines problems #4, #5"
   formula: (x = 0) ∨ (y ≤ z)
@@ -175,7 +174,7 @@ l_003:
   vin:
     x: [ 0, 100 ]
     z: [ -100, 100 ]
-  n: 30
+  n: 100
 l_007:
   comment: "combines problems #7, #8"
   formula: (x = a + 10n) ∧ (y = b + 10n)
@@ -188,7 +187,7 @@ l_007:
     a: [ 0, 11 ]
     b: [ 0, 11 ]
     n: [ 0, 100 ]
-  n: 30
+  n: 100
 l_009:
   comment: "combines problems #9, #10"
   formula: (x = a + 2n) ∧ (y = b + 2n)
@@ -201,7 +200,7 @@ l_009:
     a: [ 0, 11 ]
     b: [ 0, 11 ]
     n: [ 0, 100 ]
-  n: 30
+  n: 100
 l_015:
   comment: "combines problems #15, #16, #17, #18"
   formula: m ≤ x ≤ z
@@ -212,7 +211,7 @@ l_015:
   vo: [m, z]
   vin:
     x: [ 0, 124 ]
-  n: 20
+  n: 100
 l_023:
   formula: (i = 1 + 2n) ∧ (j = 20 - n)
   goal:
@@ -222,7 +221,7 @@ l_023:
   vo: [i, j]
   vin:
     n: [0, 8]
-  n: 12
+  n: 100
 l_024:
   formula: (i = 1 + 2n) ∧ (j = 10 - n)
   goal:
@@ -232,7 +231,7 @@ l_024:
   vo: [i, j]
   vin:
     n: [0, 5]
-  n: 10
+  n: 100
 l_025:
   comment: "combines problems #25, #30"
   formula: 0 ≤ x ≤ 100
@@ -256,7 +255,7 @@ l_028:
   vo: x
   vin:
     n: [ -100, 100 ]
-  n: 20
+  n: 100
 l_035:
   comment: "combines problems #35, #36, #37"
   formula: 0 ≤ c ≤ 40
@@ -267,7 +266,7 @@ l_035:
   vo:
   vin:
     c : [ 0, 40 ]
-  n: 50
+  n: 100
 l_038:
   comment: "combines problems #38, #39"
   formula: 0 ≤ c ≤ n
@@ -278,7 +277,7 @@ l_038:
   vo: c
   vin:
     n: [1, 100]
-  n: 20
+  n: 100
 l_040:
   comment: "combines problems #40, #41, #42, #43, #44, #56, #57"
   formula: c = 0
@@ -286,7 +285,7 @@ l_040:
   expr: "0"
   vo: c
   vin:
-  n: 3
+  n: 100
 l_045:
   comment: "combines problems #45, #46, #47, #48, #49"
   formula: 0 ≤ c ≤ n
@@ -297,7 +296,7 @@ l_045:
   vo: c
   vin:
     n: [0, 256]
-  n: 20
+  n: 100
 l_050:
   comment: "combines problems #50, #51, #52"
   formula: 0 ≤ c ≤ 4
@@ -308,7 +307,7 @@ l_050:
   vo:
   vin:
     c: [0, 4]
-  n: 10
+  n: 100
 l_063:
   comment: "combines problems #63, #64"
   formula: (x = 1) ∨ (y = 11 - x)
@@ -319,31 +318,26 @@ l_063:
   vo: y
   vin:
     x: [1, 10]
-  n: 20
+  n: 100
 l_065:
   comment: "combines problems #65, #66"
-  formula: (x = 1) ∨ (y = 101 - x)
-  goal:
-    - x == 1
-    - y == 101 - x
-  expr: "randint(-100, 100) if x == 1 else 101 - x"
+  formula: y = 101 - x
+  goal: y == 101 - x
+  expr: "101 - x"
   vo: y
   vin:
     x: [1, 100]
-  n: 20
+  n: 100
 l_067:
   comment: "combines problems #67, #68, #70"
-  formula: (x = 1) ∨ (y = n + 1 - x)
-  goal:
-    - x == 1
-    - y == n + 1 - x
-  expr: "a if x == 1 else n + 1 - x"
+  formula: y = n + 1 - x
+  goal: y == n + 1 - x
+  expr: "n + 1 - x"
   vo: y
   vin:
-    n: 50
-    x: [1, 10]
-    a: [-100, 100]
-  n: 30
+    n: [0,  10]
+    x: [1, 100]
+  n: 100
 l_071:
   comment: "combines problems #71, #73"
   formula: z = 36y + c
@@ -353,7 +347,7 @@ l_071:
   vin:
     y: [127, 256]
     c: [0, 36]
-  n: 30
+  n: 100
 l_077:
   comment: "combines problems #77, #78, #79"
   formula: i ≤ y ≤ x
@@ -361,9 +355,9 @@ l_077:
     - i <= y
     - y <= x
   expr: "randint(0, 1 + 181), 181, 255"
-  vo: [i, y ,x]
+  vo: [i, y, x]
   vin:
-  n: 20
+  n: 100
 l_083:
   formula: x = (y² - a² - y + a)/2 - 5000
   goal: "x == -5000 + ((y * y - y) - (a * a - a))/2"
@@ -372,7 +366,7 @@ l_083:
   vin:
     a: 48
     y: [48, 99]
-  n: 30
+  n: 100
 l_084:
   formula: x = (y² - a² - y + a)/2 - 50
   goal: "x == -50 + ((y * y - y) - (a * a - a))/2"
@@ -381,7 +375,7 @@ l_084:
   vin:
     a: 4
     y: [4, 11]
-  n: 30
+  n: 100
 l_085:
   formula: x = (y² - a² - y + a)/2 - 15000
   goal: "x == -15000 + ((y * y - y) - (a * a - a))/2"
@@ -390,21 +384,20 @@ l_085:
   vin:
     a: 112
     y: [112, 189]
-  n: 30
+  n: 100
 l_087:
   comment: "combines problems #87, #88"
   formula: (lock = 1 ∧ x = y) ∨ (lock = 0 ∧ x = y - 1)
   goal:
-    - lock == 1
-    - x == y
-    - lock == 0
-    - x == y - 1
+    - x == y - 1 + lock
+    - lock <= 1
+    - 0 <= lock
   expr: "x if lock == 1 else x - 1"
   vo: y
   vin:
     x: [0, 100]
     lock: [0, 1]
-  n: 20
+  n: 100
 l_091:
   formula: (y = 0) ∧ (x = 0)
   goal:
@@ -414,7 +407,7 @@ l_091:
   vo: y
   vin:
     x: 0
-  n: 3
+  n: 100
 l_093:
   formula: (x ≤ 2i) ∧ (y ≤ 2i) ∧ (x + y = 3i)
   goal:
@@ -426,7 +419,7 @@ l_093:
   vin:
     n: 100
     i: [0, 100]
-  n: 20
+  n: 100
 l_094:
   formula: (2j = i² + i) ∧ (i ≤ n + 1)
   goal:
@@ -437,7 +430,7 @@ l_094:
   vin:
     n: 122
     i: [0, 123]
-  n: 20
+  n: 100
 l_095:
   comment: "combines problems #95, #96"
   formula: (x < 0) ∨ ((i ≤ x + 1) ∧ (j = iy))
@@ -450,7 +443,7 @@ l_095:
   vin:
     y: 1
     x: [-50, 100]
-  n: 30
+  n: 100
 l_097:
   comment: "combines problems #97, #98"
   formula: (0 ≤ i ≤ x + 1) ∧ (j = 2i)
@@ -463,7 +456,7 @@ l_097:
   vin:
     x: [-50, 100]
     y: 2
-  n: 30
+  n: 100
 l_099:
   comment: "combines problems #99, #100"
   formula: y = n - x
@@ -473,7 +466,7 @@ l_099:
   vin:
     n: 256
     x: [0, 256]
-  n: 20
+  n: 100
 l_101:
   comment: "combines problems #101, #102"
   formula: (m < 0) ∨ (0 ≤ x ≤ m)
@@ -485,7 +478,7 @@ l_101:
   vo: x
   vin:
     m: 100
-  n: 20
+  n: 100
 l_103:
   formula: 0 ≤ x ≤ 100
   goal:
@@ -495,7 +488,7 @@ l_103:
   vo:
   vin:
     x : [ 0, 100 ]
-  n: 20
+  n: 100
 l_107:
   formula: (k = 0 ∧ m = b) ∨ (k = 1 ∧ m = max(a, b))
   goal:
@@ -509,7 +502,7 @@ l_107:
     a: [-20,20]
     b: [-20,20]
     k: [0, 1]
-  n: 20
+  n: 100
 l_108:
   formula: (m = b) ∧ ((c ≤ 0 ∧ k = 0) ∨ (0 ≤ k ≤ c))
   goal:
@@ -523,7 +516,7 @@ l_108:
   vin:
     b: [ 0, 60]
     c: [-20, 100]
-  n: 20
+  n: 100
 l_109:
   formula: (1 ≤ k ≤ c) ∧ (m = max(a, b))
   goal:
@@ -536,7 +529,7 @@ l_109:
     a: [-50, 50]
     b: [-50, 50]
     c: [ 1, 100]
-  n: 20
+  n: 100
 l_110:
   comment: "combines problems #110, #111"
   formula: (sn = i - 1) ∧ (0 ≤ sn < i ≤ n + 1)
@@ -550,7 +543,7 @@ l_110:
   vin:
     n: 134
     i: [1, 134]
-  n: 20
+  n: 100
 l_114:
   comment: "combines problems #114, #115"
   formula: sn = x
@@ -559,7 +552,7 @@ l_114:
   vo: sn
   vin:
     x: [0, 1000]
-  n: 20
+  n: 100
 l_118:
   comment: "combines problems #118, #119"
   formula: (sn + 1 = i) ∧ ((size < 1) ∨ (i ≤ size + 1))
@@ -571,7 +564,7 @@ l_118:
   vo: [sn, i]
   vin:
     size: [-100, 200]
-  n: 20
+  n: 100
 l_120:
   comment: "combines problems #120, #121"
   formula: (sn + 1 = i) ∧ (0 ≤ i ≤ 9)
@@ -583,7 +576,7 @@ l_120:
   vo: sn
   vin:
     i: [0, 9]
-  n: 20
+  n: 100
 l_124:
   comment: "combines problems #124, #125"
   formula: (0 ≤ x ≤ k) ∧ (y = j - k + x)
@@ -596,7 +589,7 @@ l_124:
   vin:
     k: [    0, 100 ]
     j: [ -100, 100 ]
-  n: 20
+  n: 100
 l_128:
   formula: (x = 2ᵏ) ∧ (2ᵏ⁻¹ < y)
   goal:
@@ -607,7 +600,7 @@ l_128:
   vin:
     k: [1, 10]
     y: 957
-  n: 20
+  n: 100
 l_130:
   comment: "combines problems #130, #131"
   formula: (x₁ = 1 ∧ x₂ = z ∧ x₃ = b) ∨ (x₁ = 0 ∧ x₂ = z - 1 ∧ x₃ = b - 1)
@@ -623,7 +616,7 @@ l_130:
   vin:
     z: [-20, 100]
     b: [-20, 100]
-  n: 20
+  n: 100
 l_132:
   formula: (0 < t < 9) ∧ (t = c - 48) ∧ (j = 2t2ᵏ - 2t) ∧ (i = j + t)
   goal:
@@ -637,14 +630,14 @@ l_132:
   vin:
     c: [49, 56]
     k: [0, 10]
-  n: 50
+  n: 100
 l_133:
   formula: 0 ≤ x ≤ n
   goal:
     - 0 <= x
     - x <= n
-  expr: "randint(0, n + 1)"
+  expr: "randint(0, n)"
   vo: x
   vin:
     n: 42
-  n: 20
+  n: 100
