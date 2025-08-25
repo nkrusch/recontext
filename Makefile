@@ -25,7 +25,7 @@ PYTHON := python3
 endif
 
 
-MATH_F := xy xxy xxxy 2xy+ 2xy 3xy 2x3y axby axbycz xm8a xmba xymba xm20
+MATH_F := xy xxy xxxy 2xy+ 2xy 3xy 2x3y axby axbycz xm20 xm80 xm2a xmba xymba
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 040 045 050 063 \
 		  065 067 071 077 083 084 085 087 091 093 094 095 097 099 101 \
 		  103 107 108 109 110 114 118 120 124 128 130 132 133

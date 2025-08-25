@@ -18,7 +18,7 @@ from z3 import *
 # Path to traces
 IN_DIR = 'input/traces'
 F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 10, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
@@ -112,7 +112,7 @@ def is_num(x: str) -> bool:
     return (x[1:] if x and x[0] == '-' else x).isnumeric()
 
 
-def tokenize(plain: str, tokens: List[str]) -> PT:
+def tokenize(plain: str, tokens: List[str] = None) -> PT:
     """Splits a plaintext string by tokens.
     
     Example:
@@ -126,14 +126,15 @@ def tokenize(plain: str, tokens: List[str]) -> PT:
     Returns:
         The tokenized string.               
     """
-    exists = [x for x in tokens if re.search(x, plain)]
+    tokens_ = tokens or TOKENS
+    exists = [x for x in tokens_ if re.search(x, plain)]
     terms = re.split(f'({WSP})', plain.replace(' ', WSP))
     for x in exists:
         tmp = terms
         n = len(terms) - 1
         for i in range(n, -1, -1):
             curr = terms[i]
-            terminal = curr in tokens or is_num(curr)
+            terminal = curr in tokens_ or is_num(curr)
             if not terminal and re.search(x, curr):
                 parts = [p for p in re.split(f'({x})', curr) if p]
                 before = tmp[:i] if i > 0 else []
@@ -167,13 +168,30 @@ def dig_mod_repair(expr):
     return expr
 
 
-def symbo(term: str):
+def sym_min(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v < m, v, m)
+    return m
+
+
+def sym_max(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v > m, v, m)
+    return m
+
+
+def sym_minmax(term: str):
     for alt, mtc in [('sym_min', 'min'), ('sym_max', 'max')]:
         term = alt if term == mtc else term
     return term
 
 
-def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
+def to_assert(
+        var: List[str], val, pred: PT,
+        fmt: Callable = None, smt: bool = False
+) -> P:
     """Construct a numerical assertion.
 
     Arguments:
@@ -181,6 +199,7 @@ def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
         val: variable values.
         pred: a tokenized assertion.
         fmt: value formatter
+        smt: convert Python symbols to SMT-lib
 
     Returns:
         A string expression where all variables are replaced with
@@ -189,6 +208,7 @@ def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
     fmt_ = fmt or pad_neg
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
+    subst = [sym_minmax(x) for x in subst] if smt else subst
     subst = [(' ' if x == WSP else x) for x in subst]
     return ''.join([str(s) for s in subst])
 
@@ -334,20 +354,6 @@ def stats(dir_path):
         print(table2)
 
 
-def sym_min(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v < m, v, m)
-    return m
-
-
-def sym_max(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v > m, v, m)
-    return m
-
-
 def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
@@ -362,8 +368,8 @@ def score(dir_path):
             src = input_csv(b_name(f))
             vrs = read_trace(src)[1]
             row_data = [name]
-            goal = conf[name]['goal'] \
-                if 'goal' in conf[name] else None
+            goal = conf[name]['goal']
+            goals = goal if(isinstance(goal, list)) else [goal]
 
             # result statistics
             eqv, inq, mod, mx = 0, 0, 0, 0
@@ -378,14 +384,14 @@ def score(dir_path):
             assert len(res) == eqv + inq
 
             # equivalence check
-            match, pool, resp = False, res[:], ' '
-            if goal:
-                resp = '✗'
-                while pool and not match:
-                    term = pool.pop()
+            match, pool, resp = False, res[:], '✗'
+            while pool and not match:
+                term, i = pool.pop(), 0
+                while i < len(goals) and not match:
+                    goal, i = goals[i], i + 1
                     res, _ = term_eq(vrs, goal, term)
-                    match = (res == unsat)
                     resp = '?' if res == unknown else resp
+                    match = (res == unsat)
             row_data.append('✔' if match else resp)
             table.add_row(row_data)
         print(table)
@@ -404,14 +410,13 @@ def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
         * The result is one of: unsat (== proved), unknown, or no.
         * If no, the model will be a counterexample.
     """
-    bf = qt_fmt if T_DTYPE == 'd' else pad_neg
-    fmt = lambda x: symbo(bf(x))
+    fmt = qt_fmt if T_DTYPE == 'd' else pad_neg
     z3v = [Int(vr) for vr in var_list]
     values = [f'z3v[{i}]' for i in range(len(var_list))]
-    g = to_assert(var_list, values, tokenize(t1, TOKENS), fmt=fmt)
-    f = to_assert(var_list, values, tokenize(t2, TOKENS), fmt=fmt)
-    print(g, f)
+    g = to_assert(var_list, values, tokenize(t1), fmt=fmt, smt=True)
+    f = to_assert(var_list, values, tokenize(t2), fmt=fmt, smt=True)
     solver = Solver()
+    solver.set('timeout', ENV['Z3_TO'])
     solver.add(Not(eval(g) == eval(f)))
     res = solver.check()
     mod = solver.model() if res == sat else None

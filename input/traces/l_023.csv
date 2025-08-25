@@ -1,13 +1,13 @@
 trace1;I n;I i;I j
-trace1;0;1;20
+trace1;5;11;15
+trace1;3;7;17
+trace1;2;5;18
 trace1;6;13;14
 trace1;5;11;15
-trace1;8;17;12
 trace1;3;7;17
+trace1;7;15;13
+trace1;6;13;14
+trace1;1;3;19
 trace1;5;11;15
 trace1;5;11;15
-trace1;8;17;12
-trace1;4;9;16
-trace1;4;9;16
-trace1;5;11;15
-trace1;4;9;16
+trace1;1;3;19
