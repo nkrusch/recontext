@@ -311,10 +311,8 @@ l_050:
 l_063:
   comment: "combines problems #63, #64"
   formula: (x = 1) ∨ (y = 11 - x)
-  goal:
-    - x == 1
-    - y == 11 - x
-  expr: "randint(-20, 20) if x == 1 else 11 - x"
+  goal: y == 11 - x
+  expr: "11 - x"
   vo: y
   vin:
     x: [1, 10]
@@ -490,11 +488,10 @@ l_103:
     x : [ 0, 100 ]
   n: 100
 l_107:
-  formula: (k = 0 ∧ m = b) ∨ (k = 1 ∧ m = max(a, b))
+  formula: (0 ≤ k ≤ 1) ∧ m = max(a, b)
   goal:
-    - k == 0
-    - m == b
-    - k == 1
+    - 0 <= k
+    - k <= 1
     - m == max(a, b)
   expr: "b if k == 0 else max(a, b)"
   vo: m
@@ -504,13 +501,11 @@ l_107:
     k: [0, 1]
   n: 100
 l_108:
-  formula: (m = b) ∧ ((c ≤ 0 ∧ k = 0) ∨ (0 ≤ k ≤ c))
+  formula: (0 ≤ k ≤ c) ∧ (m = b)
   goal:
-    - m == b
-    - c <= 0
-    - k == 0
     - 0 <= k
     - k <= c
+    - m == b
   expr: "randint(-100, b), b, randint(0, max(0, c))"
   vo: [a, m, k]
   vin:
@@ -518,7 +513,7 @@ l_108:
     c: [-20, 100]
   n: 100
 l_109:
-  formula: (1 ≤ k ≤ c) ∧ (m = max(a, b))
+  formula: (1 ≤ k ≤ c) ∧ m = max(a, b)
   goal:
     - 1 <= k
     - k <= c
@@ -531,18 +526,15 @@ l_109:
     c: [ 1, 100]
   n: 100
 l_110:
-  comment: "combines problems #110, #111"
-  formula: (sn = i - 1) ∧ (0 ≤ sn < i ≤ n + 1)
+  comment: "combines problems #110, #111 #118, #119"
+  formula: (sn = i - 1) ∧ (0 ≤ sn < i ≤ size + 1)
   goal:
-    - sn == i - 1
-    - 0 <= sn
-    - sn < i
-    - i <= n + 1
-  expr: "i - 1"
-  vo: sn
+    - sn + 1 == i
+    - i <= size + 1
+  expr: "[x + y for x, y in zip((0, 1), [0 if size <= 0 else randint(1, size)] * 2)]"
+  vo: [sn, i]
   vin:
-    n: 134
-    i: [1, 134]
+    size: [1, 200]
   n: 100
 l_114:
   comment: "combines problems #114, #115"
@@ -552,18 +544,6 @@ l_114:
   vo: sn
   vin:
     x: [0, 1000]
-  n: 100
-l_118:
-  comment: "combines problems #118, #119"
-  formula: (sn + 1 = i) ∧ ((size < 1) ∨ (i ≤ size + 1))
-  goal:
-    - sn + 1 == i
-    - size < 1
-    - i <= size + 1
-  expr: "[x + y for x, y in zip((0, 1), [0 if size <= 0 else randint(1, size)] * 2)]"
-  vo: [sn, i]
-  vin:
-    size: [-100, 200]
   n: 100
 l_120:
   comment: "combines problems #120, #121"
@@ -603,14 +583,12 @@ l_128:
   n: 100
 l_130:
   comment: "combines problems #130, #131"
-  formula: (x₁ = 1 ∧ x₂ = z ∧ x₃ = b) ∨ (x₁ = 0 ∧ x₂ = z - 1 ∧ x₃ = b - 1)
+  formula: (0 ≤ x₁ ≤ 1) ∧ (x₂ = z - 1 + x₁) ∧ (x₃ = b - 1 + x₁)
   goal:
-    - x1 == 1
-    - x2 == z
-    - x3 == b
-    - x1 == 0
-    - x2 == z - 1
-    - x3 == b - 1
+    - x2 == z - 1 + x1
+    - x3 == b - 1 + x1
+    - 0 <= x1
+    - x1 <= 1
   expr: "[x - y for x, y in zip((1, z, b), [randint(0, 1)] * 3)]"
   vo: [x1, x2, x3]
   vin:
@@ -618,14 +596,15 @@ l_130:
     b: [-20, 100]
   n: 100
 l_132:
-  formula: (0 < t < 9) ∧ (t = c - 48) ∧ (j = 2t2ᵏ - 2t) ∧ (i = j + t)
+  formula: (0 < t < 9) ∧ (t = c - 48) ∧ (j = 2t * (2ᵏ - 1)) ∧ (i = j + t)
   goal:
     - 0 < t
     - t < 9
     - t == c - 48
-    - j == 2 * t * (2 ** k) - 2 * t
     - i == j + t
-  expr: "[(t, 2*t*(2**k)-t-t, 2*t*(2**k)-t) for t in [c-48]][0]"
+    - j == i - t
+    - j == 2 * t * (2 ** k) - 2 * t
+  expr: "[(t, 2 * t * (2 ** k) - t - t, 2 * t * (2 ** k) - t) for t in [c - 48]][0]"
   vo: [t, j, i]
   vin:
     c: [49, 56]

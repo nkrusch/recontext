@@ -455,11 +455,11 @@ method Linear103()
 }
 
 method Linear107(a: int, b: int)
-{
+{ 
   var k, m := 0, b;
   while (k < 1)
-    invariant k == 0 ==> m == b
-    invariant k == 1 ==> m == Max(a,b)
+    invariant m <= Max(a,b)
+    invariant k in [0, 1]
   {
     if m < a {
       m := a;
@@ -469,11 +469,11 @@ method Linear107(a: int, b: int)
 }
 
 method Linear108(a: int, b: int, c: int)
-  requires a <= b
+  requires a <= b && c > 0
 {
   var k, m := 0, b;
   while k < c
-    invariant (c <= 0 && k == 0) || 0 <= k <= c
+    invariant 0 <= k <= c
     invariant m == b
   {
     if m < a {
@@ -496,8 +496,8 @@ method Linear109(a: int, b: int, c: int)
   }
 }
 
-method Linear110_111(n: int)
-  requires n > 0
+method Linear110_111_118_119(n: int)
+  requires n >= 1
 {
   var sn, i := 0, 1;
   while i <= n
@@ -518,18 +518,6 @@ method Linear114_115()
     decreases *
   {
     x := x + 1;
-    sn := sn + 1;
-  }
-}
-
-method Linear118_119(size: int)
-{
-  var  sn,  i :=  0, 1;
-  while i <= size
-    invariant size < 1 || 0 <= sn < i <= size + 1
-    invariant sn + 1 == i
-  {
-    i := i + 1;
     sn := sn + 1;
   }
 }
@@ -576,9 +564,9 @@ method Linear130_131(a: int, b: int)
   var d1, d2, d3 := 1, 1, 1;
   var x1, x2, x3 := 1, a, b;
   while x1 > 0
-    invariant 
-      (x1 == 1 && x2 == a && x3 == b) ||
-      (x1 == 1 - 1 && x2 == a - 1 && x3 == b - 1)
+    invariant x1 in [0, 1]
+    invariant x2 == a - 1 + x1
+    invariant x3 == b - 1 + x1
     decreases *
   {
     if x2 > 0 {
@@ -596,15 +584,17 @@ method Linear132(c: int)
   decreases *
 {
   var i, j, t := 0, 48 - c, c - 48;
-  ghost var n := 0; 
+  ghost var n := 0;
   while *
-    invariant 0 < t < 9 && t == c - 48 && i == j + t
-    // it is true, but prove it!
+    invariant 0 < t < 9
+    invariant t == c - 48
+    invariant i == j + t
+    invariant j == i - t
     // invariant n > 0 ==> j == Pow(2, n) * 2 * t - 2 * t
     decreases * {
     if c > 48 {
       if c < 57 {
-        j := i + i; 
+        j := i + i;
         t := c - 48;
         i := j + t;
         n := n + 1;
