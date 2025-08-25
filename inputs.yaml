@@ -2,11 +2,13 @@
 #   INTRODUCTION
 # ==================================================================
 # This file defines how to generate input traces. Every problem has
-# the following structure.
+# the following structure. The `expr` is used for generation and
+# `goal` is used for equivalence checking.
 #
 #  problem_name:                  : Unique name/filename.
 #    comment: [str]               : Optional comments.
-#    formula: [str]               : Math formula.
+#    formula: [str]               : (pretty) math formula.
+#    goal: [str]                  : SMT formula
 #    expr: [str]                  : Evaluable Python expression.
 #    vin: Dict[str,int|[int,int]] : Input variables <k, v>
 #                                  - k is variable name
@@ -32,7 +34,7 @@ f_xxy:
   expr: "x * x"
   vo: y
   vin:
-    x: [ -10, 100 ]
+    x: [ -10, 50 ]
   n: 20
 f_xxxy:
   formula: x³ = y
@@ -40,7 +42,15 @@ f_xxxy:
   expr: "x * x * x"
   vo: y
   vin:
-    x: [ -1, 100 ]
+    x: [ -10, 50 ]
+  n: 20
+f_2xy+:
+  formula: 2^x = y
+  goal: "2 ** x == y"
+  expr: "2 ** x"
+  vo: y
+  vin:
+    x: [ 0, 30 ]
   n: 20
 f_2xy:
   formula: 2^x = y
@@ -88,15 +98,41 @@ f_axbycz:
     b: [ -100, 100 ]
     c: [ -100, 100 ]
   n: 20
-f_xymodba:
+f_xm20:
+  formula: x % 2 = 0
+  goal: "x % 2 == 0"
+  expr: "x * 2"
+  vo:
+  vin:
+    x: [ 0, 100 ]
+  n: 20
+
+f_xm8a:
+  formula: x % 8 = a
+  goal: "x % 8 == a"
+  expr: "x % 8"
+  vo: a
+  vin:
+    x: [ 0, 100 ]
+  n: 50
+f_xmba:
+  formula: x % b = a
+  goal: "x % b == a"
+  expr: "x % b"
+  vo: a
+  vin:
+    x: [ 0, 100 ]
+    b: [ 1,  20 ]
+  n: 20
+f_xymba:
   formula: (x + y) % b = a
   goal: "(x + y) % b == a"
   expr: "(x + y) % b"
   vo: a
   vin:
-    x: [ -100, 100 ]
-    y: [ -100, 100 ]
-    b: [    1, 100 ]
+    x: [ 0, 100 ]
+    y: [ 0, 100 ]
+    b: [ 1,  20 ]
   n: 20
 
 
@@ -117,6 +153,7 @@ f_xymodba:
 l_001:
   comment: "combines problem #2"
   formula: 2x = 2 + (y² - y)
+  goal: "1 + (y * y - y) / 2 == x"
   expr: "1 + (y * y - y) / 2"
   vo: x
   vin:
@@ -125,6 +162,7 @@ l_001:
 l_003:
   comment: "combines problems #4, #5"
   formula: (x = 0) ∨ (y ≤ z)
+  goal: "(x == 0) or (y <= z)"
   expr: "randint(-100,100) if x == 0 else min(randint(-100,100), z)"
   vo: y
   vin:
@@ -134,6 +172,7 @@ l_003:
 l_007:
   comment: "combines problems #7, #8"
   formula: (x = a + 10n) ∧ (y = b + 10n)
+  goal: "(x == a + 10 * n) and (y == b + 10 * n)"
   expr: "a + n * 10, b + n * 10"
   vo: [x, y]
   vin:
@@ -144,6 +183,7 @@ l_007:
 l_009:
   comment: "combines problems #9, #10"
   formula: (x = a + 2n) ∧ (y = b + 2n)
+  goal: "(x == a + 2 * n) and (y == b + 2 * n)"
   expr: "a + n * 2, b + n * 2"
   vo: [x, y]
   vin:
@@ -154,6 +194,7 @@ l_009:
 l_015:
   comment: "combines problems #15, #16, #17, #18"
   formula: m ≤ x ≤ z
+  goal: "m <= x and x <= z"
   expr: " randint(0, x), 124"
   vo: [m, z]
   vin:
@@ -161,6 +202,7 @@ l_015:
   n: 20
 l_023:
   formula: (i = 1 + 2n) ∧ (j = 20 - n)
+  goal: "(i == 1 + 2 * n) and (j == 20 - n)"
   expr: "1 + 2 * n, 20 - n"
   vo: [i, j]
   vin:
@@ -168,6 +210,7 @@ l_023:
   n: 12
 l_024:
   formula: (i = 1 + 2n) ∧ (j = 10 - n)
+  goal: "(i == 1 + 2 * n) and (j == 10 - n)"
   expr: "1 + 2 * n, 10 - n"
   vo: [i, j]
   vin:
@@ -176,6 +219,7 @@ l_024:
 l_025:
   comment: "combines problems #25, #30"
   formula: 0 ≤ x ≤ 100
+  goal: "0 <= x and x <= 100"
   expr: "x"
   vo:
   vin:
@@ -184,6 +228,7 @@ l_025:
 l_028:
   comment: "combines problems #28, #29"
   formula: ((n < 0) ∧ (x = n)) ∨ (0 ≤ x ≤ n)
+  goal: "((n < 0) and (x == n)) ∨ (0 <= x and x <= n)"
   expr: "n if n < 0 else min(n, randint(0, 100))"
   vo: x
   vin:
@@ -192,6 +237,7 @@ l_028:
 l_035:
   comment: "combines problems #35, #36, #37"
   formula: 0 ≤ c ≤ 40
+  goal: "0 <= c and c <= 40"
   expr: "c"
   vo:
   vin:
@@ -200,6 +246,7 @@ l_035:
 l_038:
   comment: "combines problems #38, #39"
   formula: 0 ≤ c ≤ n
+  goal: "0 <= c and c <= n"
   expr: "randint(0, n)"
   vo: c
   vin:
@@ -208,6 +255,7 @@ l_038:
 l_040:
   comment: "combines problems #40, #41, #42, #43, #44, #56, #57"
   formula: c = 0
+  goal: "c == 0"
   expr: "0"
   vo: c
   vin:
@@ -215,6 +263,7 @@ l_040:
 l_045:
   comment: "combines problems #45, #46, #47, #48, #49"
   formula: 0 ≤ c ≤ n
+  goal: "0 <= c and c <= n"
   expr: "randint(0, n)"
   vo: c
   vin:
@@ -223,6 +272,7 @@ l_045:
 l_050:
   comment: "combines problems #50, #51, #52"
   formula: 0 ≤ c ≤ 4
+  goal: "0 <= c and c <= 4"
   expr: "c"
   vo:
   vin:
@@ -231,6 +281,7 @@ l_050:
 l_063:
   comment: "combines problems #63, #64"
   formula: (x = 1) ∨ (y = 11 - x)
+  goal: "(x == 1) or (y == 11 - x)"
   expr: "randint(-20, 20) if x == 1 else 11 - x"
   vo: y
   vin:
@@ -239,6 +290,7 @@ l_063:
 l_065:
   comment: "combines problems #65, #66"
   formula: (x = 1) ∨ (y = 101 - x)
+  goal: "(x == 1) or (y == 101 - x)"
   expr: "randint(-100, 100) if x == 1 else 101 - x"
   vo: y
   vin:
@@ -247,6 +299,7 @@ l_065:
 l_067:
   comment: "combines problems #67, #68, #70"
   formula: (x = 1) ∨ (y = n + 1 - x)
+  goal: "(x == 1) or (y == n + 1 - x)"
   expr: "a if x == 1 else n + 1 - x"
   vo: y
   vin:
@@ -257,6 +310,7 @@ l_067:
 l_071:
   comment: "combines problems #71, #73"
   formula: z = 36y + c
+  goal: "z == 36 * y + c"
   expr: "36 * y + c"
   vo: z
   vin:
@@ -266,12 +320,14 @@ l_071:
 l_077:
   comment: "combines problems #77, #78, #79"
   formula: i ≤ y ≤ x
+  goal: "i <= y and y <= x"
   expr: "randint(0, 1 + 181), 181, 255"
   vo: [i, y ,x]
   vin:
   n: 20
 l_083:
   formula: x = (y² - a² - y + a)/2 - 5000
+  goal: "x == ((y * y - y) - (a * a - a)) / 2 - 5000"
   expr: "-5000 + ((y * y - y) - (a * a - a))/2"
   vo: x
   vin:
@@ -280,6 +336,7 @@ l_083:
   n: 30
 l_084:
   formula: x = (y² - a² - y + a)/2 - 50
+  goal: "x == ((y * y - y) - (a * a - a)) / 2 - 50"
   expr: "-50 + ((y * y - y) - (a * a - a))/2"
   vo: x
   vin:
@@ -288,6 +345,7 @@ l_084:
   n: 30
 l_085:
   formula: x = (y² - a² - y + a)/2 - 15000
+  goal: "x == ((y * y - y) - (a * a - a)) / 2 - 15000"
   expr: "-15000 + ((y * y - y) - (a * a - a))/2"
   vo: x
   vin:
@@ -297,6 +355,7 @@ l_085:
 l_087:
   comment: "combines problems #87, #88"
   formula: (lock = 1 ∧ x = y) ∨ (lock = 0 ∧ x = y - 1)
+  goal: "(lock == 1 and x == y) or (lock == 0 and x == y - 1)"
   expr: "x if lock == 1 else x - 1"
   vo: y
   vin:
@@ -305,6 +364,7 @@ l_087:
   n: 20
 l_091:
   formula: (y = 0) ∧ (x = 0)
+  goal: "(y == 0) and (x == 0)"
   expr: "0"
   vo: y
   vin:
@@ -312,6 +372,7 @@ l_091:
   n: 3
 l_093:
   formula: (x ≤ 2i) ∧ (y ≤ 2i) ∧ (x + y = 3i)
+  goal: "(x <= 2 * i) and (y <= 2 * i) and (x + y == 3 * i)"
   expr: "[abs(x - y) for x, y in zip((0, 3 * i), [randint(i, 2 * i)] * 2)]"
   vo: [x, y]
   vin:
@@ -320,6 +381,7 @@ l_093:
   n: 20
 l_094:
   formula: (2j = i² + i) ∧ (i ≤ n + 1)
+  goal: "(2 * j = i * i + i) and (i <= n + 1)"
   expr: "(i * i + i) / 2"
   vo: j
   vin:
@@ -329,6 +391,7 @@ l_094:
 l_095:
   comment: "combines problems #95, #96"
   formula: (x < 0) ∨ ((i ≤ x + 1) ∧ (j = iy))
+  goal: "(x < 0) or ((i <= x + 1) and (j == i * y))"
   expr: "(0, 0) if x < 0 else [randint(0, x + 1)] * 2"
   vo: [i, j]
   vin:
@@ -338,6 +401,7 @@ l_095:
 l_097:
   comment: "combines problems #97, #98"
   formula: (0 ≤ i ≤ x + 1) ∧ (j = 2i)
+  goal: "(0 <= i and i <= x + 1) ∧ (j == 2 * i)"
   expr: "[a * b for a, b in zip((1, 2), [0 if x < 0 else randint(0, x)] * 2)]"
   vo: [i, j]
   vin:
@@ -347,6 +411,7 @@ l_097:
 l_099:
   comment: "combines problems #99, #100"
   formula: y = n - x
+  goal: "y == n - x"
   expr: "n - x"
   vo: y
   vin:
@@ -356,6 +421,7 @@ l_099:
 l_101:
   comment: "combines problems #101, #102"
   formula: (m < 0) ∨ (0 ≤ x ≤ m)
+  goal: "(m < 0) or (0 <= x and x <= m)"
   expr: "randint(0, m)"
   vo: x
   vin:
@@ -363,6 +429,7 @@ l_101:
   n: 20
 l_103:
   formula: 0 ≤ x ≤ 100
+  goal: "0 <= x and x <= 100"
   expr: "x"
   vo:
   vin:
@@ -370,6 +437,7 @@ l_103:
   n: 20
 l_107:
   formula: (k = 0 ∧ m = b) ∨ (k = 1 ∧ m = Max(a, b))
+  goal: "(k == 0 and m == b) or (k == 1 and m == Max(a, b))"
   expr: "b if k == 0 else max(a, b)"
   vo: m
   vin:
@@ -379,6 +447,7 @@ l_107:
   n: 20
 l_108:
   formula: (m = b) ∧ ((c ≤ 0 ∧ k = 0) ∨ (0 ≤ k ≤ c))
+  goal: "(m == b) and ((c <= 0 and k == 0) or (0 <= k and k <= c))"
   expr: "randint(-100, b), b, randint(0, max(0, c))"
   vo: [a, m, k]
   vin:
@@ -387,6 +456,7 @@ l_108:
   n: 20
 l_109:
   formula: (1 ≤ k ≤ c) ∧ (m = Max(a, b))
+  goal: "(1 <= k and k <= c) and (m == Max(a, b))"
   expr: "(max(a, b), randint(1,c))"
   vo: [m, k]
   vin:
@@ -397,6 +467,7 @@ l_109:
 l_110:
   comment: "combines problems #110, #111"
   formula: (sn = i - 1) ∧ (0 ≤ sn < i ≤ n + 1)
+  goal: "(sn == i - 1) and (0 <= sn and sn < i and i <= n + 1)"
   expr: "i - 1"
   vo: sn
   vin:
@@ -406,6 +477,7 @@ l_110:
 l_114:
   comment: "combines problems #114, #115"
   formula: sn = x
+  goal: "sn == x"
   expr: "x"
   vo: sn
   vin:
@@ -414,6 +486,7 @@ l_114:
 l_118:
   comment: "combines problems #118, #119"
   formula: (sn + 1 = i) ∧ ((size < 1) ∨ (i ≤ size + 1))
+  goal: "(sn + 1 == i) and ((size < 1) or (i <= size + 1))"
   expr: "[x + y for x, y in zip((0, 1), [0 if size <= 0 else randint(1, size)] * 2)]"
   vo: [sn, i]
   vin:
@@ -422,6 +495,7 @@ l_118:
 l_120:
   comment: "combines problems #120, #121"
   formula: (sn + 1 = i) ∧ (0 ≤ i ≤ 9)
+  goal: "(sn + 1 == i) and (0 <= i and i <= 9)"
   expr: "i - 1"
   vo: sn
   vin:
@@ -430,6 +504,7 @@ l_120:
 l_124:
   comment: "combines problems #124, #125"
   formula: (0 ≤ x ≤ k) ∧ (y = j - k + x)
+  goal: "(0 <= x and x <= k) and (y == j - k + x)"
   expr: "[x + y for x, y in zip((0, j-k), [randint(0, k)] * 2)]"
   vo: [x, y]
   vin:
@@ -437,15 +512,18 @@ l_124:
     j: [ -100, 100 ]
   n: 20
 l_128:
-  formula: ∃ k, (x = 2ᵏ) ∧ (2ᵏ⁻¹ < y)
-  expr: "2 ** randint(1, 10)"
+  formula: (x = 2ᵏ) ∧ (2ᵏ⁻¹ < y)
+  goal: "x == 2 ^ k and 2 ^ (k - 1) < y"
+  expr: "2 ** k"
   vo: x
   vin:
+    k: [1, 10]
     y: 957
   n: 20
 l_130:
   comment: "combines problems #130, #131"
   formula: (x₁ = 1 ∧ x₂ = z ∧ x₃ = b) ∨ (x₁ = 0 ∧ x₂ = z - 1 ∧ x₃ = b - 1)
+  goal: "(x1 == 1 and x2 == z and x3 == b) or (x1 == 0 and x2 == z - 1 and x3 == b - 1)"
   expr: "[x - y for x, y in zip((1, z, b), [randint(0, 1)] * 3)]"
   vo: [x1, x2, x3]
   vin:
@@ -454,6 +532,7 @@ l_130:
   n: 20
 l_132:
   formula: (0 < t < 9) ∧ (t = c - 48) ∧ (j = 2t2ᵏ - 2t) ∧ (i = j + t)
+  goal: "(0 < t) and (t < 9) and (t == c - 48) and (j == 2 * t * 2 ^ k - 2 * t) and (i == j + t)"
   expr: "[(t, 2*t*(2**k)-t-t, 2*t*(2**k)-t) for t in [c-48]][0]"
   vo: [t, j, i]
   vin:
@@ -462,6 +541,7 @@ l_132:
   n: 50
 l_133:
   formula: 0 ≤ x ≤ n
+  goal: "0 <= x and x <= n"
   expr: "randint(0, n + 1)"
   vo: x
   vin:

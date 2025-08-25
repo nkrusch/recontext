@@ -167,6 +167,12 @@ def dig_mod_repair(expr):
     return expr
 
 
+def symbo(term: str):
+    for alt, mtc in [('sym_min', 'min'), ('sym_max', 'max')]:
+        term = alt if term == mtc else term
+    return term
+
+
 def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
     """Construct a numerical assertion.
 
@@ -183,7 +189,7 @@ def to_assert(var, val, pred: PT, fmt: Callable = None) -> P:
     fmt_ = fmt or pad_neg
     dct = dict(zip(var, val))
     subst = [(fmt_(dct[x]) if x in var else x) for x in pred]
-    subst = [' ' if str(x) == WSP else x for x in subst]
+    subst = [(' ' if x == WSP else x) for x in subst]
     return ''.join([str(s) for s in subst])
 
 
@@ -235,6 +241,7 @@ def check(dig_result: str) -> bool:
             lit = to_assert(occ, val, pred, fmt=fmt)
             literals.append(lit)
             try:
+                print(lit)
                 solver.add(eval(lit))
             except z3types.Z3Exception:
                 sc, cex = '⚠ symbolic', lit
@@ -271,10 +278,9 @@ def rand_data(in_vars, ranges, expr, n_out):
     data = list(map(dt_v, ranges))
     if n_out > 0:
         assert_ = to_assert(in_vars, data, expr)
-
         result = eval(assert_)
-        result = list(result) if isinstance(result, Iterable) else [
-            result]
+        result = list(result) if isinstance(result, Iterable) \
+            else [result]
         data += result
     return data
 
@@ -303,7 +309,7 @@ def basic_table(*headers):
 
 
 def stats(dir_path):
-    """Print statistics of a directory."""
+    """Display statistics about a directory."""
     files = [f for f in listdir(dir_path)
              if f.endswith(".csv") and '_' in f]
     if files:
@@ -328,6 +334,20 @@ def stats(dir_path):
         print(table2)
 
 
+def sym_min(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v < m, v, m)
+    return m
+
+
+def sym_max(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v > m, v, m)
+    return m
+
+
 def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
@@ -336,16 +356,16 @@ def score(dir_path):
         headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
         table = basic_table(*headers.split(','))
         conf = read_yaml(F_CONFIG)
-        solver = Solver()
-        fmt = qt_fmt if T_DTYPE == 'd' else None
+
         for f in sorted(files):
             name = Path(f).stem
             src = input_csv(b_name(f))
             vrs = read_trace(src)[1]
             row_data = [name]
-            expect = conf[name]['goal']
+            goal = conf[name]['goal'] \
+                if 'goal' in conf[name] else None
 
-            # statistics
+            # result statistics
             eqv, inq, mod, mx = 0, 0, 0, 0
             res = parse_dig_result(join(dir_path, f))
             for term in res:
@@ -358,28 +378,41 @@ def score(dir_path):
             assert len(res) == eqv + inq
 
             # equivalence check
-            z3vars = [Int(vr) for vr in vrs]
-            val = [f'z3vars[{i}]' for i in range(len(vrs))]
-            goal = tokenize(expect, TOKENS)
-            g = to_assert(vrs, val, goal, fmt=fmt)
-            match, pool, resp = False, res[:], '✗'
-
-            while pool and not match:
-                res, term = None, pool.pop()
-                solver.reset()
-                try:
-                    tkn_exp = tokenize(term, TOKENS)
-                    f = to_assert(vrs, val, tkn_exp, fmt=fmt)
-                    solver.add(Not(eval(g) == eval(f)))
-                    res = solver.check()
-                    if res == unsat:
-                        match = True
-                    elif res == unknown:
-                        resp = '?'
-                    # else => we have a cex
-                except:
-                    # print('failed', term)
-                    pass
+            match, pool, resp = False, res[:], ' '
+            if goal:
+                resp = '✗'
+                while pool and not match:
+                    term = pool.pop()
+                    res, _ = term_eq(vrs, goal, term)
+                    match = (res == unsat)
+                    resp = '?' if res == unknown else resp
             row_data.append('✔' if match else resp)
             table.add_row(row_data)
         print(table)
+
+
+def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
+    """Try to prove equivalence of two expressions.
+
+    Arguments:
+        var_list: list of variables, must include A U B.
+        t1: expression A
+        t2: expression B
+
+    Returns:
+        A pair of <result, model>.
+        * The result is one of: unsat (== proved), unknown, or no.
+        * If no, the model will be a counterexample.
+    """
+    bf = qt_fmt if T_DTYPE == 'd' else pad_neg
+    fmt = lambda x: symbo(bf(x))
+    z3v = [Int(vr) for vr in var_list]
+    values = [f'z3v[{i}]' for i in range(len(var_list))]
+    g = to_assert(var_list, values, tokenize(t1, TOKENS), fmt=fmt)
+    f = to_assert(var_list, values, tokenize(t2, TOKENS), fmt=fmt)
+    print(g, f)
+    solver = Solver()
+    solver.add(Not(eval(g) == eval(f)))
+    res = solver.check()
+    mod = solver.model() if res == sat else None
+    return res, mod

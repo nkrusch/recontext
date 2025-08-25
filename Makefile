@@ -13,7 +13,7 @@ TO := 60
 endif
 
 ifndef $DOPT # DIG options
-DOPT := -nocongruences
+DOPT :=
 endif
 
 ifndef $LOG
@@ -25,7 +25,7 @@ PYTHON := python3
 endif
 
 
-MATH_F := xy xxy xxxy 2xy 3xy 2x3y axby axbycz xymodba
+MATH_F := xy xxy xxxy 2xy+ 2xy 3xy 2x3y axby axbycz xm8a xmba xymba xm20
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 040 045 050 063 \
 		  065 067 071 077 083 084 085 087 091 093 094 095 097 099 101 \
 		  103 107 108 109 110 114 118 120 124 128 130 132 133
@@ -45,7 +45,7 @@ DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 TCL_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 
 M_PROBS := $(wildcard $(IN_TRC)/f_*.csv)
-L_PROBS := $(wildcard $(IN_TRC)/f_*.csv)
+L_PROBS := $(wildcard $(IN_TRC)/l_*.csv)
 D_PROBS := $(wildcard $(IN_TRC)/ds_*.csv)
 DIG_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
@@ -68,10 +68,12 @@ csv:   $(CSV_IN)
 
 # debugging
 dig_f: $(DIG_MTH)
+dig_l: $(DIG_LIN)
+math: clean dig_f score
+linr: clean dig_l score
 check: $(CHECKS)
 
 # trace generators
-trc:   trc_f trc_l
 trc_f: $(GEN_F)
 trc_l: $(GEN_L)
 
@@ -112,7 +114,6 @@ clean_check:
 
 clean:
 	@rm -rf $(OUT)
-
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE)
 
