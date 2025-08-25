@@ -367,15 +367,15 @@ def score(dir_path):
         goals = goal if (isinstance(goal, list)) else [goal]
 
         # result statistics
-        eqv, inq, mod, mx = 0, 0, 0, 0
         res = parse_dig_result(join(dir_path, f))
+        eqv, inq, mod, mx, inv = 0, 0, 0, 0, len(res)
         for term in res:
             pred = tokenize(term, TOKENS)
             inq += 1 if '<=' in pred else 0
             eqv += 1 if '==' in pred else 0
             mod += pred.count('%')
             mx += (pred.count('min') + pred.count('max'))
-        assert len(res) == eqv + inq
+        assert inv == eqv + inq
 
         # equivalence check
         match, pool, resp = False, res[:], '✗'
@@ -388,7 +388,7 @@ def score(dir_path):
                 match = (res == unsat)
 
         table.add_row([
-            name, len(vrs), len(res), eqv, inq, mod,
+            name, len(vrs), inv, eqv, inq, mod,
             mx, ('✔' if match else resp)])
     print(table)
 

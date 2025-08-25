@@ -100,7 +100,8 @@ method Linear23()
   var i, j := 1, 20;
   ghost var n := 0;
   while j  >= i
-    invariant j == 20 - n && i == 1 + 2 * n
+    invariant j == 20 - n 
+    invariant i == 1 + 2 * n
   {
     i := i + 2;
     j := j - 1;
@@ -113,7 +114,8 @@ method Linear24()
   var i, j := 1, 10;
   ghost var n := 0;
   while j  >= i
-    invariant j == 10 - n && i == 1 + 2 * n
+    invariant j == 10 - n 
+    invariant i == 1 + 2 * n
   {
     i := i + 2;
     j := j - 1;
@@ -250,8 +252,7 @@ method Linear65_66(a: int)
   var x, y := 1, a;
   while x <= 100
     invariant 1 <= x <= 101
-    invariant y in [a, 101 - x]
-    invariant x == 1 || y == 101 - x
+    invariant x > 1 ==> y == 101 - x
   {
     y := 100 - x;
     x := x + 1;
@@ -301,39 +302,15 @@ method Linear77_78_79(x: nat, y: nat)
   }
 }
 
-method Linear83(a: nat)
+method Linear83_84_85(a: nat, n: int)
+  requires n in [50, 5000, 15000]
   requires a > 0
 {
-  var y: nat, x := a, -5000;
+  var y: nat, x: int := a, -n;
   while x < 0
-    invariant x == (y * y - y)/2 - (a * a - a)/2 - 5000
+    invariant x == (y * y - y)/2 - (a * a - a)/2 - n
     decreases -x
   {
-    x := x + y;
-    y := y + 1;
-  }
-}
-
-method Linear84(a: nat)
-  requires a > 0
-{
-  var x, y: nat :=  -50, a;
-  while x < 0
-    invariant x == (y * y - y)/2 - (a * a - a)/2 - 50
-    decreases -x
-  {
-    x := x + y;
-    y := y + 1;
-  }
-}
-
-method Linear85(a: int)
-  requires a > 0
-{
-  var x, y: nat := -15000, a;
-  while x < 0
-    invariant x == (y * y - y)/2 - (a * a - a)/2 - 15000
-    decreases -x {
     x := x + y;
     y := y + 1;
   }

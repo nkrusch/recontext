@@ -242,6 +242,7 @@ l_025:
   vo:
   vin:
     x : [ 0, 100 ]
+    n : 100
   n: 100
 l_028:
   comment: "combines problems #28, #29"
@@ -325,7 +326,7 @@ l_065:
   vo: y
   vin:
     x: [1, 100]
-  n: 100
+  n: 500
 l_067:
   comment: "combines problems #67, #68, #70"
   formula: y = n + 1 - x
@@ -345,51 +346,35 @@ l_071:
   vin:
     y: [127, 256]
     c: [0, 36]
-  n: 100
+  n: 500
 l_077:
   comment: "combines problems #77, #78, #79"
   formula: i ≤ y ≤ x
   goal:
     - i <= y
     - y <= x
-  expr: "randint(0, 1 + 181), 181, 255"
+  expr: "randint(0, 64), 64, 128"
   vo: [i, y, x]
   vin:
-  n: 100
+  n: 500
 l_083:
-  formula: x = (y² - a² - y + a)/2 - 5000
-  goal: "x == -5000 + ((y * y - y) - (a * a - a))/2"
-  expr: "-5000 + ((y * y - y) - (a * a - a))/2"
-  vo: x
-  vin:
-    a: 48
-    y: [48, 99]
-  n: 100
-l_084:
-  formula: x = (y² - a² - y + a)/2 - 50
-  goal: "x == -50 + ((y * y - y) - (a * a - a))/2"
-  expr: "-50 + ((y * y - y) - (a * a - a))/2"
+  comment: "combines problems #83, #84, #85"
+  formula: x = (y² - a² - y + a)/2 - n
+  goal: "x == ((y * y - y) - (a * a - a))/2 - n"
+  expr: "((y * y - y) - (a * a - a))/2 - n"
   vo: x
   vin:
     a: 4
     y: [4, 11]
-  n: 100
-l_085:
-  formula: x = (y² - a² - y + a)/2 - 15000
-  goal: "x == -15000 + ((y * y - y) - (a * a - a))/2"
-  expr: "-15000 + ((y * y - y) - (a * a - a))/2"
-  vo: x
-  vin:
-    a: 112
-    y: [112, 189]
+    n: 50
   n: 100
 l_087:
   comment: "combines problems #87, #88"
   formula: (lock = 1 ∧ x = y) ∨ (lock = 0 ∧ x = y - 1)
   goal:
     - x == y - 1 + lock
-    - lock <= 1
     - 0 <= lock
+    - lock <= 1
   expr: "x if lock == 1 else x - 1"
   vo: y
   vin:
@@ -576,8 +561,8 @@ l_128:
   expr: "2 ** k"
   vo: x
   vin:
-    k: [1, 10]
-    y: 957
+    k: [1, 9]
+    y: 478
   n: 100
 l_130:
   comment: "combines problems #130, #131"
