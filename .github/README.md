@@ -29,7 +29,7 @@ The results are written to `results`.
 
 ## Inputs
 
-See `inputs.yaml` for detailed information.
+See [`inputs.yaml`](../inputs.yaml) for detailed information.
  
     DATASETS (ds)                                                              
     blink       https://archive.ics.uci.edu/dataset/754
@@ -38,7 +38,7 @@ See `inputs.yaml` for detailed information.
     wine        https://archive.ics.uci.edu/dataset/109
     
     FUNCTIONS (f)   
-    f_***       math functions 
+    f_***       pure math functions 
 
     LINEAR (l)
-    001 -- 133  progam traces
+    001 -- 133  program traces

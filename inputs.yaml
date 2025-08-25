@@ -431,16 +431,15 @@ l_094:
   n: 100
 l_095:
   comment: "combines problems #95, #96"
-  formula: (x < 0) ∨ ((i ≤ x + 1) ∧ (j = iy))
+  formula: (i ≤ x + 1) ∧ (j = iy)
   goal:
-    - x < 0
     - i <= x + 1
     - j == i * y
-  expr: "(0, 0) if x < 0 else [randint(0, x + 1)] * 2"
+  expr: "[randint(0, x + 1)] * 2"
   vo: [i, j]
   vin:
     y: 1
-    x: [-50, 100]
+    x: [0, 100]
   n: 100
 l_097:
   comment: "combines problems #97, #98"
@@ -458,18 +457,17 @@ l_097:
 l_099:
   comment: "combines problems #99, #100"
   formula: y = n - x
-  goal: "y == n - x"
+  goal: y == n - x
   expr: "n - x"
   vo: y
   vin:
-    n: 256
-    x: [0, 256]
+    n: [120, 256]
+    x: [0, 120]
   n: 100
 l_101:
   comment: "combines problems #101, #102"
-  formula: (m < 0) ∨ (0 ≤ x ≤ m)
+  formula: 0 ≤ x ≤ m
   goal:
-    - m < 0
     - 0 <= x
     - x <= m
   expr: "randint(0, m)"

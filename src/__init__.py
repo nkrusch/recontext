@@ -354,43 +354,43 @@ def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
     files = [f for f in listdir(dir_path) if f.endswith(".dig")]
-    if files:
-        headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
-        table = basic_table(*headers.split(','))
-        conf = read_yaml(F_CONFIG)
+    sources = [input_csv(b_name(f)) for f in files]
+    f_s = [x for x in zip(files, sources) if isfile(x[1])]
+    headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
+    table = basic_table(*headers.split(','))
+    conf = read_yaml(F_CONFIG)
 
-        for f in sorted(files):
-            name = Path(f).stem
-            src = input_csv(b_name(f))
-            vrs = read_trace(src)[1]
-            row_data = [name]
-            goal = conf[name]['goal']
-            goals = goal if (isinstance(goal, list)) else [goal]
+    for f, src in sorted(f_s):
+        name = Path(f).stem
+        vrs = read_trace(src)[1]
+        goal = conf[name]['goal']
+        goals = goal if (isinstance(goal, list)) else [goal]
 
-            # result statistics
-            eqv, inq, mod, mx = 0, 0, 0, 0
-            res = parse_dig_result(join(dir_path, f))
-            for term in res:
-                pred = tokenize(term, TOKENS)
-                inq += 1 if '<=' in pred else 0
-                eqv += 1 if '==' in pred else 0
-                mod += pred.count('%')
-                mx += (pred.count('min') + pred.count('max'))
-            row_data += [len(vrs), len(res), eqv, inq, mod, mx]
-            assert len(res) == eqv + inq
+        # result statistics
+        eqv, inq, mod, mx = 0, 0, 0, 0
+        res = parse_dig_result(join(dir_path, f))
+        for term in res:
+            pred = tokenize(term, TOKENS)
+            inq += 1 if '<=' in pred else 0
+            eqv += 1 if '==' in pred else 0
+            mod += pred.count('%')
+            mx += (pred.count('min') + pred.count('max'))
+        assert len(res) == eqv + inq
 
-            # equivalence check
-            match, pool, resp = False, res[:], '✗'
-            while pool and not match:
-                term, i = pool.pop(), 0
-                while i < len(goals) and not match:
-                    goal, i = goals[i], i + 1
-                    res, _ = term_eq(vrs, goal, term)
-                    resp = '?' if res == unknown else resp
-                    match = (res == unsat)
-            row_data.append('✔' if match else resp)
-            table.add_row(row_data)
-        print(table)
+        # equivalence check
+        match, pool, resp = False, res[:], '✗'
+        while pool and not match:
+            term, i = pool.pop(), 0
+            while i < len(goals) and not match:
+                goal, i = goals[i], i + 1
+                res, _ = term_eq(vrs, goal, term)
+                resp = '?' if res == unknown else resp
+                match = (res == unsat)
+
+        table.add_row([
+            name, len(vrs), len(res), eqv, inq, mod,
+            mx, ('✔' if match else resp)])
+    print(table)
 
 
 def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
