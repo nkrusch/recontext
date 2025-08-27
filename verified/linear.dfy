@@ -43,6 +43,7 @@ method Linear3_4_5(a: int, b: int, n: int)
   {
     x := x + 1;
     if z <= y {
+      
       y := z;
     }
   }
@@ -55,6 +56,7 @@ method Linear7_8(a: nat, b: nat)
   var x, y := a, b;
   ghost var n := 0;
   while *
+    invariant y == x + b - a
     invariant x == a + n * 10
     invariant y == b + n * 10
     decreases *
@@ -102,6 +104,7 @@ method Linear23()
   while j  >= i
     invariant j == 20 - n 
     invariant i == 1 + 2 * n
+    invariant i == 41 - 2 * j
   {
     i := i + 2;
     j := j - 1;
@@ -113,9 +116,10 @@ method Linear24()
 {
   var i, j := 1, 10;
   ghost var n := 0;
-  while j  >= i
+  while j  >= i    
     invariant j == 10 - n 
     invariant i == 1 + 2 * n
+    invariant i == 21 - 2 * j
   {
     i := i + 2;
     j := j - 1;

@@ -179,6 +179,7 @@ l_007:
   comment: "combines problems #7, #8"
   formula: (x = a + 10n) ∧ (y = b + 10n)
   goal:
+    - y == x + (b - a)
     - x == a + 10 * n
     - y == b + 10 * n
   expr: "a + n * 10, b + n * 10"
@@ -215,6 +216,7 @@ l_015:
 l_023:
   formula: (i = 1 + 2n) ∧ (j = 20 - n)
   goal:
+    - i == 41 - 2 * j
     - i == 1 + 2 * n
     - j == 20 - n
   expr: "1 + 2 * n, 20 - n"
@@ -225,6 +227,7 @@ l_023:
 l_024:
   formula: (i = 1 + 2n) ∧ (j = 10 - n)
   goal:
+    - i == 21 - 2 * j
     - i == 1 + 2 * n
     - j == 10 - n
   expr: "1 + 2 * n, 10 - n"
@@ -420,6 +423,7 @@ l_095:
   goal:
     - i <= x + 1
     - j == i * y
+    - j == i
   expr: "[randint(0, x + 1)] * 2"
   vo: [i, j]
   vin:

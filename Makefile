@@ -41,7 +41,7 @@ SCORE   := $(OUT)/_results.txt
 # problems
 INPUTS  := $(wildcard $(IN_TRC)/*.csv)
 DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
-TCL_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
+TCL_EXP := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
 
 M_PROBS := $(wildcard $(IN_TRC)/f_*.csv)
 L_PROBS := $(wildcard $(IN_TRC)/l_*.csv)
@@ -49,6 +49,7 @@ D_PROBS := $(wildcard $(IN_TRC)/ds_*.csv)
 DIG_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_DSS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
+TCL_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 
 # generators
 CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
@@ -57,24 +58,23 @@ GEN_F   := ${MATH_F:%=gen/f_%}
 GEN_L   := ${LINEAR:%=gen/l_%}
 
 # main recipes
-all:   csv stats host dig tacle score
+all:   stats host dig tacle score
 dig:   $(DIG_EXP)
 tacle: $(TCL_EXP)
 stats: $(STATS)
 score: $(SCORE)
 host:  $(MACHINE)
-csv:   $(CSV_IN)
 
 # debugging
-dig_f: $(DIG_MTH)
-dig_l: $(DIG_LIN)
-math: dig_f score
-linr: dig_l score
 check: $(CHECKS)
+math: $(DIG_MTH) score
+linr: $(DIG_LIN) score
+tacle_f: $(TCL_MTH)
 
 # trace generators
 trc_f: $(GEN_F)
 trc_l: $(GEN_L)
+csv:   $(CSV_IN)
 
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
