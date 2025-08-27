@@ -13,7 +13,7 @@ TO := 60
 endif
 
 ifndef $DOPT # DIG options
-DOPT :=
+DOPT := -uterms \"log(x) ; 2^x\"
 endif
 
 ifndef $LOG
@@ -43,12 +43,12 @@ SCORE   := $(OUT)/_results.txt
 
 # problems
 INPUTS  := $(wildcard $(IN_TRC)/*.csv)
-DIG_EXP := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
-TCL_EXP := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
-
 M_PROBS := $(wildcard $(IN_TRC)/f_*.csv)
 L_PROBS := $(wildcard $(IN_TRC)/l_*.csv)
 D_PROBS := $(wildcard $(IN_TRC)/ds_*.csv)
+
+DIG_ALL := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
+TCL_ALL := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
 DIG_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_DSS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
@@ -62,16 +62,16 @@ GEN_L   := ${LINEAR:%=gen/l_%}
 
 # main recipes
 all:   stats host dig tacle score
-dig:   $(DIG_EXP)
-tacle: $(TCL_EXP)
+dig:   $(DIG_ALL)
+tacle: $(TCL_ALL)
 stats: $(STATS)
 score: $(SCORE)
 host:  $(MACHINE)
 
 # debugging
-check: $(CHECKS)
-math: $(DIG_MTH) score
-linr: $(DIG_LIN) score
+check:   $(CHECKS)
+math:    $(DIG_MTH) score
+linear:  $(DIG_LIN) score
 tacle_f: $(TCL_MTH)
 
 # trace generators
@@ -96,13 +96,13 @@ gen/%:
 	$(eval fname := $(subst gen/,,$@))
 	$(PYTHON) -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
 
-$(MACHINE):
+$(MACHINE): ensure_out
 	@bash $(UTILS)/machine.sh > $@
 
-$(STATS):
+$(STATS): ensure_out
 	@$(PYTHON) -m $(UTILS) -a stats $(IN_TRC) > $@
 
-$(SCORE):
+$(SCORE): ensure_out
 	$(PYTHON) -m $(UTILS) -a score $(OUT) > $@
 
 ensure_out:
@@ -118,10 +118,3 @@ clean:
 	@rm -rf $(OUT)
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE)
-
-
-#VENV	:= .venv
-#$(VENV):
-#	@test -d .venv || python3 -m venv .venv;
-#	@source .venv/bin/activate;
-#	@pip3 install -q -r requirements.txt
