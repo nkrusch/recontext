@@ -13,7 +13,7 @@ TO := 60
 endif
 
 ifndef $DOPT # DIG options
-DOPT := -uterms \"log(x) ; 2^x\"
+DOPT := -uterms \"2^x ; 3^x \"
 endif
 
 ifndef $LOG

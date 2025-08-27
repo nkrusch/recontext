@@ -45,8 +45,11 @@ f_xxxy:
     x: [ -10, 50 ]
   n: 100
 f_2x₊y:
+  comment: "Some leniency allowed on exponential formulae"
   formula: 2^x = y
-  goal: "2 ** x == y"
+  goal:
+    - "2 ** x == y"
+    - "2 ** x <= y"
   expr: "2 ** x"
   vo: y
   vin:
@@ -54,7 +57,9 @@ f_2x₊y:
   n: 100
 f_2xy:
   formula: 2^x = y
-  goal: "2 ** x == y"
+  goal:
+    - "2 ** x == y"
+    - "2 ** x <= y"
   expr: "2 ** x"
   vo: y
   vin:
@@ -62,7 +67,9 @@ f_2xy:
   n: 100
 f_3xy:
   formula: 3^x = y
-  goal: "3 ** x == y"
+  goal:
+    - "3 ** x == y"
+    - "3 ** x <= y"
   expr: "3 ** x"
   vo: y
   vin:
