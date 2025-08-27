@@ -39,10 +39,9 @@ method Linear3_4_5(a: int, b: int, n: int)
 {
   var x, y, z := 0, a, b;
   while x < n
-    invariant y in [a, b]
-    invariant x == 0 || y <= z
-    invariant x == 0 || y == Min(a, b)
-    invariant z <= y ==> b <= a
+    invariant y in [a, b] && z == b
+    invariant z <= y <==> b <= a
+    invariant x > 0 ==> y <= z && y == Min(a, b)
   {
     x := x + 1;
     if z <= y {      
@@ -76,6 +75,7 @@ method Linear9_10(a: nat, b: nat)
   var x, y := a, b;
   ghost var n := 0;
   while *
+    invariant y == x + b - a
     invariant x == a + n * 2
     invariant y == b + n * 2
     decreases *
@@ -144,7 +144,7 @@ method Linear28_29(n : int)
 {
   var x := n;
   while x > 0
-    invariant (n < 0 && n == x) || 0 <= x <= n
+    invariant n == x || 0 <= x <= n
   {
     x := x - 1;
   }

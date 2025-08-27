@@ -44,7 +44,7 @@ f_xxxy:
   vin:
     x: [ -10, 50 ]
   n: 100
-f_2xy+:
+f_2x₊y:
   formula: 2^x = y
   goal: "2 ** x == y"
   expr: "2 ** x"
@@ -139,6 +139,22 @@ f_xymba:
     y: [ 0, 100 ]
     b: [ 1,  20 ]
   n: 100
+f_logxy:
+  formula: log x = y
+  goal: "log x = y"
+  expr: "log(x)"
+  vo: y
+  vin:
+    x: [ 0, 10000 ]
+  n: 100
+f_sinxy:
+  formula: sin x = y
+  goal: "sin x = y"
+  expr: "sin(x)"
+  vo: y
+  vin:
+    x: [ 0, 100 ]
+  n: 100
 
 # ==================================================================
 #   LINEAR PROBLEMS
@@ -167,7 +183,6 @@ l_003:
   comment: "combines problems #4, #5"
   formula: (x = 0) ∨ (y ≤ z ∧ y == min(a, b))
   goal:
-    - x == 0
     - y <= z
     - y == min(a, b)
   expr: "b, a if x == 0 else min(a, b)"
@@ -179,9 +194,9 @@ l_003:
   n: 100
 l_007:
   comment: "combines problems #7, #8"
-  formula: (x = a + 10n) ∧ (y = b + 10n)
+  formula: (y == x + b - a) ∧ (x = a + 10n) ∧ (y = b + 10n)
   goal:
-    - y == x + (b - a)
+    - y == x + b - a
     - x == a + 10 * n
     - y == b + 10 * n
   expr: "a + n * 10, b + n * 10"
@@ -193,8 +208,9 @@ l_007:
   n: 100
 l_009:
   comment: "combines problems #9, #10"
-  formula: (x = a + 2n) ∧ (y = b + 2n)
+  formula: (y == x + b - a) ∧ (x = a + 2n) ∧ (y = b + 2n)
   goal:
+    - y == x + b - a
     - x == a + 2 * n
     - y == b + 2 * n
   expr: "a + n * 2, b + n * 2"
@@ -210,13 +226,13 @@ l_015:
   goal:
     - m <= x
     - x <= z
-  expr: " randint(0, x), 124"
+  expr: "randint(0, x), randint(x, 2 * x)"
   vo: [m, z]
   vin:
-    x: [ 0, 124 ]
+    x: [ 0, 50 ]
   n: 100
 l_023:
-  formula: (i = 1 + 2n) ∧ (j = 20 - n)
+  formula: (i = 41 - 2j) ∧ (i = 1 + 2n) ∧ (j = 20 - n)
   goal:
     - i == 41 - 2 * j
     - i == 1 + 2 * n
@@ -227,7 +243,7 @@ l_023:
     n: [0, 8]
   n: 100
 l_024:
-  formula: (i = 1 + 2n) ∧ (j = 10 - n)
+  formula: (i = 21 - 2j) ∧ (i = 1 + 2n) ∧ (j = 10 - n)
   goal:
     - i == 21 - 2 * j
     - i == 1 + 2 * n
@@ -243,17 +259,15 @@ l_025:
   goal:
     - 0 <= x
     - x <= 100
-  expr: "x"
-  vo:
+  expr: "randint(0, n)"
+  vo: x
   vin:
-    x : [ 0, 100 ]
     n : 100
   n: 100
 l_028:
   comment: "combines problems #28, #29"
-  formula: ((n < 0) ∧ (x = n)) ∨ (0 ≤ x ≤ n)
+  formula: (x = n) ∨ (0 ≤ x ≤ n)
   goal:
-    - n < 0
     - x == n
     - 0 <= x
     - x <= n

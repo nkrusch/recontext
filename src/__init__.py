@@ -7,7 +7,7 @@ from os import listdir
 from os.path import isfile, basename, splitext, join
 from pathlib import Path
 from random import randint
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -25,8 +25,8 @@ T_SEP, C_SEP = ';', ','
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # Tokenization of invariant expressions(in order)
-__tkn = ('randint,else,for,and,not,max,min,mod,if,in,or,'
-         '===,==,**,<=,>=,(,),[,],*,-,+,/,%')
+__tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
+         'if,in,or,===,==,**,<=,>=,(,),[,],*,-,+,/,%')
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 WSP = '↡'  # a special symbol to mark spaces
 
@@ -393,7 +393,8 @@ def score(dir_path):
     print(table)
 
 
-def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
+def term_eq(var_list, t1, t2) \
+        -> Tuple[CheckSatResult, Optional[ModelRef]]:
     """Try to prove equivalence of two expressions.
 
     Arguments:
@@ -406,15 +407,22 @@ def term_eq(var_list, t1, t2) -> Tuple[CheckSatResult, ModelRef]:
         * The result is one of: unsat (== proved), unknown, or no.
         * If no, the model will be a counterexample.
     """
-    fmt = qt_fmt if T_DTYPE == 'd' else pad_neg
+    ttk1, ttk2 = [tokenize(x) for x in (t1, t2)]
+    for un_sup in ['log', 'sin', 'cos', 'tan']:
+        if un_sup in ttk1 or un_sup in ttk2:
+            return unknown, None
     # noinspection PyUnusedLocal
     z3v = [Int(vr) for vr in var_list]
     values = [f'z3v[{i}]' for i in range(len(var_list))]
-    g = to_assert(var_list, values, tokenize(t1), smt=True)
-    f = to_assert(var_list, values, tokenize(t2), smt=True)
+    g = to_assert(var_list, values, ttk1, smt=True)
+    f = to_assert(var_list, values, ttk2, smt=True)
     solver = Solver()
     solver.set('timeout', ENV['Z3_TO'])
-    solver.add(Not(eval(g) == eval(f)))
-    res = solver.check()
-    mod = solver.model() if res == sat else None
-    return res, mod
+    try:
+        solver.add(Not(eval(g) == eval(f)))
+        res = solver.check()
+        mod = solver.model() if res == sat else None
+        return res, mod
+    except:
+        print(f'Cannot parse {g} or {f}')
+        return unknown, None
