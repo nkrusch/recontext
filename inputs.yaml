@@ -165,15 +165,17 @@ l_001:
   n: 100
 l_003:
   comment: "combines problems #4, #5"
-  formula: (x = 0) ∨ (y ≤ z)
+  formula: (x = 0) ∨ (y ≤ z ∧ y == min(a, b))
   goal:
     - x == 0
     - y <= z
-  expr: "randint(-100,100) if x == 0 else min(randint(-100,100), z)"
-  vo: y
+    - y == min(a, b)
+  expr: "b, a if x == 0 else min(a, b)"
+  vo: [z, y]
   vin:
     x: [ 0, 100 ]
-    z: [ -100, 100 ]
+    b: [ -100, 100 ]
+    a: [ -100, 100 ]
   n: 100
 l_007:
   comment: "combines problems #7, #8"

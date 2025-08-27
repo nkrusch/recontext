@@ -39,11 +39,13 @@ method Linear3_4_5(a: int, b: int, n: int)
 {
   var x, y, z := 0, a, b;
   while x < n
+    invariant y in [a, b]
     invariant x == 0 || y <= z
+    invariant x == 0 || y == Min(a, b)
+    invariant z <= y ==> b <= a
   {
     x := x + 1;
-    if z <= y {
-      
+    if z <= y {      
       y := z;
     }
   }
