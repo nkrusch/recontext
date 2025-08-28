@@ -40,6 +40,7 @@ RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
 STATS   := $(OUT)/_inputs.txt
 SCORE   := $(OUT)/_results.txt
+ARGS_F  := config.txt
 
 # problems
 INPUTS  := $(wildcard $(IN_TRC)/*.csv)
@@ -66,7 +67,7 @@ host:  $(MACHINE)
 
 # debugging
 check:   $(CHECKS)
-math:    $(DIG_MTH) score   # -uterms \"2^x ; 3^x \"
+math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS)
 
@@ -85,7 +86,8 @@ $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 	$(PYTHON) -m $(UTILS) -a csv $< > $@
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
-	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -noarrays $(DOPT) > $@"
+	$(eval ARGS := $(shell grep $(basename $(notdir $@)) $(ARGS_F) | head -n 1 | cut -d' ' -f 2-))
+	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -noarrays $(DOPT)$(ARGS) > $@"
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
