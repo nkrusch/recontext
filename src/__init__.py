@@ -18,10 +18,12 @@ from z3 import *
 # Path to traces
 IN_DIR = 'input/traces'
 F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'DEBUG': False, **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'DEBUG': False,
+       'C_SEP': ',', **os.environ}
 
 # Format configs
-T_SEP, C_SEP = ';', ','
+T_SEP = ';'
+C_SEP = ENV['C_SEP']
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 
 # Tokenization of invariant expressions(in order)
@@ -84,7 +86,7 @@ def trace_to_csv(input_file: str):
 
 def csv_to_trace(input_file: str):
     """Convert a CSV file to a DIG trace."""
-    init = pd.read_csv(input_file, sep=',')
+    init = pd.read_csv(input_file, sep=C_SEP)
     construct_trace(init.columns, init.values)
 
 
@@ -339,10 +341,10 @@ def stats(dir_path):
 
         conf = read_yaml(F_CONFIG)
         table3 = PrettyTable(
-            ['Name', 'Formula', 'Ranges', 'Samples', 'Comments'],
+            ['#', 'Name', 'Formula', 'Ranges', 'Samples', 'Comments'],
             title='Benchmark details', align='l', min_width=6)
         fmt = lambda x: f' ∈ {x}' if x.startswith('[') else f'={x}'
-        for name, opts in sorted(conf.items()):
+        for i, (name, opts) in enumerate(sorted(conf.items())):
             fun = Namespace(**conf[name])
             nm = name.split('_')[1]
             vin = fun.vin if fun.vin else {}
@@ -358,7 +360,7 @@ def stats(dir_path):
             comm = fun.comment.replace('#', '') \
                 .replace('combines', 'comb') \
                 if 'comment' in fun else ''
-            table3.add_row([nm, fm, desc, fun.n, comm])
+            table3.add_row([i+1, nm, fm, desc, fun.n, comm])
 
         print(table1, end='\n\n')
         print(table2, end='\n\n')
@@ -372,7 +374,8 @@ def score(dir_path):
     sources = [input_csv(b_name(f)) for f in files]
     f_s = [x for x in zip(files, sources) if isfile(x[1])]
     headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
-    table = basic_table(*headers.split(','))
+    table = PrettyTable(headers.split(','), align='r')
+    table.align[table.field_names[0]] = 'l'
     conf = read_yaml(F_CONFIG)
 
     for f, src in sorted(f_s):

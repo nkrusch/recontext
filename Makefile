@@ -13,7 +13,7 @@ TO := 600
 endif
 
 ifndef $DOPT # DIG options
-DOPT := -uterms \"2^x ; 3^x \"
+DOPT :=
 endif
 
 ifndef $LOG
@@ -26,11 +26,11 @@ endif
 
 
 MATH_F := xy xxy xxxy 2x₊y 2xy 3xy 2x3y axby axbycz \
-		  xm20 xm80 xm2a xmba xymba logxy sinxy
+		  m2x0 m8x0 m2xa mbxa mbxya logxy sinxy
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 \
-		  040 045 050 063 065 067 071 077 083 087 091 \
-		  093 094 095 097 099 101 103 107 108 109 110 \
-		  114 120 124 128 130 132 133
+		  040 050 063 065 067 071 077 083 087 091 093 \
+		  094 095 097 099 101 107 108 109 110 114 120 \
+		  124 128 130 132 133
 
 # paths
 UTILS   := src
@@ -48,11 +48,9 @@ L_PROBS := $(wildcard $(IN_TRC)/l_*.csv)
 D_PROBS := $(wildcard $(IN_TRC)/ds_*.csv)
 
 DIG_ALL := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
-TCL_ALL := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
 DIG_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_DSS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
-TCL_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 
 CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
@@ -62,21 +60,25 @@ GEN_L   := ${LINEAR:%=gen/l_%}
 # main recipes
 all:   stats host dig tacle score
 dig:   $(DIG_ALL)
-tacle: $(TCL_ALL)
 stats: $(STATS)
 score: $(SCORE)
 host:  $(MACHINE)
 
 # debugging
 check:   $(CHECKS)
-math:    $(DIG_MTH) score
+math:    $(DIG_MTH) score   # -uterms \"2^x ; 3^x \"
 linear:  $(DIG_LIN) score
+sets:    $(DIG_DSS)
+
+TCL_ALL := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
+TCL_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
+tacle: 	 $(TCL_ALL)
 tacle_f: $(TCL_MTH)
+csv:   	 $(CSV_IN)
 
 # trace generators
 trc_f: $(GEN_F)
 trc_l: $(GEN_L)
-csv:   $(CSV_IN)
 
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv

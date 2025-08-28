@@ -104,21 +104,21 @@ f_axbycz:
     b: [ -100, 100 ]
     c: [ -100, 100 ]
   n: 100
-f_xm20:
+f_m2x0:
   formula: x % 2 = 0
   goal: "x % 2 == 0"
   expr: "randint(0, 100) * 2"
   vo: x
   vin:
   n: 100
-f_xm80:
+f_m8x0:
   formula: x % 8 = 0
   goal: "x % 8 == 0"
   expr: "randint(0, 100) * 8"
   vo: x
   vin:
   n: 100
-f_xm2a:
+f_m2xa:
   formula: x % 2 = a
   goal:
     - x % 2 == a
@@ -129,7 +129,7 @@ f_xm2a:
   vin:
     x: [ 0, 100 ]
   n: 100
-f_xmba:
+f_mbxa:
   formula: x % b = a
   goal:
     - x % b == a
@@ -140,7 +140,7 @@ f_xmba:
     x: [ 0, 100 ]
     b: [ 1,  20 ]
   n: 100
-f_xymba:
+f_mbxya:
   formula: (x + y) % b = a
   goal:
     - (x + y) % b == a
@@ -176,7 +176,7 @@ f_sinxy:
 # ==================================================================
 # source: https://github.com/PL-ML/code2inv
 #
-# Initially the suite has 133 benchmarks, but we keep 39.
+# Initially the suite has 133 benchmarks, but we keep 38.
 # The remaining problems have different traces.
 #
 #  9 are invalid => removed
