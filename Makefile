@@ -9,7 +9,7 @@ OUT := ./results
 endif
 
 ifndef $TO # seconds
-TO := 60
+TO := 600
 endif
 
 ifndef $DOPT # DIG options
@@ -54,7 +54,6 @@ DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_DSS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 TCL_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
 
-# generators
 CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
 GEN_F   := ${MATH_F:%=gen/f_%}

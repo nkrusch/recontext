@@ -18,7 +18,7 @@ from z3 import *
 # Path to traces
 IN_DIR = 'input/traces'
 F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'DEBUG': False, **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ','
@@ -257,7 +257,6 @@ def check(dig_result: str) -> bool:
             lit = to_assert(occ, val, pred)
             literals.append(lit)
             try:
-                print(lit)
                 solver.add(eval(lit))
             except z3types.Z3Exception:
                 sc, cex = '⚠ symbolic', lit
@@ -318,12 +317,6 @@ def generate(f_name):
     construct_trace(vin + v_out, data)
 
 
-def basic_table(*headers):
-    table = PrettyTable(headers, align='r')
-    table.align[table.field_names[0]] = 'l'
-    return table
-
-
 def stats(dir_path):
     """Display statistics about a directory."""
     files = [f for f in listdir(dir_path)
@@ -334,20 +327,39 @@ def stats(dir_path):
         pt, ct = Counter(cats), Counter(vl)
         mn, mx = min(vl), max(vl)
 
-        table1 = basic_table('Kind', 'Count')
-        rows = [list((f'trace {k.upper()}', y))
-                for k, y in pt.items()]
-        table1.add_rows(rows)
-        table1.add_row(['TOTAL', sum(pt.values())])
+        pt['Total'] = sum(pt.values())
+        table1 = PrettyTable(list(pt.keys()), title='Traces by kind')
+        table1.add_row(list(pt.values()))
 
-        table2 = basic_table('Variables', 'Freq')
-        rows = [list((f'count {n}', 0 if n not in ct else ct[n]))
-                for n in range(mn, mx + 1)]
-        table2.add_rows(rows)
-        table2.add_row(['TOTAL', sum(vl)])
+        scope = range(mn, mx + 1)
+        dct = {**dict([(x, 0) for x in scope]), **ct, 'Total': sum(vl)}
+        table2 = PrettyTable(
+            list(dct.keys()), title='Variable frequencies')
+        table2.add_row(list(dct.values()))
 
-        print(table1)
-        print(table2)
+        conf = read_yaml(F_CONFIG)
+        table3 = PrettyTable(
+            ['Name', 'Formula', 'Ranges', 'Comments'],
+            title='Benchmark details', align='l', min_width=10,
+            max_width=30, max_table_width=80, )
+        fmt = lambda x: f' ∈ {x}' if x.startswith('[') else f'={x}'
+        for name, opts in conf.items():
+            fun = Namespace(**conf[name])
+            nm = name.split('_')[1]
+            vin = fun.vin if fun.vin else { }
+            uniq_v = set([str(x) for x in vin.values()])
+            uv = dict([(vl, '') for vl in uniq_v])
+
+            for k, val in vin.items():
+                uu = uv[str(val)]
+                uv[str(val)] = (k if uu == '' else f'{uu}, {k}')
+            desc = ' '.join([f'{k}{fmt(r)}' for r, k in uv.items()])
+            comm = fun.comment if 'comment' in fun else ''
+            table3.add_row([nm, fun.formula, desc, comm])
+
+        print(table1, end='\n\n')
+        print(table2, end='\n\n')
+        print(table3)
 
 
 def score(dir_path):
@@ -418,11 +430,11 @@ def term_eq(var_list, t1, t2) \
     f = to_assert(var_list, values, ttk2, smt=True)
     solver = Solver()
     solver.set('timeout', ENV['Z3_TO'])
-    try:
-        solver.add(Not(eval(g) == eval(f)))
-        res = solver.check()
-        mod = solver.model() if res == sat else None
-        return res, mod
-    except:
-        print(f'Cannot parse {g} or {f}')
-        return unknown, None
+    # try:
+    solver.add(Not(eval(g) == eval(f)))
+    res = solver.check()
+    mod = solver.model() if res == sat else None
+    return res, mod
+    # except:
+    #     print(f'Cannot parse {g} or {f}')
+    #     return unknown, None

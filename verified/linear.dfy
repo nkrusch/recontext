@@ -129,7 +129,7 @@ method Linear24()
   }
 }
 
-method Linear25_30(n: nat)
+method Linear25_30_103(n: nat)
   requires n in [100, 10000]
 {
   var x := n;
@@ -167,7 +167,7 @@ method Linear35_36_37()
   }
 }
 
-method Linear38_39(n: int)
+method Linear38_39_45_46_47_48_49(n: int)
   requires n > 0
   decreases *
 {
@@ -204,24 +204,6 @@ method Linear40_41_42_43_44_56_57(n: int)
   }
 }
 
-method Linear45_46_47_48_49(n: int)
-  requires n > 0
-  decreases *
-{
-  var c := 0;
-  while *
-    invariant 0 <= c <= n
-    decreases * {
-    if * {
-      if c != n {
-        c := c + 1;
-      }
-    } else {
-      if c == n {
-        c := 1;
-      }}
-  }
-}
 
 method Linear50_51_52()
   decreases *
@@ -425,14 +407,6 @@ method Linear101_102(n: int)
   while x < n
     invariant n < 0 || 0 <= x <= n
   {
-    x := x + 1;
-  }
-}
-
-method Linear103()
-{
-  var x := 0;
-  while x < 100 {
     x := x + 1;
   }
 }
