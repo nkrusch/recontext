@@ -339,23 +339,26 @@ def stats(dir_path):
 
         conf = read_yaml(F_CONFIG)
         table3 = PrettyTable(
-            ['Name', 'Formula', 'Ranges', 'Comments'],
-            title='Benchmark details', align='l', min_width=10,
-            max_width=30, max_table_width=80, )
+            ['Name', 'Formula', 'Ranges', 'Samples', 'Comments'],
+            title='Benchmark details', align='l', min_width=6)
         fmt = lambda x: f' ∈ {x}' if x.startswith('[') else f'={x}'
-        for name, opts in conf.items():
+        for name, opts in sorted(conf.items()):
             fun = Namespace(**conf[name])
             nm = name.split('_')[1]
-            vin = fun.vin if fun.vin else { }
+            vin = fun.vin if fun.vin else {}
             uniq_v = set([str(x) for x in vin.values()])
             uv = dict([(vl, '') for vl in uniq_v])
-
             for k, val in vin.items():
                 uu = uv[str(val)]
                 uv[str(val)] = (k if uu == '' else f'{uu}, {k}')
+            fm = fun.formula
+            for x in ['+', '-', '=', '≤', '%']:
+                fm = fm.replace(f' {x} ', x)
             desc = ' '.join([f'{k}{fmt(r)}' for r, k in uv.items()])
-            comm = fun.comment if 'comment' in fun else ''
-            table3.add_row([nm, fun.formula, desc, comm])
+            comm = fun.comment.replace('#', '') \
+                .replace('combines', 'comb') \
+                if 'comment' in fun else ''
+            table3.add_row([nm, fm, desc, fun.n, comm])
 
         print(table1, end='\n\n')
         print(table2, end='\n\n')

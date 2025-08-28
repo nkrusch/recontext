@@ -45,7 +45,7 @@ f_xxxy:
     x: [ -10, 50 ]
   n: 100
 f_2x₊y:
-  formula: 2^x = y
+  formula: 2ˣ = y
   goal:
     - "2 ** x == y"
     - "2 ** x <= y"
@@ -55,7 +55,7 @@ f_2x₊y:
     x: [ 0, 30 ]
   n: 100
 f_2xy:
-  formula: 2^x = y
+  formula: 2ˣ = y
   goal:
     - "2 ** x == y"
     - "2 ** x <= y"
@@ -65,7 +65,7 @@ f_2xy:
     x: [ -10, 50 ]
   n: 100
 f_3xy:
-  formula: 3^x = y
+  formula: 3ˣ = y
   goal:
     - "3 ** x == y"
     - "3 ** x <= y"
@@ -200,7 +200,7 @@ l_001:
   n: 100
 l_003:
   comment: "combines #4, #5"
-  formula: x = 0 ∨ (y ≤ z ∧ y == min(a, b))
+  formula: x = 0 ∨ (y ≤ z ∧ y = min(a, b))
   goal:
     - y <= z
     - y == min(a, b)
@@ -307,7 +307,7 @@ l_035:
     c : [ 0, 40 ]
   n: 100
 l_038:
-  comment: "combines #38, #39 #45, #46, #47, #48, #49"
+  comment: "combines #38, #39, #45, #46, #47, #48, #49"
   formula: 0 ≤ c ≤ n
   goal:
     - 0 <= c
@@ -353,7 +353,7 @@ l_065:
   vo: y
   vin:
     x: [1, 100]
-  n: 500
+  n: 100
 l_067:
   comment: "combines #67, #68, #70"
   formula: y = n + 1 - x
@@ -373,7 +373,7 @@ l_071:
   vin:
     y: [127, 256]
     c: [0, 36]
-  n: 500
+  n: 100
 l_077:
   comment: "combines #77, #78, #79"
   formula: i ≤ y ≤ x
@@ -385,7 +385,7 @@ l_077:
   vin:
     y: 64
     x: 128
-  n: 500
+  n: 100
 l_083:
   comment: "combines #83, #84, #85"
   formula: x = (y² - a² - y + a)/2 - n
@@ -399,7 +399,7 @@ l_083:
   n: 100
 l_087:
   comment: "combines #87, #88"
-  formula: x == y - 1 + lock
+  formula: x = y - 1 + lock
   goal:
     - x == y - 1 + lock
     - 0 <= lock
@@ -600,7 +600,7 @@ l_130:
     b: [-20, 100]
   n: 100
 l_132:
-  formula: 0 < t < 9 ∧ c = 48 + t ∧ j = 2t2ᵏ - 2t ∧ i = j + t
+  formula: 1 ≤ t ≤ 8 ∧ c = 48 + t ∧ j = 2t2ᵏ - 2t ∧ i = j + t
   goal:
     - 0 < t
     - t < 9
