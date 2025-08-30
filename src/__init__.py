@@ -302,9 +302,8 @@ def rand_data(in_vars, ranges, expr, n_out):
     return data
 
 
-def vos(conf_vo):
-    return conf_vo if isinstance(conf_vo, list) \
-        else ([conf_vo] if conf_vo else [])
+def vos(vout):
+    return [vout] if isinstance(vout, str) else (vout or [])
 
 
 def c_vars(conf):
@@ -344,7 +343,7 @@ def stats(dir_path):
         scope = range(mn, mx + 1)
         dct = {**dict([(x, 0) for x in scope]), **ct, 'Total': sum(vl)}
         table2 = PrettyTable(list(dct.keys()))
-        table2.title='Variable count distribution'
+        table2.title = 'Variable count distribution'
         table2.add_row(list(dct.values()))
 
         ds = [f for f in files if f.startswith("ds_")]
@@ -400,8 +399,6 @@ def score(dir_path):
     for f, src in sorted(f_s):
         name = Path(f).stem
         vrs = read_trace(src)[1]
-        goal = conf[name]['goal']
-        goals = goal if (isinstance(goal, list)) else [goal]
 
         # result statistics
         res = parse_dig_result(join(dir_path, f))
@@ -415,14 +412,18 @@ def score(dir_path):
         assert inv == eqv + inq
 
         # equivalence check
-        match, pool, resp = False, res[:], '✗'
-        while pool and not match:
-            term, i = pool.pop(), 0
-            while i < len(goals) and not match:
-                goal, i = goals[i], i + 1
-                res, _ = term_eq(vrs, goal, term)
-                resp = '?' if res == unknown else resp
-                match = (res == unsat)
+        match, resp = False, ''
+        if f.startswith('f') or f.startswith('l'):
+            goal = conf[name]['goal']
+            goals = goal if (isinstance(goal, list)) else [goal]
+            pool, resp = res[:], '✗'
+            while pool and not match:
+                term, i = pool.pop(), 0
+                while i < len(goals) and not match:
+                    goal, i = goals[i], i + 1
+                    res, _ = term_eq(vrs, goal, term)
+                    resp = '?' if res == unknown else resp
+                    match = (res == unsat)
 
         table.add_row([
             name, len(vrs), inv, eqv, inq, mod,

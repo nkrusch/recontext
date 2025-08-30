@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Capture details of running host
-SOFTWARE=(make python pip)
+SOFTWARE=(make python3 pip3)
 
 version() {
   vc="$1 ${2:-"--version"}"

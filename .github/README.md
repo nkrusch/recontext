@@ -1,4 +1,4 @@
-# Invariant Discovery Experiments
+# Invariant discovery experiments
 
 This repository provides an experimental setting for _dynamic invariant detection_ over numeric data.
 
@@ -9,15 +9,17 @@ on [input traces](../input).
 ## Getting Started
 
 **Prerequisites.** &nbsp; 
-[git](https://git-scm.com/downloads), 
-[make](https://www.gnu.org/software/make/), and 
-[Python](https://www.python.org/downloads/).
+[git](https://git-scm.com/downloads) and [make](https://www.gnu.org/software/make/) (reasonably recent) 
+and [Python](https://www.python.org/downloads/) 3.11 or later.
+
+The commands `python3` should resolve to the intended runtime.
+
 
 **Setup steps.** Clone the repository and install dependencies.
 
     git clone --recurse-submodules https://github.com/nkrusch/invariants.git
     cd invariants
-    pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
 
 **Experiments.** Run all experiments at once.
 
@@ -25,9 +27,9 @@ on [input traces](../input).
 
 The results are written to `results` directory.
 
-**Additional actions**
+Generate plots of inference results:
 
-    make score                       : Generate table plots of inference results
+    make score                       
 
 
 ## Inputs
