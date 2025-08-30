@@ -24,6 +24,10 @@ ifndef $PYTHON
 PYTHON := python3
 endif
 
+ifndef $TMP
+TMP := .tmp
+endif
+
 
 MATH_F := xy xxy xxxy 2x₊y 2xy 3xy 2x3y axby axbycz \
 		  m2x0 m8x0 m2xa mbxa mbxya logxy sinxy
@@ -52,6 +56,7 @@ DIG_ALL := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_LIN := ${L_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_DSS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
+DIG_UPS := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.digup}
 
 CHECKS  := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 CSV_IN  := ${INPUTS:$(IN_TRC)/%.csv=$(IN_CSV)/%.csv}
@@ -65,12 +70,12 @@ host:  $(MACHINE)
 dig:   $(DIG_ALL)
 score: $(SCORE)
 
-# debugging
+# debugging + generators
 check:   $(CHECKS)
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS)
-# generators
+sets2:   $(DIG_UPS)
 trc_f:   $(GEN_F)
 trc_l:   $(GEN_L)
 
@@ -90,6 +95,8 @@ $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
 
 $(OUT)/%.digup: $(IN_TRC)/%.csv ensure_out
 	$(RUNNER) "python3 src/digup.py $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
+	@$(RUNNER) "python3 src/digup.py $@"
+
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
@@ -121,6 +128,6 @@ clean_tmp:
 	@rm -rf $(LOG)
 
 clean:
-	@rm -rf $(OUT)
+	@rm -rf $(OUT) $(TMP)
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE)

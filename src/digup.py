@@ -1,11 +1,13 @@
 import os
+import shutil
 import subprocess
 import sys
 from itertools import combinations as comb
 from os.path import join, dirname, abspath
 from pathlib import Path
 
-from __init__ import read_trace, construct_trace, parse_dig_str
+from __init__ import read_trace, construct_trace, parse_dig_str, \
+    read, input_csv, b_name
 
 ENV = {'MAXV': 3, 'TMP': '.tmp', **os.environ}
 MAX_VAR, TMP = ENV['MAXV'], ENV['TMP']
@@ -16,7 +18,15 @@ def construct_fn(base_name, indices):
 
 
 def __analyze(indices, name, args, trace, variables):
-    """A generator for tracing"""
+    """A generator for invariant inference.
+
+    Arguments:
+        indices: list of indices to analyze
+        name: benchmark name
+        args: Dig arguments
+        trace: input data
+        variables: trace variables
+    """
     for ix in indices:
         tmp_in = join(TMP, construct_fn(name, ix))
         vrs = [v for i, v in enumerate(variables) if i in ix]
@@ -39,29 +49,70 @@ def i_filter(hst, cand):
     return True
 
 
-def main():
-    """Modified Dig that partitions input."""
-    fp, *args = sys.argv[1:]
-    _, vrs = tp = read_trace(fp)
+def cleanup():
+    """Cleanup tasks after analyzer run."""
+    shutil.rmtree(TMP, ignore_errors=True)
+
+
+def add_num(offset, values):
+    """Number a list of values."""
+    return [f'{offset + n}. {x}' for n, x in enumerate(values)]
+
+
+def main(fp, *args):
+    """Modified Dig run that partitions the input trace.
+
+    If number of variables is low (<= 6), runs regular Dig.
+    Otherwise, sample at most MAX_VARS and analyze a subset
+    of the traces.
+
+    Arguments:
+        fp: path to input trace
+        *args: Dig arguments
+    """
+    trc, vrs, tloc = read_trace(fp)
     n_vars, recount, history = len(vrs), 1, {}
-    max_v = min(MAX_VAR, n_vars)
     flt = lambda x: i_filter(history, x)
     Path(TMP).mkdir(parents=True, exist_ok=True)
-
-    ids = [comb(range(n_vars), sz) for sz in range(max_v, max_v + 1)]
-    ids = [x for lst in ids for x in lst]
-    ids.reverse()  # longest subsets first
+    if n_vars <= 6:  # no subset if low count
+        ids = [tuple(range(0, n_vars))]
+    else:  # otherwise, make combinations of size=MAX_VAR
+        pick_n = range(MAX_VAR, MAX_VAR + 1)
+        ids = [comb(range(n_vars), sz) for sz in pick_n]
+        ids = [x for lst in ids for x in lst]
+        ids.reverse()
 
     # generator
-    for item in __analyze(ids, Path(fp).stem, args, *tp):
-        if inv := parse_dig_str(item):
-            inv = list(filter(flt, inv))
-        if inv:
-            res = [f'{recount + n}. {x}' for n, x in enumerate(inv)]
-            print('\n'.join(res), end='\n')
+    print(header(tloc))
+    for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
+        if inv := list(filter(flt, parse_dig_str(item))):
+            print('\n'.join(add_num(recount, inv)))
             recount += len(inv)
-    Path(TMP).rmdir()
+    cleanup()
+
+
+def header(tloc, count='?'):
+    """Format a result header."""
+    return f'{tloc} ({count} invs):'
+
+
+def reform(fp):
+    """Rewrite stream result to sorted format."""
+    source = input_csv(b_name(fp))
+    tloc = read_trace(source)[-1]
+    lines = (read(fp) or '').strip().split('\n')
+    if lines:
+        nums = [x for x in lines[1:] if '. ' in x]
+        (ins := [ln.split('. ', 1)[1] for ln in nums]).sort(key=len)
+        lines = add_num(1, ins)
+    data = '\n'.join([header(tloc, str(len(lines)))] + lines)
+    with open(fp, 'w') as f:
+        f.write(data)
 
 
 if __name__ == "__main__":
-    main()
+    input_file, *args = sys.argv[1:]
+    if input_file.endswith('.csv'):
+        main(input_file, *args)
+    if input_file.endswith('.digup'):
+        reform(input_file)

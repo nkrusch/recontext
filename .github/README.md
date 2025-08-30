@@ -32,6 +32,13 @@ Run all experiments at once.
 The results, including plots, are written to `results` directory.
 
 
+**Digup** is a wrapper for dig, that partitions the input trace and yields intermediate results based on the partitions.
+Running digup requires one positional argument: the input `[TRACE]`. Arguments after the trace are forwarded to Dig as-is.
+
+```
+python3 src/digup.py [TRACE] [DIG-ARGS]
+```
+
 ## Inputs
 
 * See [`inputs.yaml`](../inputs.yaml) for detailed descriptions of function and linear invariants.

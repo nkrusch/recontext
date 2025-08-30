@@ -52,17 +52,17 @@ def read_yaml(path):
         return yaml.safe_load(yml)
 
 
-def read_trace(path: str) -> Tuple[np.array, List[str]]:
+def read_trace(path: str) -> Tuple[np.array, List[str], str]:
     """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
-    idx_slice, variables = [], []
+    idx_slice, variables, t_loc = [], [], df.columns[0]
     for i, c in enumerate(df.columns[1:]):
         if not c.lower().startswith('unnamed:'):
             if c2 := str(c).strip().replace(T_PREFIX, ''):
                 idx_slice.append(i + 1)
                 variables.append(c2)
     data = np.array(df.values[:, idx_slice], dtype=T_DTYPE)
-    return data, variables
+    return data, variables, t_loc
 
 
 def input_csv(bench_name):
@@ -250,7 +250,7 @@ def check(dig_result: str) -> bool:
     if not predicates:
         return True
 
-    data, var = read_trace(src)
+    data, var, _ = read_trace(src)
     table = PrettyTable(["P(…)", "eval(P)", "CEX"])
     solver = Solver()
     all_true = True
@@ -348,13 +348,14 @@ def stats(dir_path):
         scope = range(mn, mx + 1)
         dct = {**dict([(x, 0) for x in scope]), **ct, 'Total': sum(vl)}
         table2 = PrettyTable(list(dct.keys()))
-        table2.title = 'Variable count distribution'
+        table2.title = 'Variable counts (frequency)'
         table2.add_row(list(dct.values()))
 
         ds = [f for f in files if f.startswith("ds_")]
-        fmap = lambda f: map(len, read_trace(join(dir_path, f)))
-        data = [(f.split('.')[0],) + tuple(fmap(f)) for f in ds]
-        table3 = PrettyTable(['Name', 'Samples', 'Vars'])
+        fmap = lambda f: map(len, read_trace(join(dir_path, f))[:2])
+        vals = lambda f: tuple(reversed(list(fmap(f))))
+        data = [(f.split('.')[0],) + vals(f) for f in ds]
+        table3 = PrettyTable(['Name', 'Vars', 'Samples'])
         table3.align[table3.field_names[0]] = 'l'
         table3.title = 'Datasets'
         table3.add_rows(sorted(data))
@@ -366,8 +367,8 @@ def stats(dir_path):
         conf = read_yaml(F_CONFIG)
         cv = conf.values()
         data = [('Name', list(conf)),
-                ('Samples', [x['n'] for x in cv]),
                 ('Vars', [len(c_vars(x)) for x in cv]),
+                ('Samples', [x['n'] for x in cv]),
                 ('Formula', [fft(x['formula']) for x in cv]),
                 ('Ranges', ranges := [])]
 
