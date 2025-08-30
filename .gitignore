@@ -1,7 +1,5 @@
 *.rkt#*#
-results
-env
-traces/csv
-.venv
 *.pyc
-input/csv
+.venv
+env
+results

@@ -7,7 +7,7 @@ from os import listdir
 from os.path import isfile, basename, splitext, join
 from pathlib import Path
 from random import randint
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -22,9 +22,9 @@ ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'DEBUG': False,
        'C_SEP': ',', **os.environ}
 
 # Format configs
-T_SEP = ';'
-C_SEP = ENV['C_SEP']
+T_SEP, C_SEP = ';', ENV['C_SEP']
 T_PREFIX, T_LABEL = 'I ', 'trace1'
+Z3_TO = ENV['Z3_TO']
 
 # Tokenization of invariant expressions(in order)
 __tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
@@ -302,6 +302,15 @@ def rand_data(in_vars, ranges, expr, n_out):
     return data
 
 
+def vos(conf_vo):
+    return conf_vo if isinstance(conf_vo, list) \
+        else ([conf_vo] if conf_vo else [])
+
+
+def c_vars(conf):
+    return list((conf['vin'] or {}).keys()) + vos(conf['vo'])
+
+
 def generate(f_name):
     """Generate random function traces based on config template."""
     conf = read_yaml(F_CONFIG)
@@ -312,8 +321,7 @@ def generate(f_name):
     pred = tokenize(fun.expr, TOKENS)
     f_in = fun.vin if fun.vin else {}
     vin, ranges = list(f_in.keys()), list(f_in.values())
-    v_out = (fun.vo if isinstance(fun.vo, list)
-             else [fun.vo] if fun.vo else [])
+    v_out = vos(fun.vo)
     data = [rand_data(vin, ranges, pred, len(v_out))
             for _ in range(fun.n)]
     construct_trace(vin + v_out, data)
@@ -335,36 +343,47 @@ def stats(dir_path):
 
         scope = range(mn, mx + 1)
         dct = {**dict([(x, 0) for x in scope]), **ct, 'Total': sum(vl)}
-        table2 = PrettyTable(
-            list(dct.keys()), title='Variable frequencies')
+        table2 = PrettyTable(list(dct.keys()))
+        table2.title='Variable count distribution'
         table2.add_row(list(dct.values()))
 
-        conf = read_yaml(F_CONFIG)
-        table3 = PrettyTable(
-            ['#', 'Name', 'Formula', 'Ranges', 'Samples', 'Comments'],
-            title='Benchmark details', align='l', min_width=6)
+        ds = [f for f in files if f.startswith("ds_")]
+        fmap = lambda f: map(len, read_trace(join(dir_path, f)))
+        data = [(f.split('.')[0],) + tuple(fmap(f)) for f in ds]
+        table3 = PrettyTable(['Name', 'Samples', 'Vars'])
+        table3.align[table3.field_names[0]] = 'l'
+        table3.title = 'Datasets'
+        table3.add_rows(sorted(data))
+
+        kfm = lambda l: ','.join(sorted(l))
         fmt = lambda x: f' ∈ {x}' if x.startswith('[') else f'={x}'
-        for i, (name, opts) in enumerate(sorted(conf.items())):
-            fun = Namespace(**conf[name])
-            nm = name.split('_')[1]
-            vin = fun.vin if fun.vin else {}
-            uniq_v = set([str(x) for x in vin.values()])
-            uv = dict([(vl, '') for vl in uniq_v])
+        fft = lambda f: f.replace(' ', '')
+
+        conf = read_yaml(F_CONFIG)
+        cv = conf.values()
+        data = [('Name', list(conf)),
+                ('Samples', [x['n'] for x in cv]),
+                ('Vars', [len(c_vars(x)) for x in cv]),
+                ('Formula', [fft(x['formula']) for x in cv]),
+                ('Ranges', ranges := [])]
+
+        for vin in [opts['vin'] or {} for opts in cv]:
+            uniq = set(map(str, vin.values()))
+            rgs = dict([(uq, []) for uq in uniq])
             for k, val in vin.items():
-                uu = uv[str(val)]
-                uv[str(val)] = (k if uu == '' else f'{uu}, {k}')
-            fm = fun.formula
-            for x in ['+', '-', '=', '≤', '%']:
-                fm = fm.replace(f' {x} ', x)
-            desc = ' '.join([f'{k}{fmt(r)}' for r, k in uv.items()])
-            comm = fun.comment.replace('#', '') \
-                .replace('combines', 'comb') \
-                if 'comment' in fun else ''
-            table3.add_row([i+1, nm, fm, desc, fun.n, comm])
+                rgs[str(val)].append(k)
+            rg = [kfm(k) + fmt(r) for r, k in rgs.items()]
+            ranges.append(' '.join(rg))
+
+        table4 = PrettyTable(title='Invariant benchmarks', align='l')
+        [table4.add_column(*c) for c in data]
+        for i in range(len(data)):
+            table4.align[table4.field_names[i]] = 'l'
 
         print(table1, end='\n\n')
+        print(table3, end='\n\n')
+        print(table4, end='\n\n')
         print(table2, end='\n\n')
-        print(table3)
 
 
 def score(dir_path):
@@ -411,8 +430,7 @@ def score(dir_path):
     print(table)
 
 
-def term_eq(var_list, t1, t2) \
-        -> Tuple[CheckSatResult, Optional[ModelRef]]:
+def term_eq(var_list, t1, t2):
     """Try to prove equivalence of two expressions.
 
     Arguments:
@@ -435,12 +453,8 @@ def term_eq(var_list, t1, t2) \
     g = to_assert(var_list, values, ttk1, smt=True)
     f = to_assert(var_list, values, ttk2, smt=True)
     solver = Solver()
-    solver.set('timeout', ENV['Z3_TO'])
-    # try:
+    solver.set('timeout', Z3_TO)
     solver.add(Not(eval(g) == eval(f)))
     res = solver.check()
     mod = solver.model() if res == sat else None
     return res, mod
-    # except:
-    #     print(f'Cannot parse {g} or {f}')
-    #     return unknown, None

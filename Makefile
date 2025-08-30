@@ -59,27 +59,26 @@ GEN_F   := ${MATH_F:%=gen/f_%}
 GEN_L   := ${LINEAR:%=gen/l_%}
 
 # main recipes
-all:   stats host dig tacle score
-dig:   $(DIG_ALL)
+all:   stats host dig score
 stats: $(STATS)
-score: $(SCORE)
 host:  $(MACHINE)
+dig:   $(DIG_ALL)
+score: $(SCORE)
 
 # debugging
 check:   $(CHECKS)
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS)
+# generators
+trc_f:   $(GEN_F)
+trc_l:   $(GEN_L)
 
+# tacle
 TCL_ALL := ${INPUTS:$(IN_CSV)/%.csv=$(OUT)/%.tacle}
 TCL_MTH := ${M_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.tacle}
-tacle: 	 $(TCL_ALL)
-tacle_f: $(TCL_MTH)
+tacle: 	 $(TCL_MTH)
 csv:   	 $(CSV_IN)
-
-# trace generators
-trc_f: $(GEN_F)
-trc_l: $(GEN_L)
 
 
 $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
@@ -114,8 +113,9 @@ ensure_out:
 ensure_csv:
 	@mkdir -p $(IN_CSV)
 
-clean_check:
+clean_tmp:
 	@rm -rf $(OUT)/*.check
+	@rm -rf $(LOG)
 
 clean:
 	@rm -rf $(OUT)

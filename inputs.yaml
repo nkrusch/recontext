@@ -105,21 +105,21 @@ f_axbycz:
     c: [ -100, 100 ]
   n: 100
 f_m2x0:
-  formula: x % 2 = 0
+  formula: x ≡ 0 (mod 2)
   goal: "x % 2 == 0"
   expr: "randint(0, 100) * 2"
   vo: x
   vin:
   n: 100
 f_m8x0:
-  formula: x % 8 = 0
+  formula: x ≡ 0 (mod 8)
   goal: "x % 8 == 0"
   expr: "randint(0, 100) * 8"
   vo: x
   vin:
   n: 100
 f_m2xa:
-  formula: x % 2 = a
+  formula: x ≡ a (mod 2)
   goal:
     - x % 2 == a
     - (x - a) % 2 == 0
@@ -130,7 +130,7 @@ f_m2xa:
     x: [ 0, 100 ]
   n: 100
 f_mbxa:
-  formula: x % b = a
+  formula: x ≡ a (mod b)
   goal:
     - x % b == a
     - (x + a) % b == 0
@@ -141,7 +141,7 @@ f_mbxa:
     b: [ 1,  20 ]
   n: 100
 f_mbxya:
-  formula: (x + y) % b = a
+  formula: x + y ≡ a (mod b)
   goal:
     - (x + y) % b == a
     - (x + y + a) % b == 0
@@ -213,7 +213,7 @@ l_003:
   n: 100
 l_007:
   comment: "combines #7, #8"
-  formula: y == x + b - a ∧ x = a + 10n ∧ y = b + 10n
+  formula: x = a + 10n ∧ y = b + 10n
   goal:
     - y == x + b - a
     - x == a + 10 * n
@@ -227,7 +227,7 @@ l_007:
   n: 100
 l_009:
   comment: "combines #9, #10"
-  formula: y == x + b - a ∧ x = a + 2n ∧ y = b + 2n
+  formula: x = a + 2n ∧ y = b + 2n
   goal:
     - y == x + b - a
     - x == a + 2 * n

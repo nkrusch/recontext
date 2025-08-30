@@ -1,25 +1,10 @@
-# Experiments on Discovering Invariants
+# Invariant Discovery Experiments
 
-This repository provides an experimental setting for invariant detection over numeric data.
+This repository provides an experimental setting for _dynamic invariant detection_ over numeric data.
 
-With the provided tooling it is possible to:
-* generate traces from known invariants,
-* run invariant inference on traces using Dig, and
-* alternatively, run the inference using Tacle.
-
-Additionally, it is possible to:
-* generate table plots of results (`make score`),
-* generate statistics of inputs (`make stats`),  
-* capture host machines details (`make host`), and
-* run sanity check to confirm dig results are SAT (`make check`).
-* convert between formats csv ↔ traces (`python -m src --help`)
-
-**Repository organization**
-
-     input           contains inputs 
-     dig and tacle   (submodules) dynamic analyzers 
-     src             all scripts for running experiments
-     verified        all Dafny-verified codes
+With the repository tooling, it is possible to run invariant inference on numeric data using 
+[Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle)
+on [input traces](../input).
 
 ## Getting Started
 
@@ -28,29 +13,33 @@ Additionally, it is possible to:
 [make](https://www.gnu.org/software/make/), and 
 [Python](https://www.python.org/downloads/).
 
-**Steps.**
+**Setup steps.** Clone the repository and install dependencies.
 
-1. Clone the repository with submodules.
-
-       git clone --recurse-submodules https://github.com/nkrusch/invariants.git
-
-   To pull submodules after clone, run `git submodule update --init`
-
-2. Install dependencies
-
-       pip install -r requirements.txt
+    git clone --recurse-submodules https://github.com/nkrusch/invariants.git
+    cd invariants
+    pip install -r requirements.txt
 
 **Experiments.** Run all experiments at once.
 
     make
 
-The results are written to `results`.
+The results are written to `results` directory.
 
-## About Inputs
+**Additional actions**
 
-See [`inputs.yaml`](../inputs.yaml) for detailed information about f/l inputs.
-Details about datasets are at the associated links.
- 
+    make score                       : Generate table plots of inference results
+
+
+## Inputs
+
+* See [`inputs.yaml`](../inputs.yaml) for detailed descriptions of function and linear invariants.
+* Details about datasets are available at the associated links.
+* Some problems require user-supplied options (see [`config.txt`](../config.txt))
+* To compute some statistics about inputs run `make stats`
+* Dig analyzer expects traces [in `input/traces`]
+* Tacle analyzer expects CSV [in `input/csv`]
+
+
     DATASETS (ds)                                                              
     blink       https://archive.ics.uci.edu/dataset/754
     iris        https://archive.ics.uci.edu/dataset/53
@@ -58,11 +47,18 @@ Details about datasets are at the associated links.
     wine        https://archive.ics.uci.edu/dataset/109
     wred        https://archive.ics.uci.edu/dataset/186
     
-    FUNCTIONS (f)   
+    FUNCTION INVARIANTS (f)   
     f_***       pure math functions 
 
-    LINEAR (l)
+    LINEAR INVARIANT (l)
     001 -- 133  program traces
 
-Some problems require extra user-supplied information to solve.
-The [`config.txt`](../config.txt) defines input specific run options.
+
+## Repository organization
+
+     .
+     ├─ dig             analyzer (submodule)
+     ├─ input           contains inputs 
+     ├─ src             all scripts for running experiments
+     ├─ tacle           analyzer (submodule) 
+     └─ verified        Dafny-verified codes
