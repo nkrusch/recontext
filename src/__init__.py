@@ -18,8 +18,7 @@ from z3 import *
 # Path to traces
 IN_DIR = 'input/traces'
 F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'DEBUG': False,
-       'C_SEP': ',', **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',', **os.environ}
 
 # Format configs
 T_SEP, C_SEP = ';', ENV['C_SEP']
@@ -90,7 +89,7 @@ def csv_to_trace(input_file: str):
     construct_trace(init.columns, init.values)
 
 
-def construct_trace(vars_: List[str], values):
+def construct_trace(vars_: List[str], values, fn=sys.stdout):
     np_val = np.array(values)
     int_test = np_val.astype(int)
     data = int_test if np.all(np_val == int_test) else np_val
@@ -99,14 +98,20 @@ def construct_trace(vars_: List[str], values):
     prefix = np.full((data.shape[0], 1), T_LABEL)
     data = np.hstack([prefix, data])
     # noinspection PyTypeChecker
-    np.savetxt(sys.stdout, data, delimiter=T_SEP, fmt='%s')
+    np.savetxt(fn, data, delimiter=T_SEP, fmt='%s')
 
 
 def parse_dig_result(input_file):
     """Extract invariants from a DIG result file."""
-    temp = read(input_file).strip().split('\n')[1:]
-    preds = [x.split('.', 1)[1].strip() for x in temp]
-    return [dig_mod_repair(p) for p in preds]
+    return parse_dig_str(read(input_file))
+
+
+def parse_dig_str(invariants):
+    if invariants:
+        lines = invariants.strip().split('\n')[1:]
+        preds = [x.split('.', 1)[1].strip() for x in lines]
+        return [dig_mod_repair(p) for p in preds]
+    return []
 
 
 def is_num(x: str) -> bool:

@@ -86,7 +86,10 @@ $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
 	$(eval ARGS := $(shell grep $(basename $(notdir $@)) $(ARGS_F) | head -n 1 | cut -d' ' -f 2-))
-	$(RUNNER) "python3 -O dig/src/dig.py -log 0 $< -noss -nomp -noarrays $(DOPT)$(ARGS) > $@"
+	$(RUNNER) "python3 -O dig/src/dig.py $< -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS) > $@"
+
+$(OUT)/%.digup: $(IN_TRC)/%.csv ensure_out
+	$(RUNNER) "python3 src/digup.py $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
 	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
