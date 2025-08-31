@@ -4,7 +4,10 @@ This repository provides an experimental setting for _dynamic invariant detectio
 The environment is pre-configured with two detectors,
 [Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle),
 and various input [traces](../input).
-Some portions of the development are verified in Dafny.
+Parts of the development are [verified](../verified) in Dafny.
+
+[**Digup**](../src/digup.py) is modified version of Dig.    
+Digup partitions the input trace and yields intermediate results based on the partitions.
 
 ## Getting Started
 
@@ -22,22 +25,32 @@ Command `python3` should resolve to the intended runtime.
     cd invariants
     python3 -m pip install -r requirements.txt
 
-
 ## Experiments
 
-Run all experiments at once.
+Run **all experiments at once**.
 
     make
 
 The results, including plots, are written to `results` directory.
 
+The `make` command will generate statistics of inputs traces and host machine,
+runs Dig on all available inputs, and generates a plot of the results.
+To run the same steps as **individual steps**:
 
-**Digup** is a wrapper for dig, that partitions the input trace and yields intermediate results based on the partitions.
-Running digup requires one positional argument: the input `[TRACE]`. Arguments after the trace are forwarded to Dig as-is.
+    COMMAND             Description     
+    ────────────────────────────────────────────────────────────
+    make stats          Gather statistics of inputs
+    make host           Details of current host machine
+    make dig            Run all Dig experiments
+    make digup          Run all digup experiments
+    make score          Plot results
 
-```
-python3 src/digup.py [TRACE] [DIG-ARGS]
-```
+To run a **single benchmark**, run:
+
+    make results/[INPUT].[EXT]
+
+where `[INPUT]` is a benchmark name, and `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
+For example: `make results/l_003.dig`.
 
 ## Inputs
 
@@ -50,17 +63,17 @@ python3 src/digup.py [TRACE] [DIG-ARGS]
 
 <pre>
 DATASETS (ds)                                                              
-blink       https://archive.ics.uci.edu/dataset/754
-iris        https://archive.ics.uci.edu/dataset/53
-lt-fs-id    https://archive.ics.uci.edu/dataset/715
-wine        https://archive.ics.uci.edu/dataset/109
-wred        https://archive.ics.uci.edu/dataset/186
+ds_blink         https://archive.ics.uci.edu/dataset/754
+ds_iris          https://archive.ics.uci.edu/dataset/53
+ds_lt-fs-id      https://archive.ics.uci.edu/dataset/715
+ds_wine          https://archive.ics.uci.edu/dataset/109
+ds_wred          https://archive.ics.uci.edu/dataset/186
 
 FUNCTION INVARIANTS (f)   
-f_***       pure math functions 
+f_***            pure math functions 
 
 LINEAR INVARIANT (l)
-001 -- 133  program traces
+l_001 -- l_133   program traces
 </pre>
 
 
@@ -72,6 +85,7 @@ LINEAR INVARIANT (l)
      .
      ├─ 🗀 dig                 analyzer (submodule)
      ├─ 🗀 input               all input traces 
+     ├─ 🗀 ref                 referential result
      ├─ 🗀 src                 scripts for running experiments
      ├─ 🗀 tacle               analyzer (submodule) 
      ├─ 🗀 verified            Dafny-verified codes

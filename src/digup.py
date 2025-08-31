@@ -5,12 +5,16 @@ import sys
 from itertools import combinations as comb
 from os.path import join, dirname, abspath
 from pathlib import Path
+import random
+
+from rich.progress import Progress
 
 from __init__ import read_trace, construct_trace, parse_dig_str, \
     read, input_csv, b_name
 
-ENV = {'MAXV': 3, 'TMP': '.tmp', **os.environ}
-MAX_VAR, TMP = ENV['MAXV'], ENV['TMP']
+ENV = {'PICK_N': 5, 'TMP': '.tmp', 'SUB_TO': 60, **os.environ}
+PICK_N, TMP = ENV['PICK_N'], ENV['TMP']
+SUBPROC_TO = ENV['SUB_TO']
 
 
 def construct_fn(base_name, indices):
@@ -31,11 +35,14 @@ def __analyze(indices, name, args, trace, variables):
         tmp_in = join(TMP, construct_fn(name, ix))
         vrs = [v for i, v in enumerate(variables) if i in ix]
         construct_trace(vrs, trace[:, ix], fn=tmp_in)
-        yield subprocess.run(
-            ['python3', '-O', 'dig/src/dig.py', tmp_in, *args],
-            cwd=dirname(dirname(abspath(__file__))),
-            timeout=60,
-            capture_output=True, text=True).stdout
+        try:
+            yield subprocess.run(
+                ['python3', '-O', 'dig/src/dig.py', tmp_in, *args],
+                cwd=dirname(dirname(abspath(__file__))),
+                timeout=SUBPROC_TO,
+                capture_output=True, text=True).stdout
+        except subprocess.TimeoutExpired:
+            yield ''
         os.remove(tmp_in)
 
 
@@ -59,6 +66,15 @@ def add_num(offset, values):
     return [f'{offset + n}. {x}' for n, x in enumerate(values)]
 
 
+def calc_diff(n, combinations):
+    result = []
+    for c in combinations:
+        diff = lambda r: set(c).symmetric_difference(set(r))
+        if not next((r for r in result if len(diff(r)) < n), None):
+            result.append(c)
+    return result
+
+
 def main(fp, *args):
     """Modified Dig run that partitions the input trace.
 
@@ -71,23 +87,30 @@ def main(fp, *args):
         *args: Dig arguments
     """
     trc, vrs, tloc = read_trace(fp)
-    n_vars, recount, history = len(vrs), 1, {}
+    n_vars, history = len(vrs), {}
     flt = lambda x: i_filter(history, x)
     Path(TMP).mkdir(parents=True, exist_ok=True)
-    if n_vars <= 6:  # no subset if low count
+    if n_vars <= 6:
         ids = [tuple(range(0, n_vars))]
-    else:  # otherwise, make combinations of size=MAX_VAR
-        pick_n = range(MAX_VAR, MAX_VAR + 1)
-        ids = [comb(range(n_vars), sz) for sz in pick_n]
-        ids = [x for lst in ids for x in lst]
-        ids.reverse()
+    else:
+        ids = calc_diff(4, list(comb(range(n_vars), PICK_N)))
+        random.shuffle(ids)
 
     # generator
-    print(header(tloc))
-    for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
-        if inv := list(filter(flt, parse_dig_str(item))):
-            print('\n'.join(add_num(recount, inv)))
-            recount += len(inv)
+    def do_all(after_each=lambda: True):
+        recount = 1
+        for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
+            if inv := list(filter(flt, parse_dig_str(item))):
+                print('\n'.join(add_num(recount, inv)))
+                recount += len(inv)
+            after_each()
+
+    def with_prog():
+        with Progress() as progress:
+            task = progress.add_task('', total=len(ids))
+            do_all(lambda: progress.update(task, advance=1) and True)
+
+    with_prog() if len(ids) > 1 else do_all()
     cleanup()
 
 
@@ -111,8 +134,8 @@ def reform(fp):
 
 
 if __name__ == "__main__":
-    input_file, *args = sys.argv[1:]
+    input_file, *dig_args = sys.argv[1:]
     if input_file.endswith('.csv'):
-        main(input_file, *args)
+        main(input_file, *dig_args)
     if input_file.endswith('.digup'):
         reform(input_file)

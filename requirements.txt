@@ -10,4 +10,5 @@ matplotlib
 pandas
 # Me
 prettytable
+rich
 PyYAML

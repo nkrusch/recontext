@@ -64,10 +64,11 @@ GEN_F   := ${MATH_F:%=gen/f_%}
 GEN_L   := ${LINEAR:%=gen/l_%}
 
 # main recipes
-all:   stats host dig score
+all:   stats host dig digup score
 stats: $(STATS)
 host:  $(MACHINE)
 dig:   $(DIG_ALL)
+digup:   $(DIG_UPS)
 score: $(SCORE)
 
 # debugging + generators
@@ -75,7 +76,6 @@ check:   $(CHECKS)
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS)
-sets2:   $(DIG_UPS)
 trc_f:   $(GEN_F)
 trc_l:   $(GEN_L)
 

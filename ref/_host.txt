@@ -1,0 +1,11 @@
+HARDWARE
+  OS: 22.04 Ubuntu 22.04.5 LTS 
+  Kernel: Linux 6.8.0-1036-gcp
+  Architecture: x86_64
+  Processor: AMD EPYC 7B12
+  Cores: 8
+  Total memory: 62.791  GB
+SOFTWARE
+  make: 4.3
+  python: not installed
+  pip: 22.0.2
