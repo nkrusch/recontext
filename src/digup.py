@@ -1,20 +1,22 @@
 import os
+import random
 import shutil
+import signal
 import subprocess
 import sys
 from itertools import combinations as comb
 from os.path import join, dirname, abspath
 from pathlib import Path
-import random
+from typing import Callable
 
 from rich.progress import Progress
 
-from __init__ import read_trace, construct_trace, parse_dig_str, \
-    read, input_csv, b_name
+from __init__ import read, input_csv, b_name
+from __init__ import read_trace, construct_trace, parse_dig_str
 
-ENV = {'PICK_N': 5, 'TMP': '.tmp', 'SUB_TO': 60, **os.environ}
-PICK_N, TMP = ENV['PICK_N'], ENV['TMP']
-SUBPROC_TO = ENV['SUB_TO']
+ENV = {'PICK_N': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600, **os.environ}
+TOTAL_TO, SUBPROC_TO = map(int, [(ENV['TO']), ENV['STO']])
+PICK_N, TMP = int(ENV['PICK_N']), ENV['TMP']
 
 
 def construct_fn(base_name, indices):
@@ -32,8 +34,8 @@ def __analyze(indices, name, args, trace, variables):
         variables: trace variables
     """
     for ix in indices:
-        tmp_in = join(TMP, construct_fn(name, ix))
         vrs = [v for i, v in enumerate(variables) if i in ix]
+        tmp_in = join(TMP, construct_fn(name, ix))
         construct_trace(vrs, trace[:, ix], fn=tmp_in)
         try:
             yield subprocess.run(
@@ -44,21 +46,6 @@ def __analyze(indices, name, args, trace, variables):
         except subprocess.TimeoutExpired:
             yield ''
         os.remove(tmp_in)
-
-
-def i_filter(hst, cand):
-    """Basic filter to ignore duplicates and simple patterns."""
-    if cand in hst:
-        return False
-    hst[cand] = 1
-    if '<=' in cand:  # ignore var <= num
-        return ' ' in cand.split('<=', 1)[0].strip()
-    return True
-
-
-def cleanup():
-    """Cleanup tasks after analyzer run."""
-    shutil.rmtree(TMP, ignore_errors=True)
 
 
 def add_num(offset, values):
@@ -75,6 +62,27 @@ def calc_diff(n, combinations):
     return result
 
 
+def header(tloc, count='?'):
+    """Format a result header."""
+    return f'{tloc} ({count} invs):'
+
+
+def do_with_to(action: Callable, cleanup: Callable = None):
+    def to_handler(signum, frame):
+        raise TimeoutError()
+
+    signal.signal(signal.SIGALRM, to_handler)
+    signal.alarm(TOTAL_TO)
+    code = 0
+    try:
+        action()
+    except TimeoutError:
+        code = 129
+    if cleanup:
+        cleanup()
+    sys.exit(code)
+
+
 def main(fp, *args):
     """Modified Dig run that partitions the input trace.
 
@@ -87,36 +95,39 @@ def main(fp, *args):
         *args: Dig arguments
     """
     trc, vrs, tloc = read_trace(fp)
-    n_vars, history = len(vrs), {}
-    flt = lambda x: i_filter(history, x)
+
+    if len(vrs) <= 6:
+        def run_me():
+            try:
+                res = subprocess.run(
+                    ['python3', '-O', 'dig/src/dig.py', fp, *args],
+                    cwd=dirname(dirname(abspath(__file__))),
+                    timeout=SUBPROC_TO,
+                    capture_output=True, text=True).stdout
+                print(res)
+            except subprocess.TimeoutExpired:
+                pass
+        return do_with_to(run_me)
+
+    ids = calc_diff(4, list(comb(range(len(vrs)), PICK_N)))
     Path(TMP).mkdir(parents=True, exist_ok=True)
-    if n_vars <= 6:
-        ids = [tuple(range(0, n_vars))]
-    else:
-        ids = calc_diff(4, list(comb(range(n_vars), PICK_N)))
-        random.shuffle(ids)
+    cleanup = lambda: shutil.rmtree(TMP, ignore_errors=True)
+    random.shuffle(ids)
 
-    # generator
-    def do_all(after_each=lambda: True):
-        recount = 1
-        for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
-            if inv := list(filter(flt, parse_dig_str(item))):
-                print('\n'.join(add_num(recount, inv)))
-                recount += len(inv)
-            after_each()
-
-    def with_prog():
+    def do_all():
+        history, recount = {}, 1
+        flt = lambda x: x not in history
         with Progress() as progress:
+            print(header(tloc))
             task = progress.add_task('', total=len(ids))
-            do_all(lambda: progress.update(task, advance=1) and True)
+            for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
+                if inv := list(filter(flt, parse_dig_str(item))):
+                    history.update(dict([(k, 1) for k in inv]))
+                    print('\n'.join(add_num(recount, inv)))
+                    recount += len(inv)
+                progress.update(task, advance=1)
 
-    with_prog() if len(ids) > 1 else do_all()
-    cleanup()
-
-
-def header(tloc, count='?'):
-    """Format a result header."""
-    return f'{tloc} ({count} invs):'
+    return do_with_to(do_all, cleanup)
 
 
 def reform(fp):
@@ -125,9 +136,9 @@ def reform(fp):
     tloc = read_trace(source)[-1]
     lines = (read(fp) or '').strip().split('\n')
     if lines:
-        nums = [x for x in lines[1:] if '. ' in x]
-        (ins := [ln.split('. ', 1)[1] for ln in nums]).sort(key=len)
-        lines = add_num(1, ins)
+        nums = [x for x in lines if '. ' in x]
+        ins = [ln.split('. ', 1)[1] for ln in nums]
+        lines = add_num(1, sorted(ins, key=len))
     data = '\n'.join([header(tloc, str(len(lines)))] + lines)
     with open(fp, 'w') as f:
         f.write(data)

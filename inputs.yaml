@@ -600,7 +600,7 @@ l_130:
     b: [-20, 100]
   n: 100
 l_132:
-  formula: 1 ≤ t ≤ 8 ∧ c = 48 + t ∧ j = 2t2ᵏ - 2t ∧ i = j + t
+  formula: 1 ≤ t ≤ 8 ∧ j = 2t2ᵏ - 2t ∧ i = j + t
   goal:
     - 0 < t
     - t < 9

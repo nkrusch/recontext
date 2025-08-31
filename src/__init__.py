@@ -77,7 +77,7 @@ def b_name(file_path):
 
 def trace_to_csv(input_file: str):
     """Convert a DIG trace to a CSV file."""
-    data, var = read_trace(input_file)
+    data, var, _ = read_trace(input_file)
     data = np.vstack([np.array(var), data])
     # noinspection PyTypeChecker
     np.savetxt(sys.stdout, data, delimiter=C_SEP, fmt='%s')
@@ -341,13 +341,13 @@ def stats(dir_path):
         pt, ct = Counter(cats), Counter(vl)
         mn, mx = min(vl), max(vl)
 
-        pt['Total'] = sum(pt.values())
+        pt['∑'] = sum(pt.values())
         table1 = PrettyTable(list(pt.keys()), title='Traces by kind')
         table1.add_row(list(pt.values()))
 
         scope = range(mn, mx + 1)
-        dct = {**dict([(x, 0) for x in scope]), **ct, 'Total': sum(vl)}
-        table2 = PrettyTable(list(dct.keys()))
+        dct = {**dict([(x, 0) for x in scope]), **ct, ' ∑ ': sum(vl)}
+        table2 = PrettyTable(list(map(str, dct)))
         table2.title = 'Variable counts (frequency)'
         table2.add_row(list(dct.values()))
 
@@ -355,20 +355,21 @@ def stats(dir_path):
         fmap = lambda f: map(len, read_trace(join(dir_path, f))[:2])
         vals = lambda f: tuple(reversed(list(fmap(f))))
         data = [(f.split('.')[0],) + vals(f) for f in ds]
-        table3 = PrettyTable(['Name', 'Vars', 'Samples'])
+        table3 = PrettyTable(['Name', 'V', '𝒩'])
         table3.align[table3.field_names[0]] = 'l'
         table3.title = 'Datasets'
         table3.add_rows(sorted(data))
 
         kfm = lambda l: ','.join(sorted(l))
-        fmt = lambda x: f' ∈ {x}' if x.startswith('[') else f'={x}'
+        fmt = lambda x: x.replace(' ', '') \
+            if x.startswith('[') else f'={x}'
         fft = lambda f: f.replace(' ', '')
 
         conf = read_yaml(F_CONFIG)
         cv = conf.values()
         data = [('Name', list(conf)),
-                ('Vars', [len(c_vars(x)) for x in cv]),
-                ('Samples', [x['n'] for x in cv]),
+                ('V', [len(c_vars(x)) for x in cv]),
+                (' 𝒩 ', [x['n'] for x in cv]),
                 ('Formula', [fft(x['formula']) for x in cv]),
                 ('Ranges', ranges := [])]
 
@@ -385,26 +386,26 @@ def stats(dir_path):
         for i in range(len(data)):
             table4.align[table4.field_names[i]] = 'l'
 
-        print(table1, end='\n\n')
-        print(table3, end='\n\n')
-        print(table4, end='\n\n')
-        print(table2, end='\n\n')
+        tables = map(str, [table1, table2, table3, table4])
+        print('\n\n'.join(tables))
 
 
 def score(dir_path):
     """Given the known invariant, and the inferred candidates,
     test how many correct invariants are recovered."""
-    files = [f for f in listdir(dir_path) if f.endswith(".dig")]
+    files = [f for f in listdir(dir_path) if
+             f.endswith(".dig") or f.endswith(".digup")]
     sources = [input_csv(b_name(f)) for f in files]
     f_s = [x for x in zip(files, sources) if isfile(x[1])]
-    headers = 'Benchmark,V,∑,=,≤,%,↕,✔'
-    table = PrettyTable(headers.split(','), align='r')
-    table.align[table.field_names[0]] = 'l'
+    t1_head = 'Detector,Benchmark,V,∑,=,≤,%,↕,✔'.split(',')
+    t2_head = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
     conf = read_yaml(F_CONFIG)
+    t1, t2 = [], []
 
     for f, src in sorted(f_s):
-        name = Path(f).stem
+        name, ext = Path(f).stem, Path(f).suffix[1:]
         vrs = read_trace(src)[1]
+        is_ds = f.startswith('ds')
 
         # result statistics
         res = parse_dig_result(join(dir_path, f))
@@ -416,12 +417,12 @@ def score(dir_path):
             mod += pred.count('%')
             mx += (pred.count('min') + pred.count('max'))
         assert inv == eqv + inq
+        row = [ext, name, len(vrs), inv, eqv, inq, mod, mx]
 
-        # equivalence check
-        match, resp = False, ''
-        if f.startswith('f') or f.startswith('l'):
+        if not is_ds:
+            match, resp = False, ''
             goal = conf[name]['goal']
-            goals = goal if (isinstance(goal, list)) else [goal]
+            goals = [goal] if isinstance(goal, str) else goal
             pool, resp = res[:], '✗'
             while pool and not match:
                 term, i = pool.pop(), 0
@@ -430,11 +431,16 @@ def score(dir_path):
                     res, _ = term_eq(vrs, goal, term)
                     resp = '?' if res == unknown else resp
                     match = (res == unsat)
+            row.append(('✔' if match else resp))
+        (t1 if not is_ds else t2).append(row)
 
-        table.add_row([
-            name, len(vrs), inv, eqv, inq, mod,
-            mx, ('✔' if match else resp)])
-    print(table)
+    for h, t in [(t1_head, t1), (t2_head, t2)]:
+        if t:
+            table = PrettyTable(h, align='r')
+            for i in [0, 1]:
+                table.align[table.field_names[i]] = 'l'
+            table.add_rows(t)
+            print(table, '\n')
 
 
 def term_eq(var_list, t1, t2):

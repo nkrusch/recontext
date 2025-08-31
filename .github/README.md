@@ -1,18 +1,20 @@
 # Dynamic invariant discovery
 
-**This repository provides an experimental setting for _dynamic invariant detection_ over numeric data.**
-Invariant detection finds assertions in data that hold for all instances of the data.
+This repository provides an _experimental setting_ for _dynamic invariant detection_ over _numeric data_.
+Invariant detection aims to find assertions that hold over all instances of the data.
 
-The environment is pre-configured with two detectors, [Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle) and many input [traces](#inputs).
-[Digup](../src/digup.py) is modified version of Dig that partitions the input trace and yields intermediate results based on the partitions.
-Select parts of the development are [verified](../verified) in Dafny.
+The environment is pre-configured with two detectors, [Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle), and many input [traces](#inputs).
+The analyzers will have scalability issues with larger inputs. 
+[Digup](../src/digup.py) (a modified version of Dig) partitions the input trace, and yields inference results based on the partitions.
+
+Select parts of the development are verified in Dafny.
 
 
 ## Getting Started
 
-**Prerequisites.** 
-* [git](https://git-scm.com/downloads) and [make](https://www.gnu.org/software/make/)
-* [Python](https://www.python.org/downloads/) 3.10 or later
+**Prerequisites.** &nbsp;
+[git](https://git-scm.com/downloads) and [make](https://www.gnu.org/software/make/)
+[Python](https://www.python.org/downloads/) 3.10 or later
 
 **🖥️ Setup steps for native host.** Clone the repository and install dependencies.
 
@@ -27,28 +29,29 @@ Run **all experiments at once**.
 
     make
 
-The results, including plots, are written to `results` directory.
+The results are written to `results` directory.
 
 The `make` command will generate statistics of inputs traces and host machine,
-runs Dig on all available inputs, and generates a plot of the results.
-To run the same steps as **individual steps**:
+runs all pre-configured experiments, and generates a plot of the results.
+To run the same as **individual steps**:
 
 <pre>
 COMMAND             DESCRIPTION     
 ────────────────────────────────────────────────────────────
-make stats          Statistics about input traces
+make stats          Gather statistics about input traces
 make host           Capture host machine details
-make dig            Run all Dig experiments
-make digup          Run all Digup experiments
+make dig            Run Dig experiments
+make digup          Run Digup experiments
 make score          Plot results
 </pre>
 
-To run a **single benchmark**, run:
+To execute a **single benchmark**, run:
 
     make results/[INPUT].[EXT]
 
-* `[INPUT]` is a benchmark (input) name, like `l_003`.
-* `[EXT]` is the choice analyzer `dig`, `digup`, or `tacle`. 
+* `[INPUT]` is a benchmark name, like `l_003`.
+* `[EXT]` is the choice analyzer: `dig`, `digup`, `tacle`. 
+* Example `make results/l_003.dig`
 
 Overridable **Makefile options**.
 
@@ -58,16 +61,16 @@ OPTION      DEFAULT     DESCRIPTION
 PYTHON      python3     Python runtime
 OUT         results     Directory for writing results
 TMP         .tmp        Temporary files directory 
-TO          600         Analysis timeout, in seconds
-DOPT        (None)      Extra dig analysis options
+TO          600         Analysis timeout in seconds
+DOPT        (None)      Dig analysis options
 </pre>
 
 ## Inputs
 
-* Function and linear invariants are described in [`inputs.yaml`](../inputs.yaml).
 * Dataset details are available at the associated links.
+* Function and linear invariants are described in [`inputs.yaml`](../inputs.yaml).
 * Some problems require user-supplied options, defined in [`config.txt`](../config.txt)
-* Dig expects inputs as traces and tacle expects CSV format
+* Dig expects inputs as traces and tacle expects input in CSV format
 
 <pre>
 DATASETS (ds)                                                              
@@ -93,12 +96,12 @@ l_001 -- l_133   program traces
  .
  ├─ 🗀 dig                 analyzer (submodule)
  ├─ 🗀 input               all input traces 
- ├─ 🗀 ref_result          referential result
+ ├─ 🗀 results.0           referential result
  ├─ 🗀 src                 scripts for running experiments
  ├─ 🗀 tacle               analyzer (submodule) 
  ├─ 🗀 verified            Dafny-verified codes
  ├─ config.txt             input-specific run options
- ├─ inputs.yaml            trace configurations (for generation)
+ ├─ inputs.yaml            configurations for trace generation
  ├─ LICENSE                software license
  ├─ Makefile               useful commands
  └─ requirements.txt       Python dependencies
