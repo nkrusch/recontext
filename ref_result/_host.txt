@@ -7,5 +7,5 @@ HARDWARE
   Total memory: 62.791  GB
 SOFTWARE
   make: 4.3
-  python: not installed
-  pip: 22.0.2
+  python3: 3.10.12
+  pip3: 22.0.2

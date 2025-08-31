@@ -3,9 +3,16 @@ SHELL := /bin/bash
 # supress Make output
 MAKEFLAGS += --no-print-directory
 
+ifndef $PYTHON
+PYTHON := python3
+endif
 
 ifndef $OUT  
-OUT := ./results
+OUT := results
+endif
+
+ifndef $TMP
+TMP := .tmp
 endif
 
 ifndef $TO # seconds
@@ -16,27 +23,15 @@ ifndef $DOPT # DIG options
 DOPT :=
 endif
 
-ifndef $LOG
-LOG := $(OUT)/_log.txt
-endif
-
-ifndef $PYTHON
-PYTHON := python3
-endif
-
-ifndef $TMP
-TMP := .tmp
-endif
-
 
 MATH_F := xy xxy xxxy 2x₊y 2xy 3xy 2x3y axby axbycz \
 		  m2x0 m8x0 m2xa mbxa mbxya logxy sinxy
+
 LINEAR := 001 003 007 009 015 023 024 025 028 035 038 \
 		  040 050 063 065 067 071 077 083 087 091 093 \
 		  094 095 097 099 101 107 108 109 110 114 120 \
 		  124 128 130 132 133
 
-# paths
 UTILS   := src
 IN_CSV	:= ./input/csv
 IN_TRC	:= ./input/traces
@@ -44,6 +39,7 @@ RUNNER  := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
 MACHINE := $(OUT)/_host.txt
 STATS   := $(OUT)/_inputs.txt
 SCORE   := $(OUT)/_results.txt
+LOG 	:= $(OUT)/_log.txt
 ARGS_F  := config.txt
 
 # problems
@@ -68,7 +64,7 @@ all:   stats host dig digup score
 stats: $(STATS)
 host:  $(MACHINE)
 dig:   $(DIG_ALL)
-digup:   $(DIG_UPS)
+digup: $(DIG_UPS)
 score: $(SCORE)
 
 # debugging + generators
@@ -91,15 +87,14 @@ $(IN_CSV)/%.csv: $(IN_TRC)/%.csv ensure_csv
 
 $(OUT)/%.dig: $(IN_TRC)/%.csv ensure_out
 	$(eval ARGS := $(shell grep $(basename $(notdir $@)) $(ARGS_F) | head -n 1 | cut -d' ' -f 2-))
-	$(RUNNER) "python3 -O dig/src/dig.py $< -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS) > $@"
+	$(RUNNER) "$(PYTHON) -O dig/src/dig.py $< -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS) > $@"
 
 $(OUT)/%.digup: $(IN_TRC)/%.csv ensure_out
-	$(RUNNER) "python3 src/digup.py $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
-	@$(RUNNER) "python3 src/digup.py $@"
-
+	export TMP=$(TMP) && $(RUNNER) "$(PYTHON) src/digup.py $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
+	@$(PYTHON) src/digup.py $@
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv ensure_out
-	$(RUNNER) "cd tacle && python3 -m tacle ../$< -g > ../$@"
+	$(RUNNER) "cd tacle && $(PYTHON) -m tacle ../$< -g > ../$@"
 
 $(OUT)/%.check:
 	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@

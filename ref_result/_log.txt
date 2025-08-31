@@ -1,5 +1,3 @@
-2025-08-30 09:02:22
-----
 2025-08-30 09:03:54 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_blink.csv -noss -nomp -noarrays  > results/ds_blink.dig
 ----
 2025-08-30 09:04:06 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_iris.csv -noss -nomp -noarrays  > results/ds_iris.dig
