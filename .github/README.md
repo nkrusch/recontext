@@ -20,7 +20,7 @@ Select parts of the development are verified in Dafny.
 
     git clone --recurse-submodules https://github.com/nkrusch/invariants.git 
     cd invariants
-    python -m venv venv && source venv/bin/activate
+    python3 -m venv venv && source venv/bin/activate
     python3 -m pip install -r requirements.txt
 
 
@@ -37,15 +37,17 @@ runs all pre-configured experiments, and generates a plot of the results.
 To run the same as **individual steps**:
 
 <pre>
-COMMAND             DESCRIPTION     
-────────────────────────────────────────────────────────────
-make stats          Gather statistics about input traces
-make host           Capture host machine details
-make dig            Run Dig experiments
-make digup          Run Digup experiments
-make times          Run exec time experiments
-make score          Plot results
+COMMAND             DESCRIPTION                            DURATION
+──────────────────────────────────────────────────────────────────────
+make stats          Gather statistics about input traces    <1 min
+make host           Capture host machine details            <1 min
+make dig            Run Dig experiments                     ~60 min
+make digup          Run Digup experiments                   ~25 min
+make times          Run exec time experiments               ~90 min
+make score          Plot results                            <1 min
 </pre>
+
+The duration estimate is based on Ubuntu 22.04 amd64 8-core, 64 GB RAM machine.
 
 #### Execute a single benchmark
 
@@ -66,6 +68,9 @@ TMP         .tmp        Temporary files directory
 TO          600         Analysis timeout in seconds
 DOPT        (None)      Dig analysis options
 </pre>
+
+The times experiment runs until completion,
+and is unaffected by the timeout.
 
 ## Inputs
 
