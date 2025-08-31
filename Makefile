@@ -24,6 +24,10 @@ ifndef $DOPT # DIG options
 DOPT :=
 endif
 
+ifndef $T_SIZES # sizes for timing
+T_SIZES := 25 50 75 100
+endif
+
 # paths
 UTILS    := src
 IN_CSV	 := input/csv
@@ -34,7 +38,7 @@ MACHINE  := $(OUT)/_host.txt
 STATS    := $(OUT)/_inputs.txt
 SCORE    := $(OUT)/_results.txt
 RUNNER   := bash $(UTILS)/runner.sh $(TO) "$(LOG)"
-TIMER    := bash $(UTILS)/timer.sh
+TIMER    := bash $(UTILS)/timer.sh "$(LOG)"
 
 # problems
 T_SET    := f_xy f_2x3y f_logxy
@@ -43,7 +47,7 @@ D_PROBS  := $(wildcard $(IN_TRC)/ds_*.csv)
 DIG_ALL  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_UPS  := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.digup}
 T_PROBS  := ${T_SET:%=$(OUT)/%.time}
-T_SIZES  := 25 50 75 100
+
 
 # main recipes
 all:     stats host dig digup times score
@@ -101,8 +105,8 @@ $(OUT)/%.time: $(TMP)/%.csv $(OUT)
 	$(eval f := $(subst .csv,,$(subst $(TMP)/,,$<)))
 	@$(foreach N,$(T_SIZES), \
 	   echo "Processing $(f) and size=$(N) [of $(T_SIZES)]…" ; \
-	   $(TIMER) "Tacle" $(N) "(cd tacle && $(PYTHON) -m tacle ../$(TMP)/$(f).$(N).csv -g) 1>/dev/null" >> $@ ; \
-	   $(TIMER) "Dig"   $(N) "$(PYTHON) -O dig/src/dig.py $(TMP)/$(f).$(N).trc -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS) 1>/dev/null" >> $@ ; )
+	   $(TIMER) "Tacle" $(N) "(cd tacle && $(PYTHON) -m tacle ../$(TMP)/$(f).$(N).csv -g)" >> $@ ; \
+	   $(TIMER) "Dig"   $(N) "$(PYTHON) -O dig/src/dig.py $(TMP)/$(f).$(N).trc -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS)" >> $@ ; )
 
 $(OUT)/%.check:
 	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@

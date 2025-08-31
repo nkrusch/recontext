@@ -5,7 +5,7 @@ Invariant detection aims to find assertions that hold over all instances of the 
 
 The environment is pre-configured with two detectors, [Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle), and many input [traces](#inputs).
 The analyzers will have scalability issues with larger inputs. 
-[Digup](../src/digup.py) (a modified version of Dig) partitions the input trace, and yields inference results based on the partitions.
+[Digup](../src/digup.py) is a wrapper for Dig that partitions the input trace, and yields inference results based on the partitions.
 
 Select parts of the development are verified in Dafny.
 
@@ -30,7 +30,8 @@ Select parts of the development are verified in Dafny.
 
     make
 
-The results are written to `results` directory.
+The results (including command logs) are written to `results` directory.
+run `make clean` to clear the results directory.
 
 The `make` command will generate statistics of inputs traces and host machine,
 runs all pre-configured experiments, and generates a plot of the results.
@@ -49,6 +50,14 @@ make score          Plot results                            <1 min
 
 The duration estimate is based on Ubuntu 22.04 amd64 8-core, 64 GB RAM machine.
 
+For a faster experiments, reduce the timeout and the sample sizes of the "times" experiment. 
+For example, the following command will finish in about 10 minutes.
+
+     make TO=30 T_SIZES="10 25"
+
+Without timeout, about 18 hours is required for all the benchmarks 
+to terminate (see `result.0`). The longest benchmarks takes about 12 h.
+
 #### Execute a single benchmark
 
     make results/[INPUT].[EXT]
@@ -60,17 +69,17 @@ The duration estimate is based on Ubuntu 22.04 amd64 8-core, 64 GB RAM machine.
 #### Overridable Makefile options
 
 <pre>
-OPTION      DEFAULT     DESCRIPTION     
-────────────────────────────────────────────────────────────
-PYTHON      python3     Path to Python runtime
-OUT         results     Directory for writing results
-TMP         .tmp        Temporary files directory 
-TO          600         Analysis timeout in seconds
-DOPT        (None)      Dig analysis options
+OPTION      DEFAULT           DESCRIPTION     
+───────────────────────────────────────────────────────────────────
+PYTHON      python3           Path to Python runtime
+OUT         results           Directory for writing results
+TMP         .tmp              Temporary files directory 
+TO          600               Analysis timeout in seconds
+DOPT        (None)            Dig analysis options
+T_SIZES     25 50 75 100      Trace sizes for times experiment
 </pre>
 
-The times experiment runs until completion,
-and is unaffected by the timeout.
+The times experiment runs until completion and is unaffected by the timeout.
 
 ## Inputs
 
