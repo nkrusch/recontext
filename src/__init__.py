@@ -101,6 +101,12 @@ def construct_trace(vars_: List[str], values, fn=sys.stdout):
     np.savetxt(fn, data, delimiter=T_SEP, fmt='%s')
 
 
+def parse_times(input_file):
+    """Extract invariants from a DIG result file."""
+    times = read(input_file).strip().split('\n')
+    return [x.split(',') for x in times]
+
+
 def parse_dig_result(input_file):
     """Extract invariants from a DIG result file."""
     return parse_dig_str(read(input_file))
@@ -355,7 +361,7 @@ def stats(dir_path):
         fmap = lambda f: map(len, read_trace(join(dir_path, f))[:2])
         vals = lambda f: tuple(reversed(list(fmap(f))))
         data = [(f.split('.')[0],) + vals(f) for f in ds]
-        table3 = PrettyTable(['Name', 'V', '𝒩'])
+        table3 = PrettyTable(['Name', 'V', 'N'])
         table3.align[table3.field_names[0]] = 'l'
         table3.title = 'Datasets'
         table3.add_rows(sorted(data))
@@ -369,7 +375,7 @@ def stats(dir_path):
         cv = conf.values()
         data = [('Name', list(conf)),
                 ('V', [len(c_vars(x)) for x in cv]),
-                (' 𝒩 ', [x['n'] for x in cv]),
+                (' N ', [x['n'] for x in cv]),
                 ('Formula', [fft(x['formula']) for x in cv]),
                 ('Ranges', ranges := [])]
 
@@ -396,11 +402,13 @@ def score(dir_path):
     files = [f for f in listdir(dir_path) if
              f.endswith(".dig") or f.endswith(".digup")]
     sources = [input_csv(b_name(f)) for f in files]
+    times = [f for f in listdir(dir_path) if f.endswith(".time")]
     f_s = [x for x in zip(files, sources) if isfile(x[1])]
-    t1_head = 'Detector,Benchmark,V,∑,=,≤,%,↕,✔'.split(',')
-    t2_head = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
+    t1h = 'Detector,Benchmark,V,∑,=,≤,%,↕,✔'.split(',')
+    t2h = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
+    tmh = 'Benchmark,Detector'.split(',')
     conf = read_yaml(F_CONFIG)
-    t1, t2 = [], []
+    t1, t2, tm = [], [], []
 
     for f, src in sorted(f_s):
         name, ext = Path(f).stem, Path(f).suffix[1:]
@@ -434,7 +442,25 @@ def score(dir_path):
             row.append(('✔' if match else resp))
         (t1 if not is_ds else t2).append(row)
 
-    for h, t in [(t1_head, t1), (t2_head, t2)]:
+    if times:
+        results, sizes = {}, set()
+        for f in sorted(times):
+            bm = Path(f).stem
+            results[bm] = {}
+            for row in parse_times(join(dir_path, f)):
+                tool, sz, dur = row[0], int(row[1]), row[-1]
+                if tool not in results[bm]:
+                    results[bm][tool] = {}
+                results[bm][tool][sz] = dur
+                sizes.add(sz)
+        sizes = sorted(list(sizes))
+        tmh += [f'N={n}, ms' for n in sizes]
+        for bm, val in results.items():
+            for dt, tms in val.items():
+                times = [tms[n] if n in tms else '' for n in sizes]
+                tm.append([bm, dt.lower()] + times)
+
+    for h, t in [(t1h, t1), (t2h, t2), (tmh, tm)]:
         if t:
             table = PrettyTable(h, align='r')
             for i in [0, 1]:

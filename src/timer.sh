@@ -4,11 +4,10 @@ TOOL="$1"
 SIZE="$2"
 CMD="$3"
 
-start=$(date +%s%N)
-#{ time (exec sh -c "$CMD") ; } 2>&1 | tr '\n' ', ' | tr '\t' ' '
-t_out=$(echo "$(time (exec sh -c "$CMD"))")
-t_out="blahblah"
-end=$(date +%s%N)
-dur_ns=$((end_time - start_time))
+utc_now() { python3 -c 'import time; print(int(time.time() * 1000))'; }
 
-echo "$TOOL,$SIZE,$start,$end,$dur_ns,$t_out"
+START=$(utc_now)
+(exec sh -c "$CMD")
+END=$(utc_now)
+DIFF=$(echo "$END - $START" | bc)
+echo "$TOOL","$SIZE","$START","$END","$DIFF"

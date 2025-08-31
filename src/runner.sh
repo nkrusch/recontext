@@ -23,5 +23,8 @@ runCmdWithTimeout() {
     echo 129; fi
 }
 
+start_time=$SECONDS
 res=$(runCmdWithTimeout "$TIMEOUT" "$CMD" "$LOG");
-echo -e "$(date '+%Y-%m-%d %H:%M:%S') ${res} ${CMD}\n----" >> "$LOG"
+end_time=$SECONDS
+diff=$((end_time - start_time))
+echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${diff} s) ${res} ${CMD}\n----" >> "$LOG"

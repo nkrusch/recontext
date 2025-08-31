@@ -18,14 +18,15 @@ Select parts of the development are verified in Dafny.
 
 **🖥️ Setup steps for native host.** Clone the repository and install dependencies.
 
-    git clone --recurse-submodules https://github.com/nkrusch/invariants.git
+    git clone --recurse-submodules https://github.com/nkrusch/invariants.git 
     cd invariants
+    python -m venv venv && source venv/bin/activate
     python3 -m pip install -r requirements.txt
 
 
 ## Experiments
 
-Run **all experiments at once**.
+#### Run all experiments at once
 
     make
 
@@ -42,10 +43,11 @@ make stats          Gather statistics about input traces
 make host           Capture host machine details
 make dig            Run Dig experiments
 make digup          Run Digup experiments
+make times          Run exec time experiments
 make score          Plot results
 </pre>
 
-To execute a **single benchmark**, run:
+#### Execute a single benchmark
 
     make results/[INPUT].[EXT]
 
@@ -53,12 +55,12 @@ To execute a **single benchmark**, run:
 * `[EXT]` is the choice analyzer: `dig`, `digup`, `tacle`. 
 * Example `make results/l_003.dig`
 
-Overridable **Makefile options**.
+#### Overridable Makefile options
 
 <pre>
 OPTION      DEFAULT     DESCRIPTION     
 ────────────────────────────────────────────────────────────
-PYTHON      python3     Python runtime
+PYTHON      python3     Path to Python runtime
 OUT         results     Directory for writing results
 TMP         .tmp        Temporary files directory 
 TO          600         Analysis timeout in seconds
