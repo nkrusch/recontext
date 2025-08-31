@@ -13,8 +13,8 @@ Select parts of the development are verified in Dafny.
 ## Getting Started
 
 **Prerequisites.** &nbsp;
-[git](https://git-scm.com/downloads) and [make](https://www.gnu.org/software/make/)
-[Python](https://www.python.org/downloads/) 3.10 or later
+[git](https://git-scm.com/downloads), [make](https://www.gnu.org/software/make/), and
+[Python](https://www.python.org/downloads/) (v3.10 or later)
 
 **🖥️ Setup steps for native host.** Clone the repository and install dependencies.
 
@@ -51,8 +51,8 @@ make score          Plot results
 
     make results/[INPUT].[EXT]
 
-* `[INPUT]` is a benchmark name, like `l_003`.
-* `[EXT]` is the choice analyzer: `dig`, `digup`, `tacle`. 
+* `[INPUT]` is a benchmark name (like `l_003`).
+* `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
 * Example `make results/l_003.dig`
 
 #### Overridable Makefile options
