@@ -31,7 +31,6 @@ Select parts of the development are verified in Dafny.
     make
 
 The results (including command logs) are written to `results` directory.
-run `make clean` to clear the results directory.
 
 The `make` command will generate statistics of inputs traces and host machine,
 runs all pre-configured experiments, and generates a plot of the results.
@@ -50,13 +49,15 @@ make score          Plot results                            <1 min
 
 The duration estimate is based on Ubuntu 22.04 amd64 8-core, 64 GB RAM machine.
 
-For a faster experiments, reduce the timeout and the sample sizes of the "times" experiment. 
+For a faster experiments, reduce the timeout and the sample sizes of the "times" experiment.   
 For example, the following command will finish in about 10 minutes.
 
      make TO=30 T_SIZES="10 25"
 
-Without timeout, about 18 hours is required for all the benchmarks 
-to terminate (see `result.0`). The longest benchmarks takes about 12 h.
+Without timeout, about 18 hours is required for all the benchmarks to terminate (see `result.0`).    
+The longest benchmarks takes about 12 h.
+
+Run `make clean` to reset the `results` directory.
 
 #### Execute a single benchmark
 
@@ -79,7 +80,8 @@ DOPT        (None)            Dig analysis options
 T_SIZES     25 50 75 100      Trace sizes for times experiment
 </pre>
 
-The times experiment runs until completion and is unaffected by the timeout.
+The "times"-experiment runs until completion and is unaffected by the timeout.
+It can be adjusted by changing the sample sizes.
 
 ## Inputs
 
@@ -112,7 +114,7 @@ l_001 -- l_133   program traces
  .
  ├─ 🗀 dig                 analyzer (submodule)
  ├─ 🗀 input               all input traces 
- ├─ 🗀 results.0           referential result
+ ├─ 🗀 results.0           referential result for inspection
  ├─ 🗀 src                 scripts for running experiments
  ├─ 🗀 tacle               analyzer (submodule) 
  ├─ 🗀 verified            Dafny-verified codes
