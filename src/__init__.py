@@ -24,6 +24,7 @@ ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',', **os.environ}
 T_SEP, C_SEP = ';', ENV['C_SEP']
 T_PREFIX, T_LABEL = 'I ', 'trace1'
 Z3_TO = ENV['Z3_TO']
+TIME_FMT = 1  # 1=MS, 1000=S
 
 # Tokenization of invariant expressions(in order)
 __tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
@@ -451,10 +452,15 @@ def score(dir_path):
                 tool, sz, dur = row[0], int(row[1]), row[-1]
                 if tool not in results[bm]:
                     results[bm][tool] = {}
-                results[bm][tool][sz] = dur
+                tmp = ''
+                if dur:
+                    tmp = float(dur) / TIME_FMT
+                    tmp = int(tmp) if TIME_FMT == 1 else round(tmp, 1)
+                results[bm][tool][sz] = tmp
                 sizes.add(sz)
         sizes = sorted(list(sizes))
-        tmh += [f'N={n}, ms' for n in sizes]
+        unit = 's' if TIME_FMT == 1000 else 'ms'
+        tmh += [f'N={n}, {unit}' for n in sizes]
         for bm, val in results.items():
             for dt, tms in val.items():
                 times = [tms[n] if n in tms else '' for n in sizes]
