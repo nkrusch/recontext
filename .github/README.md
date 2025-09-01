@@ -37,27 +37,20 @@ runs all pre-configured experiments, and generates a plot of the results.
 To run the same as **individual steps**:
 
 <pre>
-COMMAND             DESCRIPTION                            DURATION
-──────────────────────────────────────────────────────────────────────
-make stats          Gather statistics about input traces    <1 min
-make host           Capture host machine details            <1 min
-make dig            Run Dig experiments                     ~60 min
-make digup          Run Digup experiments                   ~25 min
-make times          Run exec time experiments               ~90 min
-make score          Plot results                            <1 min
+COMMAND             DESCRIPTION                             DURATION[^1]
+────────────────────────────────────────────────────────────────────────
+make stats          Gather statistics about input traces         < 1 min
+make host           Capture host machine details                 < 1 min
+make dig            Run Dig experiments                         ~ 30 min
+make digup          Run Digup experiments                        ~ 5 min
+make times          Run exec time experiments                   ~ 30 min
+make score          Plot results                                 < 1 min
 </pre>
 
-The duration estimate is based on Ubuntu 22.04 amd64 8-core, 64 GB RAM machine.
+[^1]: The duration estimates are based on `result.0`.
 
-For a faster experiments, reduce the timeout and the sample sizes of the "times" experiment.   
-For example, the following command will finish in about 10 minutes.
+Run `make clean` to reset the `results` directory.    
 
-     make TO=30 T_SIZES="10 25"
-
-Without timeout, about 18 hours is required for all the benchmarks to terminate (see `result.0`).    
-The longest benchmarks takes about 12 h.
-
-Run `make clean` to reset the `results` directory.
 
 #### Execute a single benchmark
 
@@ -70,18 +63,22 @@ Run `make clean` to reset the `results` directory.
 #### Overridable Makefile options
 
 <pre>
-OPTION      DEFAULT           DESCRIPTION     
-───────────────────────────────────────────────────────────────────
-PYTHON      python3           Path to Python runtime
-OUT         results           Directory for writing results
-TMP         .tmp              Temporary files directory 
-TO          600               Analysis timeout in seconds
-DOPT        (None)            Dig analysis options
-T_SIZES     25 50 75 100      Trace sizes for times experiment
+OPTION         DEFAULT              DESCRIPTION     
+────────────────────────────────────────────────────────────────────────
+PYTHON         python3              Path to Python runtime
+OUT            results              Directory for writing results
+TMP            .tmp                 Temporary files directory 
+TO             60                   Analysis timeout in seconds
+DOPT           (None)               Dig analysis options
+T_SIZES        25 50 75 100         Trace sizes for times experiment
 </pre>
 
 The "times"-experiment runs until completion and is unaffected by the timeout.
 It can be adjusted by changing the sample sizes.
+For example, the following command will finish in about 10 minutes.
+
+     make TO=30 T_SIZES="10 25"
+
 
 ## Inputs
 

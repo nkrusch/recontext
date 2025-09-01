@@ -1,14 +1,14 @@
 trace1 (13 invs):
 1. -pw <= 0
 2. -sw <= -2
-3. pl - sl <= 0
-4. pw - sw <= 0
-5. -pw + sw <= 4
-6. -pl + pw <= 0
-7. pw - sl <= -3
+3. pw - sw <= 0
+4. pl - sl <= 0
+5. pw - sl <= -3
+6. -pw + sw <= 4
+7. -pl + pw <= 0
 8. pw + sl <= 10
-9. -pl - pw <= -1
-10. -sl + sw <= -1
-11. -pl - sl <= -5
-12. min(pl, sw) - sl - 2 <= 0
-13. pw + 1 - max(pl, sw, 0) <= 0
+9. -sl + sw <= -1
+10. -pl - pw <= -1
+11. -sl - sw <= -6
+12. pw + 1 - max(pl, sw) <= 0
+13. min(pl, sw) - sl - 2 <= 0

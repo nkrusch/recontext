@@ -1,128 +1,178 @@
-2025-08-30 09:03:54 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_blink.csv -noss -nomp -noarrays  > results/ds_blink.dig
+2025-09-01 00:11:35 (35 s) 0 python3 -O dig/src/dig.py input/traces/ds_blink.csv -log 0 -noss -nomp -noarrays  > results/ds_blink.dig
 ----
-2025-08-30 09:04:06 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_iris.csv -noss -nomp -noarrays  > results/ds_iris.dig
+2025-09-01 00:11:48 (13 s) 0 python3 -O dig/src/dig.py input/traces/ds_iris.csv -log 0 -noss -nomp -noarrays  > results/ds_iris.dig
 ----
-2025-08-30 09:04:17 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_lt-fs-id.csv -noss -nomp -noarrays  > results/ds_lt-fs-id.dig
+2025-09-01 00:12:00 (12 s) 0 python3 -O dig/src/dig.py input/traces/ds_lt-fs-id.csv -log 0 -noss -nomp -noarrays  > results/ds_lt-fs-id.dig
 ----
-2025-08-30 12:10:48 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_wine.csv -noss -nomp -noarrays  > results/ds_wine.dig
+2025-09-01 03:27:52 (11752 s) 0 python3 -O dig/src/dig.py input/traces/ds_wine.csv -log 0 -noss -nomp -noarrays  > results/ds_wine.dig
 ----
-2025-08-30 23:58:52 0 python3 -O dig/src/dig.py -log 0 input/traces/ds_wred.csv -noss -nomp -noarrays  > results/ds_wred.dig
----- 
-2025-08-31 22:58:58 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_2x3y.csv -log 0 -noss -nomp -noarrays  > results/f_2x3y.dig
+2025-09-01 15:17:58 (42606 s) 0 python3 -O dig/src/dig.py input/traces/ds_wred.csv -log 0 -noss -nomp -noarrays  > results/ds_wred.dig
 ----
-2025-08-31 22:59:00 (2 s) 0 python3 -O dig/src/dig.py input/traces/f_2xy.csv -log 0 -noss -nomp -noarrays -uterms 2^x > results/f_2xy.dig
+2025-09-01 15:18:00 (2 s) 0 python3 -O dig/src/dig.py input/traces/f_2x3y.csv -log 0 -noss -nomp -noarrays  > results/f_2x3y.dig
 ----
-2025-08-31 22:59:01 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_2x₊y.csv -log 0 -noss -nomp -noarrays -uterms 2^x > results/f_2x₊y.dig
+2025-09-01 15:18:01 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_2xy.csv -log 0 -noss -nomp -noarrays -uterms 2^x > results/f_2xy.dig
 ----
-2025-08-31 22:59:04 (3 s) 0 python3 -O dig/src/dig.py input/traces/f_3xy.csv -log 0 -noss -nomp -noarrays -uterms 3^x > results/f_3xy.dig
+2025-09-01 15:18:03 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_2x₊y.csv -log 0 -noss -nomp -noarrays -uterms 2^x > results/f_2x₊y.dig
 ----
-2025-08-31 22:59:13 (9 s) 0 python3 -O dig/src/dig.py input/traces/f_axby.csv -log 0 -noss -nomp -noarrays  > results/f_axby.dig
+2025-09-01 15:18:06 (3 s) 0 python3 -O dig/src/dig.py input/traces/f_3xy.csv -log 0 -noss -nomp -noarrays -uterms 3^x > results/f_3xy.dig
 ----
-2025-08-31 22:59:25 (12 s) 0 python3 -O dig/src/dig.py input/traces/f_axbycz.csv -log 0 -noss -nomp -noarrays  > results/f_axbycz.dig
+2025-09-01 15:18:14 (8 s) 0 python3 -O dig/src/dig.py input/traces/f_axby.csv -log 0 -noss -nomp -noarrays  > results/f_axby.dig
 ----
-2025-08-31 22:59:28 (3 s) 0 python3 -O dig/src/dig.py input/traces/f_logxy.csv -log 0 -noss -nomp -noarrays  > results/f_logxy.dig
+2025-09-01 15:18:27 (13 s) 0 python3 -O dig/src/dig.py input/traces/f_axbycz.csv -log 0 -noss -nomp -noarrays  > results/f_axbycz.dig
 ----
-2025-08-31 22:59:29 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m2x0.csv -log 0 -noss -nomp -noarrays  > results/f_m2x0.dig
+2025-09-01 15:18:29 (2 s) 0 python3 -O dig/src/dig.py input/traces/f_logxy.csv -log 0 -noss -nomp -noarrays  > results/f_logxy.dig
 ----
-2025-08-31 22:59:30 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m2xa.csv -log 0 -noss -nomp -noarrays  > results/f_m2xa.dig
+2025-09-01 15:18:30 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m2x0.csv -log 0 -noss -nomp -noarrays  > results/f_m2x0.dig
 ----
-2025-08-31 22:59:31 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m8x0.csv -log 0 -noss -nomp -noarrays  > results/f_m8x0.dig
+2025-09-01 15:18:31 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m2xa.csv -log 0 -noss -nomp -noarrays  > results/f_m2xa.dig
 ----
-2025-08-31 22:59:44 (13 s) 0 python3 -O dig/src/dig.py input/traces/f_mbxa.csv -log 0 -noss -nomp -noarrays  > results/f_mbxa.dig
+2025-09-01 15:18:32 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_m8x0.csv -log 0 -noss -nomp -noarrays  > results/f_m8x0.dig
 ----
-2025-08-31 22:59:59 (15 s) 0 python3 -O dig/src/dig.py input/traces/f_mbxya.csv -log 0 -noss -nomp -noarrays  > results/f_mbxya.dig
+2025-09-01 15:18:45 (13 s) 0 python3 -O dig/src/dig.py input/traces/f_mbxa.csv -log 0 -noss -nomp -noarrays  > results/f_mbxa.dig
 ----
-2025-08-31 23:00:02 (3 s) 0 python3 -O dig/src/dig.py input/traces/f_sinxy.csv -log 0 -noss -nomp -noarrays  > results/f_sinxy.dig
+2025-09-01 15:19:00 (15 s) 0 python3 -O dig/src/dig.py input/traces/f_mbxya.csv -log 0 -noss -nomp -noarrays  > results/f_mbxya.dig
 ----
-2025-08-31 23:00:27 (25 s) 0 python3 -O dig/src/dig.py input/traces/f_xxxy.csv -log 0 -noss -nomp -noarrays  > results/f_xxxy.dig
+2025-09-01 15:19:03 (3 s) 0 python3 -O dig/src/dig.py input/traces/f_sinxy.csv -log 0 -noss -nomp -noarrays  > results/f_sinxy.dig
 ----
-2025-08-31 23:00:59 (31 s) 0 python3 -O dig/src/dig.py input/traces/f_xxy.csv -log 0 -noss -nomp -noarrays  > results/f_xxy.dig
+2025-09-01 15:19:28 (25 s) 0 python3 -O dig/src/dig.py input/traces/f_xxxy.csv -log 0 -noss -nomp -noarrays  > results/f_xxxy.dig
 ----
-2025-08-31 23:01:00 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_xy.csv -log 0 -noss -nomp -noarrays  > results/f_xy.dig
+2025-09-01 15:19:53 (25 s) 0 python3 -O dig/src/dig.py input/traces/f_xxy.csv -log 0 -noss -nomp -noarrays  > results/f_xxy.dig
 ----
-2025-08-31 23:01:02 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_001.csv -log 0 -noss -nomp -noarrays  > results/l_001.dig
+2025-09-01 15:19:54 (1 s) 0 python3 -O dig/src/dig.py input/traces/f_xy.csv -log 0 -noss -nomp -noarrays  > results/f_xy.dig
 ----
-2025-08-31 23:01:10 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_003.csv -log 0 -noss -nomp -noarrays  > results/l_003.dig
+2025-09-01 15:19:56 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_001.csv -log 0 -noss -nomp -noarrays  > results/l_001.dig
 ----
-2025-08-31 23:01:17 (7 s) 0 python3 -O dig/src/dig.py input/traces/l_007.csv -log 0 -noss -nomp -noarrays  > results/l_007.dig
+2025-09-01 15:20:04 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_003.csv -log 0 -noss -nomp -noarrays  > results/l_003.dig
 ----
-2025-08-31 23:01:26 (9 s) 0 python3 -O dig/src/dig.py input/traces/l_009.csv -log 0 -noss -nomp -noarrays  > results/l_009.dig
+2025-09-01 15:20:11 (7 s) 0 python3 -O dig/src/dig.py input/traces/l_007.csv -log 0 -noss -nomp -noarrays  > results/l_007.dig
 ----
-2025-08-31 23:01:40 (14 s) 0 python3 -O dig/src/dig.py input/traces/l_015.csv -log 0 -noss -nomp -noarrays  > results/l_015.dig
+2025-09-01 15:20:20 (9 s) 0 python3 -O dig/src/dig.py input/traces/l_009.csv -log 0 -noss -nomp -noarrays  > results/l_009.dig
 ----
-2025-08-31 23:01:42 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_023.csv -log 0 -noss -nomp -noarrays  > results/l_023.dig
+2025-09-01 15:20:34 (14 s) 0 python3 -O dig/src/dig.py input/traces/l_015.csv -log 0 -noss -nomp -noarrays  > results/l_015.dig
 ----
-2025-08-31 23:01:44 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_024.csv -log 0 -noss -nomp -noarrays  > results/l_024.dig
+2025-09-01 15:20:35 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_023.csv -log 0 -noss -nomp -noarrays  > results/l_023.dig
 ----
-2025-08-31 23:01:45 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_025.csv -log 0 -noss -nomp -noarrays  > results/l_025.dig
+2025-09-01 15:20:37 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_024.csv -log 0 -noss -nomp -noarrays  > results/l_024.dig
 ----
-2025-08-31 23:01:47 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_028.csv -log 0 -noss -nomp -noarrays  > results/l_028.dig
+2025-09-01 15:20:38 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_025.csv -log 0 -noss -nomp -noarrays  > results/l_025.dig
 ----
-2025-08-31 23:01:48 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_035.csv -log 0 -noss -nomp -noarrays  > results/l_035.dig
+2025-09-01 15:20:41 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_028.csv -log 0 -noss -nomp -noarrays  > results/l_028.dig
 ----
-2025-08-31 23:01:51 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_038.csv -log 0 -noss -nomp -noarrays  > results/l_038.dig
+2025-09-01 15:20:42 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_035.csv -log 0 -noss -nomp -noarrays  > results/l_035.dig
 ----
-2025-08-31 23:01:52 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_040.csv -log 0 -noss -nomp -noarrays  > results/l_040.dig
+2025-09-01 15:20:44 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_038.csv -log 0 -noss -nomp -noarrays  > results/l_038.dig
 ----
-2025-08-31 23:01:52 (0 s) 0 python3 -O dig/src/dig.py input/traces/l_050.csv -log 0 -noss -nomp -noarrays  > results/l_050.dig
+2025-09-01 15:20:45 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_040.csv -log 0 -noss -nomp -noarrays  > results/l_040.dig
 ----
-2025-08-31 23:01:53 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_063.csv -log 0 -noss -nomp -noarrays  > results/l_063.dig
+2025-09-01 15:20:46 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_050.csv -log 0 -noss -nomp -noarrays  > results/l_050.dig
 ----
-2025-08-31 23:01:56 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_065.csv -log 0 -noss -nomp -noarrays  > results/l_065.dig
+2025-09-01 15:20:47 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_063.csv -log 0 -noss -nomp -noarrays  > results/l_063.dig
 ----
-2025-08-31 23:02:00 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_067.csv -log 0 -noss -nomp -noarrays  > results/l_067.dig
+2025-09-01 15:20:49 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_065.csv -log 0 -noss -nomp -noarrays  > results/l_065.dig
 ----
-2025-08-31 23:02:07 (7 s) 0 python3 -O dig/src/dig.py input/traces/l_071.csv -log 0 -noss -nomp -noarrays  > results/l_071.dig
+2025-09-01 15:20:53 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_067.csv -log 0 -noss -nomp -noarrays  > results/l_067.dig
 ----
-2025-08-31 23:02:10 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_077.csv -log 0 -noss -nomp -noarrays  > results/l_077.dig
+2025-09-01 15:21:00 (7 s) 0 python3 -O dig/src/dig.py input/traces/l_071.csv -log 0 -noss -nomp -noarrays  > results/l_071.dig
 ----
-2025-08-31 23:02:12 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_083.csv -log 0 -noss -nomp -noarrays  > results/l_083.dig
+2025-09-01 15:21:03 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_077.csv -log 0 -noss -nomp -noarrays  > results/l_077.dig
 ----
-2025-08-31 23:02:21 (9 s) 0 python3 -O dig/src/dig.py input/traces/l_087.csv -log 0 -noss -nomp -noarrays  > results/l_087.dig
+2025-09-01 15:21:05 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_083.csv -log 0 -noss -nomp -noarrays  > results/l_083.dig
 ----
-2025-08-31 23:02:22 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_091.csv -log 0 -noss -nomp -noarrays  > results/l_091.dig
+2025-09-01 15:21:13 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_087.csv -log 0 -noss -nomp -noarrays  > results/l_087.dig
 ----
-2025-08-31 23:02:26 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_093.csv -log 0 -noss -nomp -noarrays  > results/l_093.dig
+2025-09-01 15:21:14 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_091.csv -log 0 -noss -nomp -noarrays  > results/l_091.dig
 ----
-2025-08-31 23:02:29 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_094.csv -log 0 -noss -nomp -noarrays  > results/l_094.dig
+2025-09-01 15:21:19 (5 s) 0 python3 -O dig/src/dig.py input/traces/l_093.csv -log 0 -noss -nomp -noarrays  > results/l_093.dig
 ----
-2025-08-31 23:02:34 (5 s) 0 python3 -O dig/src/dig.py input/traces/l_095.csv -log 0 -noss -nomp -noarrays  > results/l_095.dig
+2025-09-01 15:21:22 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_094.csv -log 0 -noss -nomp -noarrays  > results/l_094.dig
 ----
-2025-08-31 23:02:37 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_097.csv -log 0 -noss -nomp -noarrays  > results/l_097.dig
+2025-09-01 15:21:26 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_095.csv -log 0 -noss -nomp -noarrays  > results/l_095.dig
 ----
-2025-08-31 23:02:41 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_099.csv -log 0 -noss -nomp -noarrays  > results/l_099.dig
+2025-09-01 15:21:29 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_097.csv -log 0 -noss -nomp -noarrays  > results/l_097.dig
 ----
-2025-08-31 23:02:43 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_101.csv -log 0 -noss -nomp -noarrays  > results/l_101.dig
+2025-09-01 15:21:33 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_099.csv -log 0 -noss -nomp -noarrays  > results/l_099.dig
 ----
-2025-08-31 23:02:47 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_107.csv -log 0 -noss -nomp -noarrays  > results/l_107.dig
+2025-09-01 15:21:34 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_101.csv -log 0 -noss -nomp -noarrays  > results/l_101.dig
 ----
-2025-08-31 23:02:55 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_108.csv -log 0 -noss -nomp -noarrays  > results/l_108.dig
+2025-09-01 15:21:38 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_107.csv -log 0 -noss -nomp -noarrays  > results/l_107.dig
 ----
-2025-08-31 23:03:07 (12 s) 0 python3 -O dig/src/dig.py input/traces/l_109.csv -log 0 -noss -nomp -noarrays  > results/l_109.dig
+2025-09-01 15:21:46 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_108.csv -log 0 -noss -nomp -noarrays  > results/l_108.dig
 ----
-2025-08-31 23:03:11 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_110.csv -log 0 -noss -nomp -noarrays  > results/l_110.dig
+2025-09-01 15:21:59 (13 s) 0 python3 -O dig/src/dig.py input/traces/l_109.csv -log 0 -noss -nomp -noarrays  > results/l_109.dig
 ----
-2025-08-31 23:03:13 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_114.csv -log 0 -noss -nomp -noarrays  > results/l_114.dig
+2025-09-01 15:22:03 (4 s) 0 python3 -O dig/src/dig.py input/traces/l_110.csv -log 0 -noss -nomp -noarrays  > results/l_110.dig
 ----
-2025-08-31 23:03:14 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_120.csv -log 0 -noss -nomp -noarrays  > results/l_120.dig
+2025-09-01 15:22:04 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_114.csv -log 0 -noss -nomp -noarrays  > results/l_114.dig
 ----
-2025-08-31 23:03:20 (6 s) 0 python3 -O dig/src/dig.py input/traces/l_124.csv -log 0 -noss -nomp -noarrays  > results/l_124.dig
+2025-09-01 15:22:05 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_120.csv -log 0 -noss -nomp -noarrays  > results/l_120.dig
 ----
-2025-08-31 23:03:22 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_128.csv -log 0 -noss -nomp -noarrays  > results/l_128.dig
+2025-09-01 15:22:11 (6 s) 0 python3 -O dig/src/dig.py input/traces/l_124.csv -log 0 -noss -nomp -noarrays  > results/l_124.dig
 ----
-2025-08-31 23:03:30 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_130.csv -log 0 -noss -nomp -noarrays  > results/l_130.dig
+2025-09-01 15:22:14 (3 s) 0 python3 -O dig/src/dig.py input/traces/l_128.csv -log 0 -noss -nomp -noarrays  > results/l_128.dig
 ----
-2025-08-31 23:03:37 (7 s) 0 python3 -O dig/src/dig.py input/traces/l_132.csv -log 0 -noss -nomp -noarrays  > results/l_132.dig
+2025-09-01 15:22:22 (8 s) 0 python3 -O dig/src/dig.py input/traces/l_130.csv -log 0 -noss -nomp -noarrays  > results/l_130.dig
 ----
-2025-08-31 23:03:38 (1 s) 0 python3 -O dig/src/dig.py input/traces/l_133.csv -log 0 -noss -nomp -noarrays  > results/l_133.dig
+2025-09-01 15:22:28 (6 s) 0 python3 -O dig/src/dig.py input/traces/l_132.csv -log 0 -noss -nomp -noarrays  > results/l_132.dig
 ----
-2025-08-31 23:04:13 (35 s) 0 python3 src/digup.py input/traces/ds_blink.csv -log 0 -noss -nomp -noarrays  > results/ds_blink.digup
+2025-09-01 15:22:30 (2 s) 0 python3 -O dig/src/dig.py input/traces/l_133.csv -log 0 -noss -nomp -noarrays  > results/l_133.dig
 ----
-2025-08-31 23:04:27 (13 s) 0 python3 src/digup.py input/traces/ds_iris.csv -log 0 -noss -nomp -noarrays  > results/ds_iris.digup
+2025-09-01 15:23:05 (35 s) 0 python3 src/digup.py input/traces/ds_blink.csv -log 0 -noss -nomp -noarrays  > results/ds_blink.digup
 ----
-2025-08-31 23:04:39 (11 s) 0 python3 src/digup.py input/traces/ds_lt-fs-id.csv -log 0 -noss -nomp -noarrays  > results/ds_lt-fs-id.digup
+2025-09-01 15:23:19 (13 s) 0 python3 src/digup.py input/traces/ds_iris.csv -log 0 -noss -nomp -noarrays  > results/ds_iris.digup
 ----
-2025-08-31 23:14:39 (599 s) 129 python3 src/digup.py input/traces/ds_wine.csv -log 0 -noss -nomp -noarrays  > results/ds_wine.digup
+2025-09-01 15:23:31 (12 s) 0 python3 src/digup.py input/traces/ds_lt-fs-id.csv -log 0 -noss -nomp -noarrays  > results/ds_lt-fs-id.digup
 ----
-2025-08-31 23:24:39 (599 s) 129 python3 src/digup.py input/traces/ds_wred.csv -log 0 -noss -nomp -noarrays  > results/ds_wred.digup
+2025-09-01 16:00:37 (2226 s) 0 python3 src/digup.py input/traces/ds_wine.csv -log 0 -noss -nomp -noarrays  > results/ds_wine.digup
+----
+2025-09-01 16:26:09 (1532 s) 0 python3 src/digup.py input/traces/ds_wred.csv -log 0 -noss -nomp -noarrays  > results/ds_wred.digup
+----
+2025-09-01 16:26:11 (1 s)  (cd tacle && python3 -m tacle ../.tmp/f_xy.25.csv -g)
+----
+2025-09-01 16:26:12 (1 s)  python3 -O dig/src/dig.py .tmp/f_xy.25.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:26:22 (9 s)  (cd tacle && python3 -m tacle ../.tmp/f_xy.50.csv -g)
+----
+2025-09-01 16:26:23 (1 s)  python3 -O dig/src/dig.py .tmp/f_xy.50.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:26:53 (30 s)  (cd tacle && python3 -m tacle ../.tmp/f_xy.75.csv -g)
+----
+2025-09-01 16:26:55 (2 s)  python3 -O dig/src/dig.py .tmp/f_xy.75.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:28:09 (74 s)  (cd tacle && python3 -m tacle ../.tmp/f_xy.100.csv -g)
+----
+2025-09-01 16:28:10 (1 s)  python3 -O dig/src/dig.py .tmp/f_xy.100.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:28:15 (4 s)  (cd tacle && python3 -m tacle ../.tmp/f_2x3y.25.csv -g)
+----
+2025-09-01 16:28:17 (2 s)  python3 -O dig/src/dig.py .tmp/f_2x3y.25.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:29:26 (69 s)  (cd tacle && python3 -m tacle ../.tmp/f_2x3y.50.csv -g)
+----
+2025-09-01 16:29:28 (2 s)  python3 -O dig/src/dig.py .tmp/f_2x3y.50.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:35:20 (352 s)  (cd tacle && python3 -m tacle ../.tmp/f_2x3y.75.csv -g)
+----
+2025-09-01 16:35:21 (1 s)  python3 -O dig/src/dig.py .tmp/f_2x3y.75.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:53:38 (1097 s)  (cd tacle && python3 -m tacle ../.tmp/f_2x3y.100.csv -g)
+----
+2025-09-01 16:53:40 (2 s)  python3 -O dig/src/dig.py .tmp/f_2x3y.100.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:53:41 (1 s)  (cd tacle && python3 -m tacle ../.tmp/f_logxy.25.csv -g)
+----
+2025-09-01 16:53:43 (2 s)  python3 -O dig/src/dig.py .tmp/f_logxy.25.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:53:52 (9 s)  (cd tacle && python3 -m tacle ../.tmp/f_logxy.50.csv -g)
+----
+2025-09-01 16:53:55 (3 s)  python3 -O dig/src/dig.py .tmp/f_logxy.50.trc -log 0 -noss -nomp -noarrays 
+----
+2025-09-01 16:54:26 (31 s)  (cd tacle && python3 -m tacle ../.tmp/f_logxy.75.csv -g)
+----
+2025-09-01 16:54:28 (2 s)  python3 -O dig/src/dig.py .tmp/f_logxy.75.trc -log 0 -noss -nomp -noarrays 
+----
+/home/invariants/venv/lib/python3.10/site-packages/numpy/core/fromnumeric.py:86: RuntimeWarning: overflow encountered in reduce
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+2025-09-01 16:55:41 (73 s)  (cd tacle && python3 -m tacle ../.tmp/f_logxy.100.csv -g)
+----
+2025-09-01 16:55:44 (3 s)  python3 -O dig/src/dig.py .tmp/f_logxy.100.trc -log 0 -noss -nomp -noarrays 
 ----

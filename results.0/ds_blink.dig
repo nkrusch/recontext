@@ -4,17 +4,17 @@ trace1 (19 invs):
 3. -flag + pan <= 0
 4. -flag - seqID <= -1
 5. pan - min(t1, 0) == 0
-6. pan - min(t2, 0) == 0
+6. min(t2, 0) - pan == 0
 7. min(flag, 0) - pan == 0
-8. pan - min(seqID, 0) == 0
+8. min(seqID, 0) - pan == 0
 9. pan - min(t1, t2, 0) == 0
-10. pan - min(flag, t2, 0) == 0
-11. pan - min(flag, t1, 0) == 0
-12. pan - min(seqID, t2, 0) == 0
+10. min(flag, t2, 0) - pan == 0
+11. min(flag, t1, 0) - pan == 0
+12. min(seqID, t2, 0) - pan == 0
 13. min(seqID, t1, 0) - pan == 0
-14. pan - min(flag, seqID, 0) == 0
+14. min(flag, seqID, 0) - pan == 0
 15. pan - min(flag, t1, t2, 0) == 0
 16. pan - min(seqID, t1, t2, 0) == 0
 17. min(flag, seqID, t1, 0) - pan == 0
-18. min(flag, seqID, t2, 0) - pan == 0
+18. pan - min(flag, seqID, t2, 0) == 0
 19. min(flag, seqID, t1, t2, 0) - pan == 0

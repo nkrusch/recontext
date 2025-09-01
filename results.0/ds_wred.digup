@@ -1,263 +1,453 @@
-trace1 (262 invs):
+trace1 (452 invs):
 1. ρ <= 1
-2. -ρ <= 0
-3. pH <= 4
-4. Cl == 0
-5. -va <= 0
-6. -ca <= 0
-7. qty <= 8
-8. va*ρ == 0
-9. ca*ρ == 0
-10. -pH <= -2
-11. -qty <= -3
-12. ca*va == 0
-13. va + ρ <= 1
-14. -alco <= -8
-15. ca + ρ <= 1
-16. pH + ρ <= 4
-17. Cl - ρ <= 0
-18. qty + ρ <= 8
-19. ca + pH <= 4
-20. Cl - ca <= 0
-21. Cl + pH <= 4
-22. ca + va <= 1
-23. Cl + va <= 1
-24. ρ**2 - ρ == 0
-25. fa + va <= 15
-26. -fa + ρ <= -4
-27. -ca + pH <= 4
-28. qty + va <= 8
-29. fa + pH <= 18
-30. fa - pH <= 13
-31. pH - qty <= 0
-32. ca - fa <= -4
-33. ca + fa <= 15
-34. -Cl + ca <= 1
-35. Cl - pH <= -2
-36. -pH + ρ <= -1
-37. -pH - ρ <= -2
-38. Cl + qty <= 8
-39. -fa + va <= -4
-40. -fa - pH <= -7
-41. fa - qty <= 10
-42. -fa + qty <= 3
-43. pH + qty <= 11
-44. -fa + pH <= -1
-45. alco + ρ <= 14
-46. fa - tSO2 <= 6
-47. -Cl - pH <= -2
-48. sulphates <= 2
-49. va**2 - va == 0
-50. ca**2 - ca == 0
-51. -sugar + ρ <= 0
-52. sugar - ρ <= 14
-53. -fSO2 + ρ <= -1
-54. -fSO2 + fa <= 9
-55. -fa - qty <= -8
-56. -sulphates <= 0
-57. alco - qty <= 9
-58. -fSO2 + pH <= 2
-59. alco - pH <= 12
-60. -pH - qty <= -6
-61. -alco + fa <= 6
-62. alco + pH <= 17
-63. -tSO2 + ρ <= -6
-64. ca - fSO2 <= -1
-65. alco + ca <= 14
-66. ca - tSO2 <= -6
-67. pH - tSO2 <= -3
-68. alco + va <= 14
-69. ca - sugar <= 0
-70. -alco + ρ <= -7
-71. -alco - ρ <= -8
-72. pH - sugar <= 3
-73. -fSO2 - fa <= -8
-74. -sugar + va <= 0
-75. -fa + sugar <= 8
-76. -fSO2 + va <= -1
-77. fa - sugar <= 13
-78. sugar + va <= 15
-79. qty - sugar <= 7
-80. -alco + pH <= -5
-81. -fSO2 - pH <= -4
-82. -fSO2 + qty <= 5
-83. alco - tSO2 <= 6
-84. -alco + ca <= -8
-85. -pH - tSO2 <= -9
-86. -alco + va <= -8
-87. -Cl - alco <= -8
-88. ca + sugar <= 15
-89. -tSO2 + va <= -6
-90. ca*pH - 2*ca == 0
-91. pH*va - 3*va == 0
-92. ca*fa - 9*ca == 0
-93. -fa - sugar <= -6
-94. sulphates*va == 0
-95. -fSO2 - qty <= -6
-96. alco - fSO2 <= 10
-97. -alco + qty <= -1
-98. -alco - fa <= -14
-99. fSO2 - tSO2 <= -3
-100. -fa - tSO2 <= -13
-101. -pH + sugar <= 12
-102. sugar - tSO2 <= 0
-103. -fSO2 + sugar <= 9
-104. -qty + sugar <= 10
-105. -qty - sugar <= -4
-106. sulphates + ρ <= 2
-107. -fSO2 - tSO2 <= -9
-108. -alco + sugar <= 6
-109. alco - sugar <= 13
-110. ca*qty - 4*ca == 0
-111. -fSO2 - sugar <= -2
-112. sulphates + va <= 2
-113. -alco - fSO2 <= -10
-114. -alco - tSO2 <= -16
-115. -alco - sugar <= -9
-116. ca - sulphates <= 0
-117. -sugar - tSO2 <= -7
-118. alco*ca - 9*ca == 0
-119. min(ρ, 0) - Cl == 0
-120. pH + sulphates <= 4
-121. Cl - min(ρ, 0) == 0
-122. fa + sulphates <= 15
-123. qty + sulphates <= 9
-124. Cl - min(fa, 0) == 0
-125. min(ca, 0) - Cl == 0
-126. Cl - min(pH, 0) == 0
-127. -sulphates - va <= 0
-128. -sulphates + va <= 1
-129. min(fa, 0) - Cl == 0
-130. ca*sugar - 3*ca == 0
-131. -pH + sulphates <= 0
-132. min(pH, 0) - Cl == 0
-133. Cl - min(ca, 0) == 0
-134. min(va, 0) - Cl == 0
-135. min(ca, ρ) - Cl == 0
-136. -fa + sulphates <= -4
-137. -pH - sulphates <= -2
-138. min(qty, 0) - Cl == 0
-139. min(ca, va) - Cl == 0
-140. Cl - min(qty, 0) == 0
-141. -qty + sulphates <= -2
-142. Cl - min(tSO2, 0) == 0
-143. alco + sulphates <= 14
-144. min(alco, 0) - Cl == 0
-145. Cl - min(alco, 0) == 0
-146. sulphates - tSO2 <= -6
-147. min(fSO2, 0) - Cl == 0
-148. -sugar + sulphates <= 0
-149. sugar + sulphates <= 15
-150. -fSO2 + sulphates <= -1
-151. -alco + sulphates <= -7
-152. -alco - sulphates <= -8
-153. min(sugar, 0) - Cl == 0
-154. min(ca, ρ, 0) - Cl == 0
-155. min(pH, ρ, 0) - Cl == 0
-156. Cl - min(sugar, 0) == 0
-157. min(fa, pH, 0) - Cl == 0
-158. min(ca, pH, 0) - Cl == 0
-159. min(ca, fa, 0) - Cl == 0
-160. Cl - min(ca, pH, 0) == 0
-161. min(ca, va, 0) - Cl == 0
-162. min(pH, va, 0) - Cl == 0
-163. Cl - min(pH, qty, 0) == 0
-164. Cl - min(ca, qty, 0) == 0
-165. min(ca, pH, va) - Cl == 0
-166. min(qty, va, 0) - Cl == 0
-167. min(alco, ρ, 0) - Cl == 0
-168. Cl - min(tSO2, ρ, 0) == 0
-169. Cl - min(qty, va, 0) == 0
-170. Cl - min(ca, tSO2, 0) == 0
-171. Cl - min(fa, tSO2, 0) == 0
-172. Cl - min(pH, tSO2, 0) == 0
-173. Cl - min(alco, fa, 0) == 0
-174. Cl - min(alco, pH, 0) == 0
-175. Cl - min(ca, qty, va) == 0
-176. min(sugar, ρ, 0) - Cl == 0
-177. Cl - min(alco, ca, 0) == 0
-178. Cl - min(alco, ca, ρ) == 0
-179. Cl - min(fSO2, va, 0) == 0
-180. pH**2*ρ - 5*pH*ρ + 6*ρ == 0
-181. Cl - min(sulphates, 0) == 0
-182. Cl - min(fa, sugar, 0) == 0
-183. min(pH, sugar, 0) - Cl == 0
-184. Cl - min(ca, sugar, 0) == 0
-185. min(sulphates, 0) - Cl == 0
-186. min(alco, qty, 0) - Cl == 0
-187. Cl - min(ca, sugar, ρ) == 0
-188. Cl - min(fSO2, qty, 0) == 0
-189. Cl - min(sugar, va, 0) == 0
-190. qty - 2 - max(fSO2, fa) <= 0
-191. Cl - min(ca, fa, pH, 0) == 0
-192. min(ca, pH, va, 0) - Cl == 0
-193. min(qty, sugar, 0) - Cl == 0
-194. Cl - min(alco, sugar, 0) == 0
-195. min(ca, qty, va, 0) - Cl == 0
-196. Cl - min(ca, pH, qty, 0) == 0
-197. min(pH, qty, va, 0) - Cl == 0
-198. min(alco, ca, ρ, 0) - Cl == 0
-199. Cl - min(pH, tSO2, ρ, 0) == 0
-200. Cl - min(fSO2, sugar, 0) == 0
-201. pH + 2 - max(fSO2, fa, 0) <= 0
-202. min(fSO2, qty) - alco - 2 <= 0
-203. min(ca, pH, tSO2, 0) - Cl == 0
-204. min(ca, fa, tSO2, 0) - Cl == 0
-205. min(fa, pH, tSO2, 0) - Cl == 0
-206. min(ca, pH, qty, va) - Cl == 0
-207. Cl - min(ca, sugar, ρ, 0) == 0
-208. min(sulphates, ρ, 0) - Cl == 0
-209. Cl - min(fa, sulphates, 0) == 0
-210. Cl - min(ca, pH, sugar, 0) == 0
-211. Cl - min(pH, sulphates, 0) == 0
-212. Cl - min(ca, sulphates, 0) == 0
-213. Cl - min(alco, pH, qty, 0) == 0
-214. min(pH, sulphates, 0) - Cl == 0
-215. min(sulphates, ρ) - pH - 2 <= 0
-216. min(fSO2, qty, va, 0) - Cl == 0
-217. min(qty, sulphates, 0) - Cl == 0
-218. Cl - min(alco, sugar, ρ, 0) == 0
-219. min(qty, sugar, va, 0) - Cl == 0
-220. Cl - min(alco, sulphates, 0) == 0
-221. Cl - min(alco, fa, sugar, 0) == 0
-222. min(alco, sulphates, 0) - Cl == 0
-223. Cl - min(ca, pH, qty, va, 0) == 0
-224. min(alco, ca, sugar, ρ) - Cl == 0
-225. min(alco, ca, sugar, 0) - Cl == 0
-226. min(sulphates, tSO2, 0) - Cl == 0
-227. min(fSO2, sugar, va, 0) - Cl == 0
-228. Cl - min(ca, fa, pH, tSO2, 0) == 0
-229. min(sugar, sulphates, 0) - Cl == 0
-230. min(pH, sulphates, ρ, 0) - Cl == 0
-231. Cl - min(fSO2, qty, sugar, 0) == 0
-232. min(ca, pH, sulphates, 0) - Cl == 0
-233. sugar + 1 - max(alco, tSO2, 0) <= 0
-234. 2*ca - sulphates**2 + sulphates == 0
-235. Cl - min(pH, qty, sulphates, 0) == 0
-236. min(alco, ca, sugar, ρ, 0) - Cl == 0
-237. min(sulphates, tSO2, ρ, 0) - Cl == 0
-238. min(alco, fa, sulphates, 0) - Cl == 0
-239. min(alco, pH, sulphates, 0) - Cl == 0
-240. Cl - min(pH, sulphates, tSO2, 0) == 0
-241. qty + 2 - max(alco, fSO2, fa, pH) <= 0
-242. Cl - min(fa, sugar, sulphates, 0) == 0
-243. min(ca, sugar, sulphates, 0) - Cl == 0
-244. min(pH, sugar, sulphates, 0) - Cl == 0
-245. Cl - min(alco, qty, sulphates, 0) == 0
-246. min(fSO2, qty, sugar, va, 0) - Cl == 0
-247. Cl - min(alco, sugar, sulphates, 0) == 0
-248. Cl - min(pH, sulphates, tSO2, ρ, 0) == 0
-249. Cl - min(ca, pH, sugar, sulphates, 0) == 0
-250. sugar + 1 - max(alco, pH, tSO2, ρ, 0) <= 0
-251. Cl - min(alco, pH, qty, sulphates, 0) == 0
-252. min(alco, fa, sugar, sulphates, 0) - Cl == 0
-253. qty - 2 - max(fSO2, fa, sulphates, ρ, 0) <= 0
-254. sulphates**3 - 3*sulphates**2 + 2*sulphates == 0
-255. pH**2*sulphates - 5*pH*sulphates + 6*sulphates == 0
-256. fa*pH**2 - 5*fa*pH + 6*fa - 5*pH**2 + 25*pH - 30 == 0
-257. pH**2*sugar - pH**2 - 5*pH*sugar + 5*pH + 6*sugar - 6 == 0
-258. pH*sulphates**2 - pH*sulphates - 2*sulphates**2 + 2*sulphates == 0
-259. qty*sulphates**2 - qty*sulphates - 4*sulphates**2 + 4*sulphates == 0
-260. alco*sulphates**2 - alco*sulphates - 9*sulphates**2 + 9*sulphates == 0
-261. sugar*sulphates**2 - sugar*sulphates - 3*sulphates**2 + 3*sulphates == 0
-262. pH*sugar**2*sulphates - 3*pH*sugar*sulphates + 2*pH*sulphates - 3*sugar**2*sulphates + 9*sugar*sulphates + 2*sulphates**2 - 8*sulphates == 0
+2. Cl == 0
+3. Cl <= 0
+4. -ρ <= 0
+5. ca <= 1
+6. pH <= 4
+7. va <= 1
+8. -ca <= 0
+9. qty <= 8
+10. -va <= 0
+11. fa <= 15
+12. -Cl <= 0
+13. -pH <= -2
+14. va*ρ == 0
+15. ca*ρ == 0
+16. -qty <= -3
+17. ca*va == 0
+18. alco <= 14
+19. -alco <= -8
+20. va + ρ <= 1
+21. pH + ρ <= 4
+22. Cl + ρ <= 1
+23. Cl - ρ <= 0
+24. ca + ρ <= 1
+25. ca + pH <= 4
+26. qty + ρ <= 8
+27. ca + va <= 1
+28. pH + va <= 4
+29. Cl + pH <= 4
+30. Cl - va <= 0
+31. pH - va <= 4
+32. -ca + ρ <= 1
+33. qty + va <= 8
+34. fa + va <= 15
+35. ca - pH <= -1
+36. ca - fa <= -4
+37. fa + pH <= 18
+38. ca + fa <= 15
+39. ca + qty <= 8
+40. -Cl + ca <= 1
+41. pH - qty <= 0
+42. ρ**2 - ρ == 0
+43. -fa + ρ <= -4
+44. -Cl + pH <= 4
+45. Cl - pH <= -2
+46. -Cl - ca <= 0
+47. -pH + ρ <= -1
+48. -pH - ρ <= -2
+49. -fa + qty <= 3
+50. fa - qty <= 10
+51. -fa + va <= -4
+52. -fa - pH <= -7
+53. -fa + pH <= -1
+54. ca - qty <= -3
+55. pH + qty <= 11
+56. fa - tSO2 <= 6
+57. alco + ρ <= 14
+58. -qty - ρ <= -3
+59. -qty + ρ <= -2
+60. -pH + va <= -2
+61. -ca - pH <= -2
+62. -Cl + fa <= 15
+63. -pH + qty <= 6
+64. Cl - qty <= -3
+65. -Cl - pH <= -2
+66. -Cl + qty <= 8
+67. va**2 - va == 0
+68. -alco + fa <= 6
+69. alco + va <= 14
+70. -Cl - qty <= -3
+71. -fa - qty <= -8
+72. alco - qty <= 9
+73. ca - fSO2 <= -1
+74. ca - sugar <= 0
+75. pH - sugar <= 3
+76. -fSO2 + fa <= 9
+77. -fSO2 + pH <= 2
+78. ca - tSO2 <= -6
+79. qty - tSO2 <= 0
+80. pH - tSO2 <= -3
+81. -pH - qty <= -6
+82. -sulphates <= 0
+83. sugar - ρ <= 14
+84. -sugar + ρ <= 0
+85. -fSO2 + ρ <= -1
+86. -tSO2 + ρ <= -6
+87. ca**2 - ca == 0
+88. alco + pH <= 17
+89. -alco - ρ <= -8
+90. -alco + ρ <= -7
+91. alco + ca <= 14
+92. -alco + va <= -8
+93. -fSO2 - fa <= -8
+94. fa - sugar <= 13
+95. -fa + sugar <= 8
+96. ca + sugar <= 15
+97. -fSO2 - pH <= -4
+98. pH + sugar <= 18
+99. qty - sugar <= 7
+100. -pH - tSO2 <= -9
+101. -fSO2 + qty <= 5
+102. -fSO2 + va <= -1
+103. -sugar + va <= 0
+104. alco - tSO2 <= 6
+105. sugar + va <= 15
+106. -alco + pH <= -5
+107. -tSO2 + va <= -6
+108. -alco + ca <= -8
+109. -Cl - alco <= -8
+110. -alco - ca <= -8
+111. -alco + qty <= -1
+112. -alco - fa <= -14
+113. -fa - sugar <= -6
+114. -pH + sugar <= 12
+115. sugar - tSO2 <= 0
+116. -fa - tSO2 <= -13
+117. -fSO2 - qty <= -6
+118. sulphates*va == 0
+119. ca*fa - 9*ca == 0
+120. pH*va - 3*va == 0
+121. ca*pH - 2*ca == 0
+122. alco - fSO2 <= 10
+123. fSO2 - tSO2 <= -3
+124. -alco - pH <= -10
+125. -fSO2 + sugar <= 9
+126. -qty - tSO2 <= -11
+127. -qty + sugar <= 10
+128. -qty - sugar <= -4
+129. -alco + sugar <= 6
+130. alco - sugar <= 13
+131. sulphates + ρ <= 2
+132. ca*qty - 4*ca == 0
+133. -fSO2 - tSO2 <= -9
+134. -fSO2 - sugar <= -2
+135. -sugar - tSO2 <= -7
+136. pH + sulphates <= 4
+137. -alco - sugar <= -9
+138. -alco - tSO2 <= -16
+139. min(ρ, 0) - Cl == 0
+140. ca - sulphates <= 0
+141. sulphates - va <= 2
+142. -alco - fSO2 <= -10
+143. Cl - min(ρ, 0) == 0
+144. -sulphates - ρ <= 0
+145. alco*ca - 9*ca == 0
+146. sulphates + va <= 2
+147. Cl - min(va, 0) == 0
+148. min(fa, 0) - Cl == 0
+149. min(ca, 0) - Cl == 0
+150. fa + sulphates <= 15
+151. qty + sulphates <= 9
+152. min(va, ρ) - Cl == 0
+153. ca*sugar - 3*ca == 0
+154. Cl - min(fa, 0) == 0
+155. Cl - min(ca, 0) == 0
+156. -ca + sulphates <= 1
+157. Cl - min(pH, 0) == 0
+158. -pH + sulphates <= 0
+159. -ca - sulphates <= 0
+160. -Cl + sulphates <= 2
+161. min(pH, 0) - Cl == 0
+162. min(va, 0) - Cl == 0
+163. qty - sulphates <= 8
+164. -sulphates - va <= 0
+165. Cl - min(va, ρ) == 0
+166. min(ca, ρ) - Cl == 0
+167. Cl - min(ca, ρ) == 0
+168. -Cl - sulphates <= 0
+169. min(qty, 0) - Cl == 0
+170. -fa + sulphates <= -4
+171. min(ca, va) - Cl == 0
+172. Cl - min(ca, va) == 0
+173. Cl - min(qty, 0) == 0
+174. -pH - sulphates <= -2
+175. Cl - min(alco, 0) == 0
+176. Cl - min(tSO2, 0) == 0
+177. sulphates - tSO2 <= -6
+178. alco + sulphates <= 14
+179. -qty + sulphates <= -2
+180. -qty - sulphates <= -3
+181. min(fSO2, 0) - Cl == 0
+182. Cl - min(fSO2, 0) == 0
+183. min(alco, 0) - Cl == 0
+184. min(tSO2, 0) - Cl == 0
+185. Cl - min(sugar, 0) == 0
+186. -sugar + sulphates <= 0
+187. -fSO2 + sulphates <= -1
+188. sugar + sulphates <= 15
+189. min(va, ρ, 0) - Cl == 0
+190. Cl - min(pH, ρ, 0) == 0
+191. Cl - min(fa, ρ, 0) == 0
+192. -alco + sulphates <= -7
+193. min(sugar, 0) - Cl == 0
+194. Cl - min(ca, ρ, 0) == 0
+195. min(fa, ρ, 0) - Cl == 0
+196. min(pH, ρ, 0) - Cl == 0
+197. min(fa, va, 0) - Cl == 0
+198. min(ca, va, 0) - Cl == 0
+199. Cl - min(ca, fa, 0) == 0
+200. Cl - min(ca, va, 0) == 0
+201. Cl - min(pH, va, 0) == 0
+202. Cl - min(ca, pH, 0) == 0
+203. Cl - min(fa, pH, 0) == 0
+204. min(ca, pH, 0) - Cl == 0
+205. min(ca, fa, 0) - Cl == 0
+206. Cl - min(fa, va, 0) == 0
+207. min(fa, va, ρ) - Cl == 0
+208. min(ca, fa, ρ) - Cl == 0
+209. min(qty, va, 0) - Cl == 0
+210. min(fa, qty, 0) - Cl == 0
+211. min(ca, qty, 0) - Cl == 0
+212. Cl - min(ca, fa, va) == 0
+213. Cl - min(pH, qty, 0) == 0
+214. Cl - min(qty, va, 0) == 0
+215. min(ca, pH, va) - Cl == 0
+216. Cl - min(ca, qty, 0) == 0
+217. Cl - min(fa, qty, 0) == 0
+218. Cl - min(alco, ρ, 0) == 0
+219. Cl - min(fSO2, ρ, 0) == 0
+220. Cl - min(tSO2, ρ, 0) == 0
+221. min(alco, ρ, 0) - Cl == 0
+222. Cl - min(alco, fa, 0) == 0
+223. Cl - min(alco, va, 0) == 0
+224. Cl - min(ca, tSO2, 0) == 0
+225. Cl - min(sugar, ρ, 0) == 0
+226. Cl - min(tSO2, va, 0) == 0
+227. min(ca, tSO2, 0) - Cl == 0
+228. min(ca, qty, va) - Cl == 0
+229. min(sugar, ρ, 0) - Cl == 0
+230. min(alco, fa, 0) - Cl == 0
+231. min(fSO2, pH, 0) - Cl == 0
+232. Cl - min(fSO2, fa, 0) == 0
+233. min(fSO2, va, 0) - Cl == 0
+234. min(alco, pH, 0) - Cl == 0
+235. min(alco, va, 0) - Cl == 0
+236. Cl - min(fSO2, pH, 0) == 0
+237. min(tSO2, va, 0) - Cl == 0
+238. min(tSO2, va, ρ) - Cl == 0
+239. min(fa, tSO2, 0) - Cl == 0
+240. Cl - min(pH, tSO2, 0) == 0
+241. Cl - min(alco, ca, 0) == 0
+242. min(ca, fSO2, 0) - Cl == 0
+243. min(ca, fSO2, ρ) - Cl == 0
+244. Cl - min(alco, ca, ρ) == 0
+245. Cl - min(alco, qty, 0) == 0
+246. pH + 2 - max(fSO2, fa) <= 0
+247. Cl - min(ca, sugar, 0) == 0
+248. min(qty, tSO2, 0) - Cl == 0
+249. Cl - min(sugar, va, ρ) == 0
+250. Cl - min(sugar, va, 0) == 0
+251. Cl - min(sulphates, 0) == 0
+252. min(fa, sugar, 0) - Cl == 0
+253. min(ca, tSO2, va) - Cl == 0
+254. min(sulphates, 0) - Cl == 0
+255. pH**2*ρ - 5*pH*ρ + 6*ρ == 0
+256. min(fa, pH, ρ, 0) - Cl == 0
+257. Cl - min(pH, sugar, 0) == 0
+258. min(ca, sugar, 0) - Cl == 0
+259. min(pH, sugar, 0) - Cl == 0
+260. min(sugar, va, 0) - Cl == 0
+261. min(alco, qty, 0) - Cl == 0
+262. min(fa, va, ρ, 0) - Cl == 0
+263. min(ca, fSO2, va) - Cl == 0
+264. min(alco, ca, va) - Cl == 0
+265. min(ca, fa, ρ, 0) - Cl == 0
+266. Cl - min(ca, sugar, ρ) == 0
+267. min(fSO2, qty, 0) - Cl == 0
+268. Cl - min(qty, tSO2, 0) == 0
+269. Cl - min(fSO2, qty, 0) == 0
+270. Cl - min(qty, sugar, 0) == 0
+271. qty + 1 - max(fa, tSO2) <= 0
+272. Cl - min(sulphates, va) == 0
+273. min(ca, fa, va, 0) - Cl == 0
+274. min(ca, sugar, va) - Cl == 0
+275. Cl - min(ca, pH, va, 0) == 0
+276. min(pH, sugar) - fa - 2 <= 0
+277. Cl - min(fa, pH, va, 0) == 0
+278. Cl - min(alco, fSO2, 0) == 0
+279. Cl - min(ca, fa, pH, 0) == 0
+280. min(sulphates, va) - ca <= 0
+281. min(fSO2, tSO2, 0) - Cl == 0
+282. min(qty, sugar, 0) - Cl == 0
+283. min(fa, qty, va, 0) - Cl == 0
+284. Cl - min(sugar, tSO2, 0) == 0
+285. min(pH, qty, va, 0) - Cl == 0
+286. Cl - min(ca, pH, qty, 0) == 0
+287. min(ca, qty, va, 0) - Cl == 0
+288. Cl - min(alco, sugar, 0) == 0
+289. Cl - min(ca, fa, qty, 0) == 0
+290. min(fSO2, pH, ρ, 0) - Cl == 0
+291. min(alco, pH, ρ, 0) - Cl == 0
+292. min(fa, tSO2, ρ, 0) - Cl == 0
+293. Cl - min(tSO2, va, ρ, 0) == 0
+294. Cl - min(fSO2, fa, ρ, 0) == 0
+295. Cl - min(ca, fSO2, ρ, 0) == 0
+296. min(alco, ca, ρ, 0) - Cl == 0
+297. min(fSO2, sugar, 0) - Cl == 0
+298. Cl - min(pH, tSO2, ρ, 0) == 0
+299. Cl - min(alco, fa, va, 0) == 0
+300. min(sulphates, ρ, 0) - Cl == 0
+301. min(sugar, va, ρ, 0) - Cl == 0
+302. min(ca, tSO2, va, 0) - Cl == 0
+303. min(ca, pH, qty, va) - Cl == 0
+304. min(fa, sugar, ρ, 0) - Cl == 0
+305. min(pH, sugar, ρ, 0) - Cl == 0
+306. min(fSO2, qty) - alco - 2 <= 0
+307. pH + 2 - max(fSO2, fa, 0) <= 0
+308. Cl - min(fSO2, fa, va, 0) == 0
+309. Cl - min(fSO2, pH, va, 0) == 0
+310. Cl - min(fSO2, fa, pH, 0) == 0
+311. Cl - min(alco, pH, va, 0) == 0
+312. min(fa, tSO2, va, ρ) - Cl == 0
+313. min(fa, tSO2, va, 0) - Cl == 0
+314. Cl - min(ca, pH, tSO2, 0) == 0
+315. min(ca, fa, tSO2, 0) - Cl == 0
+316. Cl - min(fa, pH, tSO2, 0) == 0
+317. min(alco, ca, va, 0) - Cl == 0
+318. Cl - min(ca, fSO2, va, 0) == 0
+319. Cl - min(ca, fSO2, fa, ρ) == 0
+320. Cl - min(ca, fSO2, fa, 0) == 0
+321. Cl - min(ca, sugar, ρ, 0) == 0
+322. Cl - min(sulphates, ρ, 0) == 0
+323. Cl - min(alco, qty, va, 0) == 0
+324. min(alco, fa, qty, 0) - Cl == 0
+325. ca + 2 - max(pH, sugar, 0) <= 0
+326. min(ca, qty, tSO2, 0) - Cl == 0
+327. qty + 2 - max(alco, fa, ρ) <= 0
+328. min(sulphates, va, 0) - Cl == 0
+329. Cl - min(sulphates, va, ρ) == 0
+330. min(ca, sugar, va, 0) - Cl == 0
+331. min(ca, fa, sugar, 0) - Cl == 0
+332. min(fa, sugar, va, 0) - Cl == 0
+333. Cl - min(ca, sulphates, 0) == 0
+334. Cl - min(fa, pH, sugar, 0) == 0
+335. Cl - min(pH, sulphates, 0) == 0
+336. min(ca, pH, sugar, 0) - Cl == 0
+337. min(ca, sulphates, 0) - Cl == 0
+338. Cl - min(fa, sulphates, 0) == 0
+339. min(pH, sugar, va, 0) - Cl == 0
+340. min(alco, fSO2, ρ, 0) - Cl == 0
+341. Cl - min(alco, pH, qty, 0) == 0
+342. Cl - min(pH, qty, tSO2, 0) == 0
+343. Cl - min(fSO2, pH, qty, 0) == 0
+344. min(fSO2, qty, va, 0) - Cl == 0
+345. min(sulphates, ρ) - pH - 2 <= 0
+346. qty + 2 - max(alco, fa, va) <= 0
+347. min(ca, qty, sugar, 0) - Cl == 0
+348. Cl - min(ca, fa, sugar, va) == 0
+349. min(ca, sulphates, va) - Cl == 0
+350. qty - 2 - max(fSO2, fa, pH) <= 0
+351. Cl - min(qty, sulphates, 0) == 0
+352. min(alco, fSO2, pH, 0) - Cl == 0
+353. min(qty, sulphates, 0) - Cl == 0
+354. sugar + 1 - max(alco, tSO2) <= 0
+355. Cl - min(alco, fSO2, va, 0) == 0
+356. Cl - min(alco, ca, fSO2, 0) == 0
+357. qty + 2 - max(alco, ca, fa) <= 0
+358. min(alco, sugar, ρ, 0) - Cl == 0
+359. Cl - min(fSO2, pH, tSO2, 0) == 0
+360. min(qty, sugar, va, 0) - Cl == 0
+361. Cl - min(ca, sugar, tSO2, 0) == 0
+362. sulphates**2*ρ - sulphates*ρ == 0
+363. min(sulphates, tSO2, 0) - Cl == 0
+364. min(ca, pH, qty, va, 0) - Cl == 0
+365. Cl - min(alco, sulphates, 0) == 0
+366. min(alco, fa, sugar, 0) - Cl == 0
+367. min(alco, pH, sugar, 0) - Cl == 0
+368. min(alco, sugar, va, 0) - Cl == 0
+369. min(alco, sulphates, 0) - Cl == 0
+370. min(sulphates, tSO2, va) - ρ <= 0
+371. min(fa, tSO2, va, ρ, 0) - Cl == 0
+372. min(alco, ca, fSO2, va) - Cl == 0
+373. min(ca, fSO2, fa, ρ, 0) - Cl == 0
+374. min(alco, ca, sugar, ρ) - Cl == 0
+375. min(alco, ca, sugar, 0) - Cl == 0
+376. min(fSO2, qty, tSO2, 0) - Cl == 0
+377. min(fSO2, sugar, va, 0) - Cl == 0
+378. Cl - min(sulphates, tSO2, 0) == 0
+379. min(fSO2, pH, sugar) - fa - 2 <= 0
+380. min(qty, sugar, tSO2, 0) - Cl == 0
+381. Cl - min(sulphates, va, ρ, 0) == 0
+382. min(sugar, sulphates, 0) - Cl == 0
+383. Cl - min(sulphates, tSO2, va) == 0
+384. min(pH, sugar, tSO2) - fa - 2 <= 0
+385. min(fa, pH, sugar, ρ, 0) - Cl == 0
+386. Cl - min(sugar, sulphates, 0) == 0
+387. min(fSO2, fa, pH, va, 0) - Cl == 0
+388. Cl - min(ca, fa, pH, tSO2, 0) == 0
+389. min(fSO2, qty, sugar, 0) - Cl == 0
+390. min(pH, sulphates, ρ, 0) - Cl == 0
+391. Cl - min(alco, fa, qty, va, 0) == 0
+392. Cl - min(sugar, sulphates, va) == 0
+393. min(ca, fa, sugar, va, 0) - Cl == 0
+394. Cl - min(ca, sulphates, va, 0) == 0
+395. min(ca, pH, sulphates, 0) - Cl == 0
+396. pH*sulphates*ρ - 3*sulphates*ρ == 0
+397. Cl - min(ca, fa, sulphates, 0) == 0
+398. Cl - min(alco, fSO2, pH, ρ, 0) == 0
+399. 2*ca - sulphates**2 + sulphates == 0
+400. min(fa, qty, sulphates, 0) - Cl == 0
+401. min(ca, qty, sulphates, 0) - Cl == 0
+402. Cl - min(pH, qty, sulphates, 0) == 0
+403. min(alco, ca, fSO2, va, 0) - Cl == 0
+404. min(alco, ca, sugar, ρ, 0) - Cl == 0
+405. Cl - min(sulphates, tSO2, ρ, 0) == 0
+406. fa - 2 - max(alco, qty, tSO2, ρ) <= 0
+407. Cl - min(sugar, sulphates, ρ, 0) == 0
+408. sulphates + 2 - max(fSO2, pH, 0) <= 0
+409. min(ca, sulphates, tSO2, 0) - Cl == 0
+410. min(sulphates, tSO2, va, 0) - Cl == 0
+411. qty + 2 - max(alco, fSO2, fa, 0) <= 0
+412. min(alco, fa, sulphates, 0) - Cl == 0
+413. min(alco, pH, sugar, va, 0) - Cl == 0
+414. Cl - min(alco, pH, sulphates, 0) == 0
+415. Cl - min(fSO2, pH, qty, tSO2, 0) == 0
+416. Cl - min(pH, sulphates, tSO2, 0) == 0
+417. min(ca, qty, sugar, tSO2, 0) - Cl == 0
+418. min(sugar, sulphates, va, ρ) - Cl == 0
+419. min(sugar, sulphates, va, 0) - Cl == 0
+420. sulphates + 1 - max(pH, sugar, 0) <= 0
+421. min(sugar, sulphates, ρ) - pH - 2 <= 0
+422. min(ca, sulphates, tSO2, va) - Cl == 0
+423. min(ca, sugar, sulphates, 0) - Cl == 0
+424. min(pH, sugar, sulphates, 0) - Cl == 0
+425. Cl - min(fa, sugar, sulphates, 0) == 0
+426. pH + 2 - max(Cl, fSO2, fa, va, 0) <= 0
+427. min(alco, qty, sulphates, 0) - Cl == 0
+428. min(fSO2, qty, sugar, va, 0) - Cl == 0
+429. qty + 1 - max(fa, sulphates, tSO2) <= 0
+430. qty - 2 - max(fSO2, fa, sulphates) <= 0
+431. sugar + 1 - max(alco, pH, tSO2, ρ) <= 0
+432. Cl - min(alco, sugar, sulphates, 0) == 0
+433. Cl - min(ca, fa, qty, sulphates, 0) == 0
+434. Cl - min(pH, sulphates, tSO2, ρ, 0) == 0
+435. Cl - min(sugar, sulphates, va, ρ, 0) == 0
+436. Cl - min(ca, sulphates, tSO2, va, 0) == 0
+437. min(ca, pH, sugar, sulphates, 0) - Cl == 0
+438. min(alco, pH, qty, sulphates, 0) - Cl == 0
+439. min(alco, fa, sugar, sulphates, 0) - Cl == 0
+440. sulphates**3 - 3*sulphates**2 + 2*sulphates == 0
+441. pH**2*sulphates - 5*pH*sulphates + 6*sulphates == 0
+442. fa*pH**2 - 5*fa*pH + 6*fa - 5*pH**2 + 25*pH - 30 == 0
+443. pH**2*sugar - pH**2 - 5*pH*sugar + 5*pH + 6*sugar - 6 == 0
+444. fa*sulphates**2 - fa*sulphates - 9*sulphates**2 + 9*sulphates == 0
+445. pH*sulphates**2 - pH*sulphates - 2*sulphates**2 + 2*sulphates == 0
+446. qty*sulphates**2 - qty*sulphates - 4*sulphates**2 + 4*sulphates == 0
+447. alco*sulphates**2 - alco*sulphates - 9*sulphates**2 + 9*sulphates == 0
+448. sugar*sulphates**2 - sugar*sulphates - 3*sulphates**2 + 3*sulphates == 0
+449. 3*alco*sulphates*ρ + 2*sugar**2*sulphates*ρ - 16*sugar*sulphates*ρ - 3*sulphates*ρ == 0
+450. 2*qty*sugar*sulphates*ρ + sugar**2*sulphates*ρ - 17*sugar*sulphates*ρ + 6*sulphates*ρ == 0
+451. fa**2*pH*ρ - 3*fa**2*ρ + fa*pH*sugar*ρ - 30*fa*pH*ρ - 3*fa*sugar*ρ + 90*fa*ρ - 15*pH*sugar*ρ + 225*pH*ρ + 45*sugar*ρ - 675*ρ == 0
+452. pH*sugar**2*sulphates - 3*pH*sugar*sulphates + 2*pH*sulphates - 3*sugar**2*sulphates + 9*sugar*sulphates + 2*sulphates**2 - 8*sulphates == 0

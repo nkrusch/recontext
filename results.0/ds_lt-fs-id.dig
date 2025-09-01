@@ -2,6 +2,6 @@ trace1 (6 invs):
 1. 2*sense - tsm == 0
 2. nodes - 6*tsm + 80 == 0
 3. -barr <= -12
-4. -sense <= -15
-5. -barr + tsm <= 20
-6. area === 0 (mod 625)
+4. -barr + tsm <= 20
+5. sense - tsm <= -15
+6. -area === 0 (mod 625)

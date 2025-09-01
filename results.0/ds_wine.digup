@@ -1,206 +1,552 @@
-trace1 (205 invs):
-1. dw <= 4
-2. nf == 0
+trace1 (551 invs):
+1. nf == 0
+2. nf <= 0
 3. ma <= 5
-4. -pa <= 0
+4. dw <= 4
 5. -ma <= 0
-6. ash <= 3
-7. -nf <= 0
-8. -dw <= -1
+6. -pa <= 0
+7. ash <= 3
+8. -nf <= 0
 9. -hue <= 0
-10. -clr <= -1
-11. -ash <= -1
-12. alco <= 14
-13. -flava <= 0
-14. -phenol <= 0
+10. -dw <= -1
+11. alco <= 14
+12. -clr <= -1
+13. -ash <= -1
+14. -flava <= 0
 15. -alco <= -11
-16. dw + nf <= 4
-17. hue + ma <= 5
-18. clr + dw <= 14
-19. -hue - ma <= 0
-20. -hue - pa <= 0
-21. -dw + hue <= 0
-22. clr - pa <= 11
-23. -ash + ma <= 3
-24. clr - ma <= 12
-25. clr + ma <= 14
-26. -clr + ma <= 3
-27. -clr + dw <= 2
-28. ash - clr <= 1
-29. -ash + dw <= 2
-30. dw + flava <= 8
-31. flava + ma <= 7
-32. flava - ma <= 3
-33. alco + dw <= 17
-34. dw - flava <= 2
-35. -clr + hue <= 0
-36. clr + hue <= 13
-37. -ash + hue <= 0
-38. alco - ma <= 13
-39. alco + ma <= 18
-40. alco + pa <= 16
-41. alco - pa <= 13
-42. -alca + pa <= -9
-43. -ash + clr <= 11
-44. -alco + dw <= -8
-45. alco - clr <= 11
-46. alco - ash <= 12
-47. -ash - clr <= -2
-48. flava + hue <= 5
-49. ash - flava <= 2
-50. ma + phenol <= 7
-51. -alca + dw <= -8
-52. dw + phenol <= 6
-53. -alco + ma <= -7
-54. -clr - hue <= -1
-55. clr - flava <= 12
-56. clr + flava <= 14
-57. hue**2 - hue == 0
-58. -alca + ma <= -10
-59. -alco - dw <= -13
-60. -clr + flava <= 1
-61. -ash + flava <= 2
-62. -alca + ash <= -9
-63. -ma + phenol <= 2
-64. -alca + clr <= -5
-65. -dw + phenol <= 1
-66. hue - phenol <= 0
-67. -alca - nf <= -10
-68. -alca + alco <= 3
-69. alca - alco <= 18
-70. -alco + nf <= -11
-71. -alco + clr <= -1
-72. -alca - hue <= -11
-73. -alco - clr <= -12
-74. clr - phenol <= 11
-75. -clr + phenol <= 1
-76. -alco + hue <= -10
-77. -alco - hue <= -11
-78. flava - phenol <= 2
-79. nf - min(pa, 0) == 0
-80. nf - min(mg, 0) == 0
-81. -flava + phenol <= 2
-82. nf - min(dw, 0) == 0
-83. min(pa, 0) - nf == 0
-84. nf - min(pro, 0) == 0
-85. min(ash, 0) - nf == 0
-86. min(hue, 0) - nf == 0
-87. nf - min(hue, 0) == 0
-88. nf - min(clr, 0) == 0
-89. nf - min(alca, 0) == 0
-90. min(alca, 0) - nf == 0
-91. nf - min(alco, 0) == 0
-92. hue - min(clr, mg) <= 0
-93. min(phenol, 0) - nf == 0
-94. min(mg, pa, 0) - nf == 0
-95. pa - 1 - min(dw, mg) <= 0
-96. min(ash, pa, 0) - nf == 0
-97. nf - min(pa, pro, 0) == 0
-98. min(hue, mg, 0) - nf == 0
-99. min(ash, mg, 0) - nf == 0
-100. nf - min(dw, hue, 0) == 0
-101. nf - min(clr, dw, 0) == 0
-102. dw - 2 - min(clr, mg) <= 0
-103. ash - max(clr, dw, 0) <= 0
-104. min(ash, pro, 0) - nf == 0
-105. min(ash, pa) - phenol <= 0
-106. min(alca, mg, 0) - nf == 0
-107. nf + 1 - min(ash, mg) <= 0
-108. min(ash, hue, 0) - nf == 0
-109. min(alca, dw, 0) - nf == 0
-110. min(clr, hue, 0) - nf == 0
-111. ma - 2 - max(clr, dw) <= 0
-112. nf - min(alco, mg, 0) == 0
-113. nf - min(alco, pa, 0) == 0
-114. nf - min(alca, pa, 0) == 0
-115. nf - min(alca, mg, 0) == 0
-116. ash - 1 - min(clr, mg) <= 0
-117. nf + 1 - min(ash, pro) <= 0
-118. nf - min(alca, hue, 0) == 0
-119. min(alca, ash, 0) - nf == 0
-120. min(alca, hue, 0) - nf == 0
-121. nf - min(alca, clr, 0) == 0
-122. flava - max(clr, dw, 0) <= 0
-123. clr + 1 - min(alco, mg) <= 0
-124. nf - min(pa, phenol, 0) == 0
-125. nf - min(alca, alco, 0) == 0
-126. flava - 1 - min(clr, mg) <= 0
-127. min(ash, phenol, 0) - nf == 0
-128. min(phenol, pro, 0) - nf == 0
-129. phenol - 1 - min(dw, mg) <= 0
-130. clr + 1 - min(alco, pro) <= 0
-131. flava - 1 - min(clr, pro) <= 0
-132. hue - 1 - min(ma, mg, pa) <= 0
-133. flava - max(ash, clr, ma) <= 0
-134. min(ash, flava, ma) - clr <= 0
-135. nf - min(ash, pa, pro, 0) == 0
-136. pa - 1 - min(phenol, pro) <= 0
-137. flava - max(ash, clr, dw) <= 0
-138. min(ash, clr, flava) - dw <= 0
-139. min(ash, hue, mg, 0) - nf == 0
-140. phenol - 1 - max(ash, ma) <= 0
-141. min(clr, dw, hue, 0) - nf == 0
-142. min(alco, mg, pa, 0) - nf == 0
-143. nf - min(alca, mg, pa, 0) == 0
-144. pa - 2 - min(alca, ma, mg) <= 0
-145. min(alca, ash, mg, 0) - nf == 0
-146. min(alca, hue, mg, 0) - nf == 0
-147. min(alca, clr, dw, 0) - nf == 0
-148. nf - min(alca, dw, hue, 0) == 0
-149. ash - 1 - max(flava, ma, 0) <= 0
-150. dw - 2 - min(alco, clr, mg) <= 0
-151. min(alca, ash, hue, 0) - nf == 0
-152. nf - min(alca, clr, hue, 0) == 0
-153. nf - min(alca, alco, mg, 0) == 0
-154. min(alca, alco, pa, 0) - nf == 0
-155. flava - 2 - min(dw, mg, pro) <= 0
-156. dw - 2 - min(clr, flava, mg) <= 0
-157. dw - 2 - min(flava, mg, pro) <= 0
-158. nf - min(ash, pa, phenol, 0) == 0
-159. min(pa, phenol, pro, 0) - nf == 0
-160. ash - 2 - min(clr, flava, mg) <= 0
-161. flava - 2 - min(ash, clr, mg) <= 0
-162. min(ash, phenol, pro, 0) - nf == 0
-163. ash**3 - 6*ash**2 + 11*ash - 6 == 0
-164. phenol - 2 - min(ash, pa, pro) <= 0
-165. dw - 2 - min(alca, mg, phenol) <= 0
-166. phenol - 1 - max(flava, ma, 0) <= 0
-167. phenol - max(clr, dw, hue, ma) <= 0
-168. min(alca, ash, hue, mg, 0) - nf == 0
-169. phenol - 1 - max(ash, flava, 0) <= 0
-170. nf - min(alca, clr, dw, hue, 0) == 0
-171. nf - min(alca, alco, mg, pa, 0) == 0
-172. pa**4 - 6*pa**3 + 11*pa**2 - 6*pa == 0
-173. min(ash, pa, phenol, pro, 0) - nf == 0
-174. phenol - 2 - min(alca, dw, ma, mg) <= 0
-175. ash**2*pa - ash**2 - 3*ash*pa + 3*ash + 2*pa - 2 == 0
-176. phenol**4 - 6*phenol**3 + 11*phenol**2 - 6*phenol == 0
-177. ash**2*ma - 2*ash**2 - 3*ash*ma + 6*ash + 2*ma - 4 == 0
-178. ash**2*dw - 3*ash**2 - 3*ash*dw + 9*ash + 2*dw - 6 == 0
-179. pa*phenol**3 - 6*pa*phenol**2 + 11*pa*phenol - 6*pa == 0
-180. hue*phenol**3 - 6*hue*phenol**2 + 11*hue*phenol - 6*hue == 0
-181. dw*pa**3 - 3*dw*pa**2 + 2*dw*pa - 2*pa**3 + 6*pa**2 - 4*pa == 0
-182. clr*pa**3 - 3*clr*pa**2 + 2*clr*pa - 2*pa**3 + 6*pa**2 - 4*pa == 0
-183. flava*phenol**3 - 6*flava*phenol**2 + 11*flava*phenol - 6*flava == 0
-184. dw**3*ma - dw**3 - 6*dw**2*ma + 6*dw**2 + 11*dw*ma - 11*dw - 6*ma + 6 == 0
-185. dw**3*hue - dw**3 - 6*dw**2*hue + 6*dw**2 + 11*dw*hue - 11*dw - 6*hue + 6 == 0
-186. dw**2*pa**2 - 3*dw**2*pa + 2*dw**2 - 3*dw*pa**2 + 9*dw*pa - 6*dw + 2*pa**2 - 6*pa + 4 == 0
-187. dw**2*hue*pa - dw**2*hue - dw*hue*pa**2 - 2*dw*hue*pa + 3*dw*hue + 2*hue*pa**2 - 2*hue == 0
-188. dw**3*pro - 1035*dw**3 - 6*dw**2*pro + 6210*dw**2 + 11*dw*pro - 11385*dw - 6*pro + 6210 == 0
-189. dw*phenol**3 - 6*dw*phenol**2 + 11*dw*phenol - 6*dw - phenol**3 + 6*phenol**2 - 11*phenol + 6 == 0
-190. 2*hue*pa**3 - 6*hue*pa**2 + 4*hue*pa + ma*pa**3 - 3*ma*pa**2 + 2*ma*pa - 3*pa**3 + 9*pa**2 - 6*pa == 0
-191. 3*alco*ash**2 - 9*alco*ash + 6*alco + 2*ash**2*clr - 45*ash**2 - 6*ash*clr + 135*ash + 4*clr - 90 == 0
-192. ma*phenol**3 - 6*ma*phenol**2 + 11*ma*phenol - 6*ma - 5*phenol**3 + 30*phenol**2 - 55*phenol + 30 == 0
-193. mg*phenol**3 - 6*mg*phenol**2 + 11*mg*phenol - 6*mg - 80*phenol**3 + 480*phenol**2 - 880*phenol + 480 == 0
-194. ash*pa**3 - 3*ash*pa**2 + 2*ash*pa + pa**3*phenol - 4*pa**3 - 3*pa**2*phenol + 12*pa**2 + 2*pa*phenol - 8*pa == 0
-195. phenol**3*pro - 415*phenol**3 - 6*phenol**2*pro + 2490*phenol**2 + 11*phenol*pro - 4565*phenol - 6*pro + 2490 == 0
-196. alca*phenol**3 - 6*alca*phenol**2 + 11*alca*phenol - 6*alca - 20*phenol**3 + 120*phenol**2 - 220*phenol + 120 == 0
-197. 30*alco*ash**2 - 90*alco*ash + 60*alco - 390*ash**2 + 1170*ash + flava**4 - 6*flava**3 + 11*flava**2 - 6*flava - 780 == 0
-198. dw**3 - 3*dw**2*hue - 6*dw**2 - 3*dw*hue*pa**2 + 9*dw*hue*pa + 9*dw*hue + 11*dw + 6*hue*pa**2 - 18*hue*pa - 6*hue - 6 == 0
-199. ash*clr*dw**2 - 5*ash*clr*dw + 6*ash*clr - ash*dw**2 + 5*ash*dw - 6*ash - 2*clr*dw**2 + 10*clr*dw - 12*clr + 2*dw**2 - 10*dw + 12 == 0
-200. 3*ash**2*phenol - 6*ash**2 - 3*ash*phenol**2 + 12*ash - pa**3*phenol + 2*pa**3 + 3*pa**2*phenol - 6*pa**2 - 2*pa*phenol + 4*pa + 6*phenol**2 - 12*phenol == 0
-201. 2*ash*dw**2 + ash*dw*flava**2 - 3*ash*dw*flava - 8*ash*dw - 3*ash*flava**2 + 9*ash*flava + 6*ash - 4*dw**2 - 2*dw*flava**2 + 6*dw*flava + 16*dw + 6*flava**2 - 18*flava - 12 == 0
-202. dw**2*hue*phenol - 2*dw**2*hue - 2*dw*hue*ma*phenol + 4*dw*hue*ma - 3*dw*hue*phenol + 6*dw*hue + hue*ma*phenol**2 + hue*ma*phenol - 6*hue*ma - hue*phenol**2 + 5*hue*phenol - 6*hue == 0
-203. ash*dw*flava**3 - 3*ash*dw*flava**2 + 2*ash*dw*flava - 3*ash*flava**3 + 9*ash*flava**2 - 6*ash*flava - 2*dw*flava**3 + 6*dw*flava**2 - 4*dw*flava + 6*flava**3 - 18*flava**2 + 12*flava == 0
-204. clr*dw**2*hue - 5*clr*dw*hue + 6*clr*hue - 3*dw**2*hue - 4*dw*hue*ma*phenol + 8*dw*hue*ma + 4*dw*hue*phenol + 7*dw*hue + 2*hue*ma*phenol**2 + 2*hue*ma*phenol - 12*hue*ma - 2*hue*phenol**2 - 2*hue*phenol - 6*hue == 0
-205. 3*ash**2*pro - 2490*ash**2 + 1095*ash*phenol**2 - 3285*ash*phenol - 9*ash*pro + 9660*ash + 365*pa**3*phenol - 730*pa**3 - 1095*pa**2*phenol + 2190*pa**2 + 730*pa*phenol - 1460*pa - 2190*phenol**2 + 6570*phenol + 6*pro - 9360 == 0
+16. -phenol <= 0
+17. ma + pa <= 7
+18. dw - nf <= 4
+19. -alca <= -10
+20. ma - nf <= 5
+21. dw - ma <= 3
+22. hue + ma <= 5
+23. ash + ma <= 7
+24. ash + dw <= 6
+25. -nf - pa <= 0
+26. dw + hue <= 5
+27. -ma - nf <= 0
+28. -ma + pa <= 2
+29. -ma + nf <= 0
+30. clr + dw <= 14
+31. -dw + hue <= 0
+32. clr - pa <= 11
+33. clr + ma <= 14
+34. -clr + ma <= 3
+35. -ash + ma <= 3
+36. clr - ma <= 12
+37. -clr + dw <= 2
+38. ash - clr <= 1
+39. -hue - ma <= 0
+40. -dw - nf <= -1
+41. -ash + dw <= 2
+42. alco + ma <= 18
+43. alco - ma <= 13
+44. alco + dw <= 17
+45. alco - pa <= 13
+46. alco + pa <= 16
+47. alco + nf <= 14
+48. clr + hue <= 13
+49. -ash - dw <= -2
+50. flava + ma <= 7
+51. -ash + hue <= 0
+52. flava - ma <= 3
+53. flava - pa <= 4
+54. -clr + hue <= 0
+55. dw - flava <= 2
+56. flava + nf <= 5
+57. -clr + nf <= -1
+58. dw + flava <= 8
+59. -alco + ma <= -7
+60. -clr - hue <= -1
+61. alco - clr <= 11
+62. alco - ash <= 12
+63. -alco + dw <= -8
+64. ma + phenol <= 7
+65. -alca + pa <= -9
+66. alco + ash <= 16
+67. -alca + dw <= -8
+68. dw + phenol <= 6
+69. flava + hue <= 5
+70. -flava - pa <= 0
+71. flava - hue <= 5
+72. ash - flava <= 2
+73. pa - phenol <= 1
+74. -flava - nf <= 0
+75. -ash + clr <= 11
+76. nf - phenol <= 0
+77. dw - phenol <= 2
+78. -flava - ma <= 0
+79. -ash - clr <= -2
+80. -flava + nf <= 0
+81. hue**2 - hue == 0
+82. alca - alco <= 18
+83. -alca + ma <= -10
+84. -alco - dw <= -13
+85. -alco + nf <= -11
+86. -ma + phenol <= 2
+87. -alca + clr <= -5
+88. -alca + ash <= -9
+89. -alca - dw <= -11
+90. clr - flava <= 12
+91. clr + flava <= 14
+92. hue - phenol <= 0
+93. -pa + phenol <= 2
+94. -ash + flava <= 2
+95. -clr + flava <= 1
+96. -alco - nf <= -11
+97. -alco + clr <= -1
+98. -dw + phenol <= 1
+99. -alca + alco <= 3
+100. -pa - phenol <= 0
+101. -alca - nf <= -10
+102. -alca - hue <= -11
+103. -alco - clr <= -12
+104. clr - phenol <= 11
+105. alco + flava <= 17
+106. -clr + phenol <= 1
+107. -alco - hue <= -11
+108. -alco + hue <= -10
+109. clr + phenol <= 15
+110. -alca + flava <= -8
+111. -clr - phenol <= -2
+112. -ash - phenol <= -2
+113. flava - phenol <= 2
+114. alco - phenol <= 13
+115. nf - min(pa, 0) == 0
+116. nf - min(ma, 0) == 0
+117. -alca + phenol <= -8
+118. nf - min(dw, 0) == 0
+119. -flava + phenol <= 2
+120. nf - min(mg, 0) == 0
+121. min(mg, 0) - nf == 0
+122. min(dw, 0) - nf == 0
+123. min(ma, 0) - nf == 0
+124. min(pa, 0) - nf == 0
+125. min(ash, 0) - nf == 0
+126. min(pro, 0) - nf == 0
+127. -alca - phenol <= -11
+128. min(hue, 0) - nf == 0
+129. -alco - phenol <= -12
+130. min(clr, 0) - nf == 0
+131. nf - min(clr, 0) == 0
+132. nf - min(pro, 0) == 0
+133. nf - min(hue, 0) == 0
+134. nf - min(ash, 0) == 0
+135. nf - min(alca, 0) == 0
+136. min(alco, 0) - nf == 0
+137. nf - min(alco, 0) == 0
+138. min(alca, 0) - nf == 0
+139. hue - min(dw, mg) <= 0
+140. hue - min(clr, mg) <= 0
+141. ash - max(clr, dw) <= 0
+142. min(flava, 0) - nf == 0
+143. nf - min(flava, 0) == 0
+144. min(phenol, 0) - nf == 0
+145. hue - min(clr, pro) <= 0
+146. min(dw, pa, 0) - nf == 0
+147. nf - min(phenol, 0) == 0
+148. nf - min(mg, pa, 0) == 0
+149. nf - min(ma, pa, 0) == 0
+150. min(mg, pa, 0) - nf == 0
+151. min(ma, mg, 0) - nf == 0
+152. nf - min(dw, pa, 0) == 0
+153. min(dw, ma, 0) - nf == 0
+154. nf - min(ma, mg, 0) == 0
+155. min(flava, pa) - dw <= 0
+156. nf - min(pa, pro, 0) == 0
+157. nf - min(ash, pa, 0) == 0
+158. pa - 2 - min(ma, mg) <= 0
+159. min(dw, pro, 0) - nf == 0
+160. nf - min(hue, mg, 0) == 0
+161. min(ash, mg, 0) - nf == 0
+162. nf - min(clr, pa, 0) == 0
+163. min(clr, mg, 0) - nf == 0
+164. min(ash, ma, 0) - nf == 0
+165. min(ash, pa, 0) - nf == 0
+166. nf - min(clr, dw, 0) == 0
+167. min(ma, pro, 0) - nf == 0
+168. min(clr, dw, 0) - nf == 0
+169. min(dw, hue, 0) - nf == 0
+170. min(hue, pa, 0) - nf == 0
+171. min(hue, mg, 0) - nf == 0
+172. nf - min(ash, dw, 0) == 0
+173. nf - min(mg, pro, 0) == 0
+174. nf - min(clr, mg, 0) == 0
+175. nf - min(ash, mg, 0) == 0
+176. nf - min(ash, ma, 0) == 0
+177. min(mg, pro, 0) - nf == 0
+178. nf - min(hue, pa, 0) == 0
+179. min(ma, pa) - phenol <= 0
+180. min(clr, ma, 0) - nf == 0
+181. min(ash, flava) - dw <= 0
+182. min(ash, dw, 0) - nf == 0
+183. dw - 2 - min(clr, mg) <= 0
+184. min(ash, pa) - phenol <= 0
+185. nf - min(ash, pro, 0) == 0
+186. nf - min(alca, ma, 0) == 0
+187. min(alco, ma, 0) - nf == 0
+188. pa - 1 - min(dw, pro) <= 0
+189. min(alco, pa, 0) - nf == 0
+190. min(alco, dw, 0) - nf == 0
+191. min(ash, hue, 0) - nf == 0
+192. nf - min(ash, hue, 0) == 0
+193. min(alca, mg, 0) - nf == 0
+194. nf + 1 - min(clr, mg) <= 0
+195. pa - 1 - min(clr, mg) <= 0
+196. nf - min(alco, pa, 0) == 0
+197. pa - 2 - min(ma, pro) <= 0
+198. min(clr, pro, 0) - nf == 0
+199. nf - min(clr, hue, 0) == 0
+200. nf - min(alca, dw, 0) == 0
+201. hue - min(mg, phenol) <= 0
+202. nf - min(hue, pro, 0) == 0
+203. min(ash, pro, 0) - nf == 0
+204. min(alca, pa, 0) - nf == 0
+205. pa - 1 - max(ash, ma) <= 0
+206. min(hue, pro, 0) - nf == 0
+207. nf - min(clr, pro, 0) == 0
+208. nf + 1 - min(ash, mg) <= 0
+209. nf - min(alco, mg, 0) == 0
+210. nf - min(alca, mg, 0) == 0
+211. min(alco, mg, 0) - nf == 0
+212. min(clr, hue, 0) - nf == 0
+213. min(alca, ma, 0) - nf == 0
+214. nf + 1 - min(ash, pro) <= 0
+215. pa - 1 - min(clr, pro) <= 0
+216. ash - 1 - min(dw, pro) <= 0
+217. dw - 2 - min(ash, pro) <= 0
+218. min(alco, pro, 0) - nf == 0
+219. nf - min(alca, ash, 0) == 0
+220. min(alca, hue, 0) - nf == 0
+221. min(flava, pa, 0) - nf == 0
+222. min(flava, mg, 0) - nf == 0
+223. min(alco, ash, 0) - nf == 0
+224. nf - min(alco, clr, 0) == 0
+225. nf - min(flava, ma, 0) == 0
+226. min(alco, clr, 0) - nf == 0
+227. nf - min(alca, clr, 0) == 0
+228. nf - min(alca, hue, 0) == 0
+229. ash - max(clr, phenol) <= 0
+230. min(alca, clr, 0) - nf == 0
+231. ash - 1 - min(clr, mg) <= 0
+232. ash - 2 - min(pa, pro) <= 0
+233. nf - min(flava, pa, 0) == 0
+234. nf + 1 - min(clr, pro) <= 0
+235. nf - min(alco, ash, 0) == 0
+236. nf - min(alco, hue, 0) == 0
+237. dw - 2 - min(clr, pro) <= 0
+238. min(flava, ma, 0) - nf == 0
+239. hue - min(phenol, pro) <= 0
+240. nf - min(flava, mg, 0) == 0
+241. min(dw, flava, 0) - nf == 0
+242. nf - min(pa, phenol, 0) == 0
+243. clr + 1 - min(alco, mg) <= 0
+244. nf - min(alca, alco, 0) == 0
+245. nf - min(ma, phenol, 0) == 0
+246. min(flava, pa) - phenol <= 0
+247. min(ash, flava, 0) - nf == 0
+248. nf - min(flava, hue, 0) == 0
+249. nf - min(clr, flava, 0) == 0
+250. pa - 1 - min(flava, mg) <= 0
+251. nf - min(dw, phenol, 0) == 0
+252. min(flava, pro, 0) - nf == 0
+253. ash - 1 - min(clr, pro) <= 0
+254. min(pa, phenol, 0) - nf == 0
+255. min(mg, phenol, 0) - nf == 0
+256. dw - 2 - min(flava, mg) <= 0
+257. flava - max(clr, dw, 0) <= 0
+258. nf - min(mg, phenol, 0) == 0
+259. hue - min(ash, mg, pro) <= 0
+260. min(alca, alco, 0) - nf == 0
+261. min(ma, phenol, 0) - nf == 0
+262. nf - min(dw, ma, pa, 0) == 0
+263. nf - min(ash, phenol, 0) == 0
+264. nf - min(phenol, pro, 0) == 0
+265. min(dw, pa, pro, 0) - nf == 0
+266. flava - 2 - min(ash, mg) <= 0
+267. ash - 2 - min(flava, mg) <= 0
+268. phenol - 1 - min(dw, mg) <= 0
+269. dw - 2 - min(mg, phenol) <= 0
+270. nf - min(hue, phenol, 0) == 0
+271. min(ash, phenol, 0) - nf == 0
+272. ash - 1 - max(flava, ma) <= 0
+273. min(clr, mg, pa, 0) - nf == 0
+274. flava - 1 - min(clr, mg) <= 0
+275. pa - 1 - max(ash, ma, 0) <= 0
+276. nf - min(ash, ma, pa, 0) == 0
+277. min(clr, phenol, 0) - nf == 0
+278. min(ma, pa, pro, 0) - nf == 0
+279. pa - 1 - min(flava, pro) <= 0
+280. clr + 1 - min(alco, pro) <= 0
+281. min(alco, flava, 0) - nf == 0
+282. pa - 1 - min(mg, phenol) <= 0
+283. min(hue, phenol, 0) - nf == 0
+284. phenol - 2 - min(mg, pa) <= 0
+285. min(hue, mg, pa, 0) - nf == 0
+286. flava - 2 - min(dw, pro) <= 0
+287. nf - min(clr, phenol, 0) == 0
+288. nf - min(alco, flava, 0) == 0
+289. ma - 2 - max(clr, dw, 0) <= 0
+290. min(ma, mg, pro, 0) - nf == 0
+291. nf - min(ash, ma, mg, 0) == 0
+292. nf - min(clr, dw, ma, 0) == 0
+293. nf - min(dw, ma, pro, 0) == 0
+294. nf - min(clr, ma, mg, 0) == 0
+295. min(phenol, pro, 0) - nf == 0
+296. nf - min(alca, flava, 0) == 0
+297. nf - min(ash, dw, pa, 0) == 0
+298. pa - 1 - min(clr, dw, mg) <= 0
+299. nf - min(ash, pa, pro, 0) == 0
+300. pa - 1 - min(phenol, pro) <= 0
+301. min(alca, phenol, 0) - nf == 0
+302. nf - min(alco, phenol, 0) == 0
+303. hue - min(alca, clr, pro) <= 0
+304. flava - 1 - min(clr, pro) <= 0
+305. min(alco, dw, pa, 0) - nf == 0
+306. nf - min(ash, hue, mg, 0) == 0
+307. phenol - 1 - max(ash, pa) <= 0
+308. min(ash, clr, flava) - dw <= 0
+309. flava - max(clr, dw, hue) <= 0
+310. phenol - 1 - min(dw, pro) <= 0
+311. dw - 2 - min(phenol, pro) <= 0
+312. nf - min(alco, ma, pa, 0) == 0
+313. min(alco, phenol, 0) - nf == 0
+314. nf - min(clr, dw, hue, 0) == 0
+315. min(ash, dw, pro, 0) - nf == 0
+316. min(dw, hue, pro, 0) - nf == 0
+317. nf - min(ash, dw, hue, 0) == 0
+318. nf - min(alca, phenol, 0) == 0
+319. flava - max(ash, clr, ma) <= 0
+320. min(ash, flava, ma) - clr <= 0
+321. phenol - 2 - min(pa, pro) <= 0
+322. phenol - 2 - min(ash, mg) <= 0
+323. ash - max(clr, phenol, 0) <= 0
+324. nf - min(hue, mg, pro, 0) == 0
+325. nf - min(clr, hue, mg, 0) == 0
+326. nf - min(clr, mg, pro, 0) == 0
+327. min(ash, ma, pro, 0) - nf == 0
+328. nf - min(ash, mg, pro, 0) == 0
+329. min(alca, mg, pa, 0) - nf == 0
+330. min(alco, mg, pa, 0) - nf == 0
+331. nf - min(clr, hue, pa, 0) == 0
+332. min(clr, ma, pro, 0) - nf == 0
+333. nf - min(clr, dw, pro, 0) == 0
+334. min(alca, ma, mg, 0) - nf == 0
+335. min(alco, ma, mg, 0) - nf == 0
+336. dw - 2 - min(ash, clr, mg) <= 0
+337. min(alco, ma, pa) - phenol <= 0
+338. ash - 2 - min(dw, ma, pro) <= 0
+339. min(alca, hue, ma) - flava <= 0
+340. min(alco, dw, pro, 0) - nf == 0
+341. min(alco, pa, pro, 0) - nf == 0
+342. min(flava, phenol, 0) - nf == 0
+343. min(alca, hue, mg, 0) - nf == 0
+344. nf - min(alca, ash, mg, 0) == 0
+345. nf - min(flava, mg, pa, 0) == 0
+346. nf - min(alco, ash, pa, 0) == 0
+347. nf - min(alco, ash, ma, 0) == 0
+348. nf - min(alco, clr, dw, 0) == 0
+349. min(flava, ma, pa, 0) - nf == 0
+350. nf - min(alca, dw, hue, 0) == 0
+351. nf - min(alca, clr, dw, 0) == 0
+352. phenol - 1 - min(clr, pro) <= 0
+353. min(ash, hue, pro, 0) - nf == 0
+354. nf - min(alca, clr, pa, 0) == 0
+355. nf - min(clr, hue, pro, 0) == 0
+356. pa - 2 - min(alca, ma, mg) <= 0
+357. min(alco, ash, mg, 0) - nf == 0
+358. min(alco, hue, pa) - flava <= 0
+359. nf - min(alco, hue, pa, 0) == 0
+360. min(alco, clr, pa, 0) - nf == 0
+361. nf + 1 - min(clr, dw, pro) <= 0
+362. nf - min(alca, clr, ma, 0) == 0
+363. nf - min(alca, clr, mg, 0) == 0
+364. nf - min(flava, ma, mg, 0) == 0
+365. nf - min(flava, phenol, 0) == 0
+366. min(dw, flava, pa, 0) - nf == 0
+367. hue - 1 - min(alca, pro, 0) <= 0
+368. nf - min(alca, alco, ma, 0) == 0
+369. ash - 1 - max(flava, ma, 0) <= 0
+370. nf + 1 - min(alco, dw, pro) <= 0
+371. nf - min(alca, ash, hue, 0) == 0
+372. nf + 1 - min(alca, ash, mg) <= 0
+373. min(alca, ash, pa) - phenol <= 0
+374. phenol - 1 - max(flava, ma) <= 0
+375. min(clr, flava, pa, 0) - nf == 0
+376. nf - min(clr, flava, mg, 0) == 0
+377. min(flava, ma, pro, 0) - nf == 0
+378. min(flava, pa, pro, 0) - nf == 0
+379. min(alco, clr, pro, 0) - nf == 0
+380. min(alca, clr, hue, 0) - nf == 0
+381. nf - min(mg, pa, phenol, 0) == 0
+382. phenol - 2 - min(flava, mg) <= 0
+383. ash - 2 - min(alco, ma, mg) <= 0
+384. nf - min(alca, alco, pa, 0) == 0
+385. min(alca, alco, mg, 0) - nf == 0
+386. nf - min(alco, clr, hue, 0) == 0
+387. min(ma, pa, phenol, 0) - nf == 0
+388. min(dw, ma, phenol, 0) - nf == 0
+389. min(dw, pa, phenol, 0) - nf == 0
+390. nf - min(alco, hue, pro, 0) == 0
+391. min(flava, mg, pro, 0) - nf == 0
+392. flava - 2 - min(mg, phenol) <= 0
+393. min(ash, flava, pa, 0) - nf == 0
+394. min(ash, dw, flava, 0) - nf == 0
+395. nf - min(ash, pa, phenol, 0) == 0
+396. min(pa, phenol, pro, 0) - nf == 0
+397. phenol - 2 - min(ma, mg, pa) <= 0
+398. clr + 1 - min(alco, mg, pro) <= 0
+399. nf - min(ash, flava, hue, 0) == 0
+400. phenol - 1 - max(ash, ma, 0) <= 0
+401. ash - 1 - min(alca, clr, mg) <= 0
+402. phenol - 2 - min(flava, pro) <= 0
+403. nf - min(clr, dw, phenol, 0) == 0
+404. min(clr, flava, pro, 0) - nf == 0
+405. nf - min(hue, mg, phenol, 0) == 0
+406. min(hue, pa, phenol, 0) - nf == 0
+407. min(clr, pa, phenol, 0) - nf == 0
+408. ash - 2 - min(flava, ma, mg) <= 0
+409. min(alco, flava, pa, 0) - nf == 0
+410. hue - 1 - min(ma, mg, pa, 0) <= 0
+411. nf - min(ash, mg, phenol, 0) == 0
+412. min(alco, flava, mg, 0) - nf == 0
+413. min(alco, flava, ma, 0) - nf == 0
+414. flava - 2 - min(phenol, pro) <= 0
+415. min(mg, phenol, pro, 0) - nf == 0
+416. min(alca, alco, ash, 0) - nf == 0
+417. nf - min(ash, phenol, pro, 0) == 0
+418. min(alco, ma, phenol, 0) - nf == 0
+419. nf - min(alca, ma, phenol, 0) == 0
+420. pa - 1 - min(alco, flava, mg) <= 0
+421. min(ash, hue, phenol, 0) - nf == 0
+422. nf - min(alco, dw, phenol, 0) == 0
+423. nf - min(alco, clr, flava, 0) == 0
+424. nf - min(alco, flava, pro, 0) == 0
+425. dw - 2 - min(clr, flava, pro) <= 0
+426. flava - 1 - min(clr, mg, pro) <= 0
+427. min(alca, pa, phenol, 0) - nf == 0
+428. min(alco, pa, phenol, 0) - nf == 0
+429. phenol - 1 - min(dw, mg, pro) <= 0
+430. phenol - max(ash, clr, ma, 0) <= 0
+431. min(alco, mg, phenol, 0) - nf == 0
+432. min(ash, ma, mg, pro, 0) - nf == 0
+433. min(clr, dw, ma, pro, 0) - nf == 0
+434. min(hue, phenol, pro, 0) - nf == 0
+435. nf - min(alca, ash, flava, 0) == 0
+436. nf - min(alco, ash, flava, 0) == 0
+437. ash**3 - 6*ash**2 + 11*ash - 6 == 0
+438. phenol - 2 - min(ash, pa, pro) <= 0
+439. pa - 1 - min(alco, mg, phenol) <= 0
+440. min(clr, hue, ma, pro) - flava <= 0
+441. pa - 1 - min(alca, flava, pro) <= 0
+442. min(alco, dw, pa, pro, 0) - nf == 0
+443. clr + 1 - min(alca, alco, pro) <= 0
+444. phenol - 2 - min(alca, ma, mg) <= 0
+445. ash - max(clr, dw, flava, hue) <= 0
+446. dw - 2 - min(alco, flava, pro) <= 0
+447. min(alco, ash, ma, pa, 0) - nf == 0
+448. min(alco, clr, phenol, 0) - nf == 0
+449. min(ash, dw, hue, pro, 0) - nf == 0
+450. min(alca, clr, phenol, 0) - nf == 0
+451. min(flava, pa, phenol, 0) - nf == 0
+452. ash - 2 - min(mg, phenol, pro) <= 0
+453. hue - min(dw, mg, phenol, pro) <= 0
+454. min(clr, hue, mg, pro, 0) - nf == 0
+455. min(alco, ash, phenol, 0) - nf == 0
+456. min(alca, clr, ma, mg, 0) - nf == 0
+457. min(alco, hue, phenol, 0) - nf == 0
+458. nf - min(alco, phenol, pro, 0) == 0
+459. min(flava, mg, phenol, 0) - nf == 0
+460. min(alca, alco, flava, 0) - nf == 0
+461. nf - min(alca, alco, phenol, 0) == 0
+462. phenol - 1 - min(alca, dw, pro) <= 0
+463. min(flava, hue, phenol, 0) - nf == 0
+464. nf - min(ash, flava, phenol, 0) == 0
+465. nf - min(alca, ash, hue, mg, 0) == 0
+466. phenol - 1 - max(ash, flava, 0) <= 0
+467. nf - min(clr, flava, mg, pa, 0) == 0
+468. min(flava, ma, pa, pro, 0) - nf == 0
+469. flava - 1 - min(alco, clr, pro) <= 0
+470. nf - min(alca, clr, dw, hue, 0) == 0
+471. ash - 2 - min(alco, mg, phenol) <= 0
+472. hue - 1 - min(alco, flava, pro) <= 0
+473. min(alca, alco, mg, pa, 0) - nf == 0
+474. min(alco, clr, hue, pa, 0) - nf == 0
+475. nf - min(dw, ma, pa, phenol, 0) == 0
+476. nf - min(flava, phenol, pro, 0) == 0
+477. min(ash, dw, flava, pa, 0) - nf == 0
+478. phenol - 1 - min(alca, clr, pro) <= 0
+479. phenol - 2 - min(flava, pa, pro) <= 0
+480. min(hue, mg, pa, phenol, 0) - nf == 0
+481. pa - 2 - min(alca, ash, ma, pro) <= 0
+482. min(alco, flava, phenol, 0) - nf == 0
+483. phenol - 1 - min(alco, clr, pro) <= 0
+484. phenol - 2 - min(alca, ash, pro) <= 0
+485. min(alco, flava, ma, mg, 0) - nf == 0
+486. pa**4 - 6*pa**3 + 11*pa**2 - 6*pa == 0
+487. nf - min(ash, pa, phenol, pro, 0) == 0
+488. flava - 2 - min(alco, mg, phenol) <= 0
+489. flava - 2 - min(alca, phenol, pro) <= 0
+490. nf - min(alco, clr, dw, phenol, 0) == 0
+491. min(alco, clr, flava, pro, 0) - nf == 0
+492. min(alca, clr, pa, phenol, 0) - nf == 0
+493. nf - min(alco, ash, mg, phenol, 0) == 0
+494. min(alca, alco, ma, phenol, 0) - nf == 0
+495. min(alco, hue, phenol, pro, 0) - nf == 0
+496. min(flava, mg, phenol, pro, 0) - nf == 0
+497. nf - min(alca, alco, ash, flava, 0) == 0
+498. dw - 2 - min(alca, clr, phenol, pro) <= 0
+499. min(ash, flava, hue, phenol, 0) - nf == 0
+500. phenol - 1 - max(ash, flava, hue, 0) <= 0
+501. nf - min(alco, flava, pa, phenol, 0) == 0
+502. pa - 1 - min(alco, clr, phenol, pro) <= 0
+503. flava - 2 - min(alco, dw, phenol, pro) <= 0
+504. ash**2*pa - ash**2 - 3*ash*pa + 3*ash + 2*pa - 2 == 0
+505. phenol**4 - 6*phenol**3 + 11*phenol**2 - 6*phenol == 0
+506. ash**2*dw - 3*ash**2 - 3*ash*dw + 9*ash + 2*dw - 6 == 0
+507. ash**2*ma - 2*ash**2 - 3*ash*ma + 6*ash + 2*ma - 4 == 0
+508. pa*phenol**3 - 6*pa*phenol**2 + 11*pa*phenol - 6*pa == 0
+509. hue*phenol**3 - 6*hue*phenol**2 + 11*hue*phenol - 6*hue == 0
+510. dw*pa**3 - 3*dw*pa**2 + 2*dw*pa - 2*pa**3 + 6*pa**2 - 4*pa == 0
+511. clr*pa**3 - 3*clr*pa**2 + 2*clr*pa - 2*pa**3 + 6*pa**2 - 4*pa == 0
+512. flava*phenol**3 - 6*flava*phenol**2 + 11*flava*phenol - 6*flava == 0
+513. flava*pa**3 - 3*flava*pa**2 + 2*flava*pa - 2*pa**3 + 6*pa**2 - 4*pa == 0
+514. dw**3*ma - dw**3 - 6*dw**2*ma + 6*dw**2 + 11*dw*ma - 11*dw - 6*ma + 6 == 0
+515. dw**3*pa - dw**3 - 6*dw**2*pa + 6*dw**2 + 11*dw*pa - 11*dw - 6*pa + 6 == 0
+516. dw**3*hue - dw**3 - 6*dw**2*hue + 6*dw**2 + 11*dw*hue - 11*dw - 6*hue + 6 == 0
+517. dw**2*pa**2 - 3*dw**2*pa + 2*dw**2 - 3*dw*pa**2 + 9*dw*pa - 6*dw + 2*pa**2 - 6*pa + 4 == 0
+518. dw**2*hue*pa - dw**2*hue - dw*hue*pa**2 - 2*dw*hue*pa + 3*dw*hue + 2*hue*pa**2 - 2*hue == 0
+519. dw**3*pro - 1035*dw**3 - 6*dw**2*pro + 6210*dw**2 + 11*dw*pro - 11385*dw - 6*pro + 6210 == 0
+520. ash*hue*phenol**2 - 3*ash*hue*phenol + 2*ash*hue - 2*hue*phenol**2 + 6*hue*phenol - 4*hue == 0
+521. dw*phenol**3 - 6*dw*phenol**2 + 11*dw*phenol - 6*dw - phenol**3 + 6*phenol**2 - 11*phenol + 6 == 0
+522. 3*alco*ash**2 - 9*alco*ash + 6*alco + 2*ash**2*clr - 45*ash**2 - 6*ash*clr + 135*ash + 4*clr - 90 == 0
+523. ma*phenol**3 - 6*ma*phenol**2 + 11*ma*phenol - 6*ma - 5*phenol**3 + 30*phenol**2 - 55*phenol + 30 == 0
+524. 2*hue*pa**3 - 6*hue*pa**2 + 4*hue*pa + ma*pa**3 - 3*ma*pa**2 + 2*ma*pa - 3*pa**3 + 9*pa**2 - 6*pa == 0
+525. mg*phenol**3 - 6*mg*phenol**2 + 11*mg*phenol - 6*mg - 80*phenol**3 + 480*phenol**2 - 880*phenol + 480 == 0
+526. 365*ash**2*hue - ash**2*pro + 465*ash**2 - 1095*ash*hue + 3*ash*pro - 1395*ash + 730*hue - 2*pro + 930 == 0
+527. flava**3*pa - flava**3 - 6*flava**2*pa + 6*flava**2 + 3*flava*pa**2 + 2*flava*pa - 5*flava - pa**3 + pa == 0
+528. 365*ash**2*clr + 3*ash**2*pro - 3585*ash**2 - 1095*ash*clr - 9*ash*pro + 10755*ash + 730*clr + 6*pro - 7170 == 0
+529. ash*pa**3 - 3*ash*pa**2 + 2*ash*pa + pa**3*phenol - 4*pa**3 - 3*pa**2*phenol + 12*pa**2 + 2*pa*phenol - 8*pa == 0
+530. phenol**3*pro - 415*phenol**3 - 6*phenol**2*pro + 2490*phenol**2 + 11*phenol*pro - 4565*phenol - 6*pro + 2490 == 0
+531. alca*phenol**3 - 6*alca*phenol**2 + 11*alca*phenol - 6*alca - 20*phenol**3 + 120*phenol**2 - 220*phenol + 120 == 0
+532. 365*alco*ash**2 - 1095*alco*ash + 730*alco - 2*ash**2*pro - 3085*ash**2 + 6*ash*pro + 9255*ash - 4*pro - 6170 == 0
+533. 3*flava**2*pa**2 - 9*flava**2*pa + 6*flava**2 - 3*flava*pa**2 + 9*flava*pa - 6*flava - 2*pa**3 + 6*pa**2 - 4*pa == 0
+534. 365*alca*ash**2 - 1095*alca*ash + 730*alca + 3*ash**2*pro - 11615*ash**2 - 9*ash*pro + 34845*ash + 6*pro - 23230 == 0
+535. 60*ash**2*hue - 60*ash**2 - 180*ash*hue + 180*ash + flava**4 - 6*flava**3 + 11*flava**2 - 6*flava + 120*hue - 120 == 0
+536. 365*ash**2*phenol + ash**2*pro - 1560*ash**2 - 1095*ash*phenol - 3*ash*pro + 4680*ash + 730*phenol + 2*pro - 3120 == 0
+537. 30*alco*ash**2 - 90*alco*ash + 60*alco - 390*ash**2 + 1170*ash + flava**4 - 6*flava**3 + 11*flava**2 - 6*flava - 780 == 0
+538. dw**3 - 3*dw**2*hue - 6*dw**2 - 3*dw*hue*pa**2 + 9*dw*hue*pa + 9*dw*hue + 11*dw + 6*hue*pa**2 - 18*hue*pa - 6*hue - 6 == 0
+539. 20*alca*ash**2 - 60*alca*ash + 40*alca - 500*ash**2 + 1500*ash - flava**4 + 6*flava**3 - 11*flava**2 + 6*flava - 1000 == 0
+540. 2*alca*ash**2*hue - 6*alca*ash*hue + 4*alca*hue - 25*alco*ash**2 + 75*alco*ash - 50*alco + 275*ash**2 - 825*ash + 550 == 0
+541. ash**2*pro**2 - 1295*ash**2*pro + 385950*ash**2 - 3*ash*pro**2 + 3885*ash*pro - 1157850*ash + 2*pro**2 - 2590*pro + 771900 == 0
+542. 60*ash**2*phenol - 120*ash**2 - 180*ash*phenol + 360*ash - flava**4 + 6*flava**3 - 11*flava**2 + 6*flava + 120*phenol - 240 == 0
+543. ash*clr*dw**2 - 5*ash*clr*dw + 6*ash*clr - ash*dw**2 + 5*ash*dw - 6*ash - 2*clr*dw**2 + 10*clr*dw - 12*clr + 2*dw**2 - 10*dw + 12 == 0
+544. ash*dw**2*hue - ash*dw**2 - 5*ash*dw*hue + 5*ash*dw + 6*ash*hue - 6*ash - 2*dw**2*hue + 2*dw**2 + 10*dw*hue - 10*dw - 12*hue + 12 == 0
+545. 94535*ash**2*mg - ash**2*pro**2 - 11033440*ash**2 - 283605*ash*mg + 3*ash*pro**2 + 33100320*ash + 189070*mg - 2*pro**2 - 22066880 == 0
+546. alca*ash*dw**2 - 5*alca*ash*dw + 6*alca*ash - 2*alca*dw**2 + 10*alca*dw - 12*alca - 10*ash*dw**2 + 50*ash*dw - 60*ash + 20*dw**2 - 100*dw + 120 == 0
+547. ash*dw**2*pro - 520*ash*dw**2 - 5*ash*dw*pro + 2600*ash*dw + 6*ash*pro - 3120*ash - 2*dw**2*pro + 1040*dw**2 + 10*dw*pro - 5200*dw - 12*pro + 6240 == 0
+548. 3*ash**2*phenol - 6*ash**2 - 3*ash*phenol**2 + 12*ash - pa**3*phenol + 2*pa**3 + 3*pa**2*phenol - 6*pa**2 - 2*pa*phenol + 4*pa + 6*phenol**2 - 12*phenol == 0
+549. 2*ash*dw**2 + ash*dw*flava**2 - 3*ash*dw*flava - 8*ash*dw - 3*ash*flava**2 + 9*ash*flava + 6*ash - 4*dw**2 - 2*dw*flava**2 + 6*dw*flava + 16*dw + 6*flava**2 - 18*flava - 12 == 0
+550. ash*dw*flava**3 - 3*ash*dw*flava**2 + 2*ash*dw*flava - 3*ash*flava**3 + 9*ash*flava**2 - 6*ash*flava - 2*dw*flava**3 + 6*dw*flava**2 - 4*dw*flava + 6*flava**3 - 18*flava**2 + 12*flava == 0
+551. 3*ash**2*pro - 2490*ash**2 + 1095*ash*phenol**2 - 3285*ash*phenol - 9*ash*pro + 9660*ash + 365*pa**3*phenol - 730*pa**3 - 1095*pa**2*phenol + 2190*pa**2 + 730*pa*phenol - 1460*pa - 2190*phenol**2 + 6570*phenol + 6*pro - 9360 == 0
