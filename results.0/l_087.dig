@@ -1,0 +1,6 @@
+trace1 (5 invs):
+1. lock + x - y - 1 == 0
+2. x**2 - 2*x*y - x + y**2 + y == 0
+3. -lock <= 0
+4. -x + y <= 0
+5. lock - x <= 0
