@@ -1,27 +1,32 @@
 # Dynamic invariant discovery
 
-This repository provides an _experimental setting_ for _dynamic invariant detection_ over _numeric data_.
+This repository is an experimental setting for _dynamic invariant detection over numeric data_.
 Invariant detection aims to find assertions that hold over all instances of the data.
 
-The environment is pre-configured with two detectors, [Dig](https://github.com/dynaroars/dig/tree/dev) or [Tacle](https://github.com/ML-KULeuven/tacle), and many input [traces](#inputs).
+The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many input traces.
 The analyzers will have scalability issues with larger inputs. 
-[Digup](../src/digup.py) is a wrapper for Dig that partitions the input trace, and yields inference results based on the partitions.
+DɪɢUᴘ is a wrapper for Dɪɢ that partitions the input trace and yields inference results based on the partitions.
 
 Select parts of the development are verified in Dafny.
 
 
 ## Getting Started
 
-**Prerequisites.** &nbsp;
+**🖥️ Setup for native hosts.** 
+
+**Prerequisites:** &nbsp;
 [git](https://git-scm.com/downloads), [make](https://www.gnu.org/software/make/), and
 [Python](https://www.python.org/downloads/) (v3.10 or later)
 
-**🖥️ Setup steps for native host.** Clone the repository and install dependencies.
-
-    git clone --recurse-submodules https://github.com/nkrusch/invariants.git 
-    cd invariants
-    python3 -m venv venv && source venv/bin/activate
-    python3 -m pip install -r requirements.txt
+Clone the repository and install dependencies.
+```bash
+git clone --recurse-submodules https://github.com/nkrusch/invariants.git
+cd invariants
+python3 -m venv venv && source venv/bin/activate    # recommended
+python3 -m pip install -r requirements.txt
+```
+The `venv` setup is for unix hosts. 
+Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating-virtual-environments) on other hosts.
 
 
 ## Experiments
@@ -30,24 +35,24 @@ Select parts of the development are verified in Dafny.
 
     make
 
-The results (including command logs) are written to `results` directory.
+The results, including command logs, are written to `results` directory.
 
 The `make` command will generate statistics of inputs traces and host machine,
 runs all pre-configured experiments, and generates a plot of the results.
 To run the same as **individual steps**:
 
 <pre>
-COMMAND             DESCRIPTION                             DURATION[^1]
+COMMAND             DESCRIPTION                                 DURATION
 ────────────────────────────────────────────────────────────────────────
 make stats          Gather statistics about input traces         < 1 min
 make host           Capture host machine details                 < 1 min
-make dig            Run Dig experiments                         ~ 30 min
-make digup          Run Digup experiments                        ~ 5 min
-make times          Run exec time experiments                   ~ 30 min
+make dig            Run Dig experiments                          ~30 min
+make digup          Run Digup experiments                         ~5 min
+make times          Run exec time experiments                    ~30 min
 make score          Plot results                                 < 1 min
 </pre>
 
-[^1]: The duration estimates are based on `result.0`.
+The duration estimates are based on `result.0`.
 
 Run `make clean` to reset the `results` directory.    
 
@@ -58,7 +63,7 @@ Run `make clean` to reset the `results` directory.
 
 * `[INPUT]` is a benchmark name (like `l_003`).
 * `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
-* Example `make results/l_003.dig`
+* For example `make results/l_003.dig`
 
 #### Overridable Makefile options
 
@@ -75,6 +80,7 @@ T_SIZES        25 50 75 100         Trace sizes for times experiment
 
 The "times"-experiment runs until completion and is unaffected by the timeout.
 It can be adjusted by changing the sample sizes.
+
 For example, the following command will finish in about 10 minutes.
 
      make TO=30 T_SIZES="10 25"
@@ -122,7 +128,7 @@ l_001 -- l_133   program traces
  └─ requirements.txt       Python dependencies
 </pre>
 
-The verified directory contains:
+The `verified` directory contains:
 * Verified linear benchmarks: extracted invariants are true invariants.
 * Verified data mutation: we can maintain invariants under data perturbations.
 
