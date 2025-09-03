@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from prettytable import PrettyTable
+from rich.progress import Progress
 from z3 import *
 
 # Path to traces
@@ -473,6 +474,29 @@ def score(dir_path):
                 table.align[table.field_names[i]] = 'l'
             table.add_rows(t)
             print(table, '\n')
+
+
+def match(f_name):
+    assert f_name.endswith(".digup")
+    f_comp = f_name.replace('.digup', '.dig')
+    src = input_csv(b_name(f_comp))
+    if isfile(f_name) and isfile(f_comp) and isfile(src):
+        maybe = parse_dig_result(f_name)
+        want = parse_dig_result(f_comp)
+        vrs = read_trace(src)[1]
+        matches = 0
+        with Progress() as progress:
+            task = progress.add_task('', total=len(want) * len(maybe))
+            while want:
+                t1 = want.pop()
+                pool, found = maybe[:], False
+                while pool and not found:
+                    t2 = pool.pop()
+                    res, _ = term_eq(vrs, t1, t2)
+                    found = (res == unsat)
+                progress.update(task, advance=len(maybe))
+                matches += 1 if found else 0
+        print(f'found {matches} of {len(want)}')
 
 
 def term_eq(var_list, t1, t2):

@@ -1,10 +1,10 @@
 import argparse
 
 from . import csv_to_trace, trace_to_csv,\
-    check, generate, stats, score
+    check, generate, stats, score, match
 
-TRACE, CSV, CHECK, GEN, STATS, SCORE = options = \
-    'trace,csv,check,gen,stats,score'.split(',')
+TRACE, CSV, CHECK, GEN, STATS, SCORE, MATCH = options = \
+    'trace,csv,check,gen,stats,score,match'.split(',')
 
 
 def main():
@@ -32,6 +32,8 @@ def main():
         stats(args.file)
     elif args.action == SCORE:
         score(args.file)
+    elif args.action == MATCH:
+        match(args.file)
     else:
         raise Exception('Unknown action')
 
