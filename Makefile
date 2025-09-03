@@ -87,7 +87,7 @@ $(OUT)/%.dig: $(IN_TRC)/%.csv $(OUT)
 $(OUT)/%.digup: $(IN_TRC)/%.csv $(OUT)
 	$(eval proc_to=$(shell echo $$(($(TO)-1))))
 	export TO=$(proc_to) && $(RUNNER) "$(PYTHON) -m digup $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
-	@$(PYTHON) src/digup.py $@
+	@$(PYTHON) -m digup $@
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv $(OUT)
 	$(RUNNER) "cd tacle && $(PYTHON) -m tacle ../$< -g > ../$@"
