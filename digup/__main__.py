@@ -11,8 +11,8 @@ from typing import Callable
 
 from rich.progress import Progress
 
-from __init__ import read, input_csv, b_name
-from __init__ import read_trace, construct_trace, parse_dig_str
+from src import read, input_csv, b_name
+from src import read_trace, construct_trace, parse_dig_str
 
 ENV = {'PICK_N': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600, **os.environ}
 TOTAL_TO, SUBPROC_TO = map(int, [(ENV['TO']), ENV['STO']])
