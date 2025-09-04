@@ -29,7 +29,7 @@ T_SIZES := 25 50 75 100
 endif
 
 # paths
-UTILS    := src
+UTILS    := scripts
 IN_CSV	 := input/csv
 IN_TRC	 := input/traces
 ARGS_F   := config.txt

@@ -117,7 +117,7 @@ l_001 -- l_133   program traces
  ├─ 🗀 digup               our modified analyzer
  ├─ 🗀 input               all input traces 
  ├─ 🗀 results.0           referential result for inspection
- ├─ 🗀 src                 scripts for running experiments
+ ├─ 🗀 scripts             scripts for running experiments
  ├─ 🗀 tacle               analyzer (submodule) 
  ├─ 🗀 verified            Dafny-verified codes
  ├─ config.txt             input-specific run options
