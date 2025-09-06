@@ -24,8 +24,8 @@ ifndef $DOPT # DIG options
 DOPT :=
 endif
 
-ifndef $T_SIZES # sizes for timing
-T_SIZES := 25 50 75 100
+ifndef $SZ # sizes for timing
+SZ := 25 50 75 100
 endif
 
 # paths
@@ -99,15 +99,15 @@ $(TMP)/%.csv: $(TMP)
 	$(eval CSV := $(subst $(TMP),$(IN_CSV),$@))
 	$(eval TRC := $(subst $(TMP),$(IN_TRC),$@))
 	@make --silent $(CSV)
-	@$(foreach N,$(T_SIZES),\
+	@$(foreach N,$(SZ),\
 		head -n $$(($(N)+1)) $(CSV) > $(subst .csv,.$(N).csv,$@) ; \
 		head -n $$(($(N)+1)) $(TRC) > $(subst .csv,.$(N).trc,$@) ;)
 
 $(OUT)/%.time: $(TMP)/%.csv $(OUT)
 	$(eval ARGS := $(shell grep $(basename $(notdir $@)) $(ARGS_F) | head -n 1 | cut -d' ' -f 2-))
 	$(eval f := $(subst .csv,,$(subst $(TMP)/,,$<)))
-	@$(foreach N,$(T_SIZES), \
-	   echo "Processing $(f) and size=$(N) [of $(T_SIZES)]…" ; \
+	@$(foreach N,$(SZ), \
+	   echo "Processing $(f) and size=$(N) [of $(SZ)]…" ; \
 	   $(TIMER) "Tacle" $(N) "(cd tacle && $(PYTHON) -m tacle ../$(TMP)/$(f).$(N).csv -g)" >> $@ ; \
 	   $(TIMER) "Dig"   $(N) "$(PYTHON) -O dig/src/dig.py $(TMP)/$(f).$(N).trc -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS)" >> $@ ; )
 
@@ -116,7 +116,7 @@ gen/%:
 	$(PYTHON) -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
 
 $(OUT)/%.check:
-	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
+	export T_DTYPE=d && $(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
 
 $(COMP):
 	@$(PYTHON) -m $(UTILS) -a match $@

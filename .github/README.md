@@ -66,30 +66,31 @@ Run `make clean` to reset the `results` directory.
 
 * `[INPUT]` is a benchmark name (like `l_003`).
 * `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
-* For example `make results/l_003.dig`
+* For example `make results/l_003.dig` run linear problem 3 on Dig.
 
 #### Overridable Makefile options
 
 <pre>
-OPTION         DEFAULT              DESCRIPTION     
+OPTION              DESCRIPTION                                  DEFAULT             
 ────────────────────────────────────────────────────────────────────────
-PYTHON         python3              Path to Python runtime
-OUT            results              Path to results directory
-TMP            .tmp                 Directory for temporary files 
-TO             90                   Analysis timeout in seconds
-DOPT           (None)               Dig analysis options
-T_SIZES        25 50 75 100         Trace sizes for times experiment
+PYTHON              Path to Python runtime                       python3
+DOPT                Dig analysis options
+OUT                 Path to results directory                    results
+TMP                 Directory for temporary files                   .tmp
+SZ                  Trace sizes for times experiment        25 50 75 100
+TO                  Analysis timeout in seconds                       90
 </pre>
 
-The times experiment runs until completion independently of timeout.
+The times experiment runs until completion independently of timeout,
+but can be adjusted by modifying the workloads (`SZ`).
 
 
 ## Inputs
 
 * Dataset details are available at the associated links.
-* Function and linear invariants are described in [`inputs.yaml`](../inputs.yaml).
-* Some problems require user-supplied options, defined in [`config.txt`](../config.txt)
-* Dig expects inputs as traces and tacle expects input in CSV format
+* Function and linear invariants are described in `inputs.yaml`.
+* Some problems require user-supplied options, defined in `config.txt`.
+* Dig expects inputs as traces and tacle expects input in CSV format.
 
 <pre>
 DATASETS (ds)                                                              
@@ -113,13 +114,13 @@ l_001 -- l_133   program traces
 
 <pre>
  .
- ├─ 🗀 dig                 analyzer (submodule)
- ├─ 🗀 digup               our modified analyzer
- ├─ 🗀 input               all input traces 
- ├─ 🗀 results.0           referential result for inspection
- ├─ 🗀 scripts             scripts for running experiments
- ├─ 🗀 tacle               analyzer (submodule) 
- ├─ 🗀 verified            Dafny-verified codes
+ ├─ 📁 dig                 analyzer (submodule)
+ ├─ 📁 digup               our modified analyzer
+ ├─ 📁 input               all input traces 
+ ├─ 📁 results.0           referential result for inspection
+ ├─ 📁 scripts             scripts for running experiments
+ ├─ 📁 tacle               analyzer (submodule) 
+ ├─ 📁 verified            Dafny-verified codes
  ├─ config.txt             input-specific run options
  ├─ inputs.yaml            configurations for trace generation
  ├─ LICENSE                software license

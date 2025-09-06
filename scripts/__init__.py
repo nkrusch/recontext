@@ -66,6 +66,13 @@ def c_vars(conf):
     return list((conf['vin'] or {}).keys()) + vos(conf['vo'])
 
 
+def fresh_solver(sol=None):
+    solver = sol or Solver()
+    solver.reset() if sol else None
+    solver.set("timeout", Z3_TO)
+    return solver
+
+
 def parse_times(input_file):
     """Parse times experiment results."""
     return [x.split(',') for x in read_lines(input_file)]
@@ -167,10 +174,12 @@ def tokenize(plain: str, tokens: List[str] = None) -> PT:
 
 
 def qt_fmt(value: T_DTYPE):
-    """Express values as Q(n, d)."""
-    frac = Fraction(str(value))
-    fn, fd = frac.numerator, frac.denominator
-    return pad_neg(fn) if fd == 1 else f'Q({fn},{fd})'
+    """Convert a fractional numeric values to Q(n, d)."""
+    if (s := str(value)).isnumeric():
+        frac = Fraction(s)
+        fn, fd = frac.numerator, frac.denominator
+        return pad_neg(fn) if fd == 1 else f'Q({fn},{fd})'
+    return value
 
 
 def dig_mod_repair(expr):
@@ -211,61 +220,55 @@ def to_assert(var: List[str], val, pred: PT, smt: bool = False) -> P:
     return ''.join([str(s) for s in subst])
 
 
-def find_cex(pred: List[P], limit: int = 3) -> List[P]:
+def find_cex(pred: List[P], limit: int = 3) -> str:
     """Find (at most limit) failing assertions."""
-    cex, solver = [], Solver()
-    for lit in pred:
+    cex, solver, pool = [], Solver(), pred[:]
+    while pool and len(cex) < limit:
+        lit = pool.pop()
         solver.reset()
         solver.add(eval(lit))
         if solver.check() != sat:
             cex.append(lit)
-        if len(cex) == limit:
-            break
-    return cex
+    return ', '.join(cex)
 
 
 def check(fn: str) -> bool:
-    """Sanity check to confirm DIG invariants are valid.
+    """Sanity check to confirm DIG invariants are valid on a trace.
 
     Checks that DIG invariants are valid for the input data. Displays,
     at stdout, the evaluation result for every invariant.
 
     Arguments:
-        fn (str): path to the results file to check.
+        fn (str): path to the DIG results file to check.
 
     Returns:
-        True if all invariants are satisfactory; otherwise False.
+        True if all invariants are satisfactory.
     """
     src = input_csv(b_name(fn))
-    if not (fn.endswith('.dig') and all(map(isfile, [src, fn]))):
-        raise Exception(f'Invalid: {src} => {fn}')
-    if not (predicates := parse_dig_result(fn)):
-        return True
-
-    table = PrettyTable(["P(…)", "eval(P)", "CEX"])
-    (data, var), solver = read_trace(src)[:2], Solver()
-    all_true = True
-
+    predicates = parse_dig_result(fn)
+    data, var = read_trace(src)[:2]
+    solver, all_t, rows = None, True, []
     for p in predicates:
-        solver.reset()
-        pred, cex, sc, literals = tokenize(p, TOKENS), '', None, []
+        solver = fresh_solver(solver)
+        pred = tokenize(p, TOKENS)
+        cex, sc, expr = '', None, []
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
         for val in np.unique(data[:, idx], axis=0):
-            # lit = to_assert(occ, val, pred)
-            literals.append(lit := to_assert(occ, val, pred))
+            expr.append(lit := to_assert(occ, val, pred))
             try:
                 solver.add(eval(lit))
             except z3types.Z3Exception:
-                sc, cex = '⚠ symbolic', lit
-        if not sc and (sc := solver.check()) != sat:
-            all_true = False
-            cex = ' '.join(find_cex(literals))
-        table.add_row([p, sc, cex])
+                pass  # '⚠ symbolic'
+            if (sc := solver.check()) == unsat:
+                all_t, cex = False, find_cex(expr)
+        rows.append([p, sc, cex])
+    table = PrettyTable(["P(…)", "eval(P)", "CEX"])
+    table.add_rows(rows)
     print(table)
-    return all_true
+    return all_t
 
 
-def rand_data(in_vars, ranges, expr, n_out):
+def rand_data(vars_, ranges, expr, n_out) -> List[T_DTYPE]:
     """Calculate value of a function for random inputs.
 
     Given an expression with variables,
@@ -274,7 +277,7 @@ def rand_data(in_vars, ranges, expr, n_out):
         3. Evaluate the expression to get output value.
 
     Arguments:
-        in_vars: input variables that occur in expr.
+        vars_: input variables that occur in expr.
         ranges: (min, max) of each variable.
         expr: literal (str) of a function to evaluate.
         n_out: number of outputs
@@ -288,22 +291,19 @@ def rand_data(in_vars, ranges, expr, n_out):
     """
     dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
     data = list(map(dt_v, ranges))
-    if n_out > 0:
-        data += as_list(eval(to_assert(in_vars, data, expr)))
-    return data
+    ret = as_list(eval(to_assert(vars_, data, expr))) if n_out else []
+    return data + ret
 
 
 def generate(f_name):
-    """Generate random function traces based on config template."""
+    """Generate random function traces based on configuration."""
     if f_name not in (conf := read_yaml(F_CONFIG)):
         raise Exception(f'No generator known for {f_name}!')
     fun = Namespace(**conf[f_name])
-    pred = tokenize(fun.expr, TOKENS)
+    p = tokenize(fun.expr, TOKENS)
     f_in = fun.vin if fun.vin else {}
-    vin, ranges = list(f_in.keys()), list(f_in.values())
-    v_out = vos(fun.vo)
-    data = [rand_data(vin, ranges, pred, len(v_out))
-            for _ in range(fun.n)]
+    vin, v_out, r = list(f_in.keys()), vos(fun.vo), list(f_in.values())
+    data = [rand_data(vin, r, p, len(v_out)) for _ in range(fun.n)]
     construct_trace(vin + v_out, data)
 
 
@@ -315,13 +315,12 @@ def stats(dir_path):
         cats = [f.split('_', 1)[0] for f in files]
         vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
         pt, ct = Counter(cats), Counter(vl)
-        mn, mx = min(vl), max(vl)
 
         pt['∑'] = sum(pt.values())
         table1 = PrettyTable(list(pt.keys()), title='Traces by kind')
         table1.add_row(list(pt.values()))
 
-        scope = range(mn, mx + 1)
+        scope = range(min(vl), max(vl) + 1)
         dct = {**dict([(x, 0) for x in scope]), **ct, ' ∑ ': sum(vl)}
         table2 = PrettyTable(list(map(str, dct)))
         table2.title = 'Variable counts (frequency)'
@@ -482,7 +481,6 @@ def term_eq(v_list: List[str], t1: str, t2: str):
     vals = [f'z3v[{i}]' for i in range(len(v_list))]
     to_a = lambda x: to_assert(v_list, vals, x, smt=True)
     g, f = map(to_a, [t1, t2])
-    solver = Solver()
-    solver.set('timeout', Z3_TO)
+    solver = fresh_solver()
     solver.add(Not(eval(g) == eval(f)))
     return solver.check()
