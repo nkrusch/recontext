@@ -1,5 +1,6 @@
 from argparse import Namespace
 from collections import Counter
+from functools import reduce
 from itertools import product
 # noinspection PyUnresolvedReferences
 from math import *
@@ -55,15 +56,14 @@ def pad_neg(v: T_DTYPE) -> str:
 
 
 def as_list(x: Any) -> List[Any]:
-    return list(x) if isinstance(x, Iterable) else [x]
-
-
-def vos(vout):
-    return [vout] if isinstance(vout, str) else (vout or [])
+    return (list(x) if isinstance(x, Iterable) else
+            ([x] if x is not None else []))
 
 
 def c_vars(conf):
-    return list((conf['vin'] or {}).keys()) + vos(conf['vo'])
+    vin = conf['vin'] if 'vin' in conf and conf['vin'] else {}
+    vo = conf['vo'] if 'vo' in conf else []
+    return list(vin.keys()) + as_list(vo)
 
 
 def fresh_solver(sol=None):
@@ -90,17 +90,13 @@ def dig_p(lines: List[str]):
 
 
 def sym_min(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v < m, v, m)
-    return m
+    """Python min evaluation for Z3."""
+    return reduce(lambda x, m: If(x < m, x, m), vs[1:], vs[0])
 
 
 def sym_max(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v > m, v, m)
-    return m
+    """Python max evaluation for Z3."""
+    return reduce(lambda x, m: If(x > m, x, m), vs[1:], vs[0])
 
 
 def read_trace(path: str) -> Tuple[np.array, List[str], str]:
@@ -222,10 +218,9 @@ def to_assert(var: List[str], val, pred: PT, smt: bool = False) -> P:
 
 def find_cex(pred: List[P], limit: int = 3) -> str:
     """Find (at most limit) failing assertions."""
-    cex, solver, pool = [], Solver(), pred[:]
+    cex, solver, pool = [], None, pred[:]
     while pool and len(cex) < limit:
-        lit = pool.pop()
-        solver.reset()
+        lit, solver = pool.pop(), fresh_solver(solver)
         solver.add(eval(lit))
         if solver.check() != sat:
             cex.append(lit)
@@ -268,7 +263,7 @@ def check(fn: str) -> bool:
     return all_t
 
 
-def rand_data(vars_, ranges, expr, n_out) -> List[T_DTYPE]:
+def rand_data(in_v, ranges, expr, has_o) -> List[T_DTYPE]:
     """Calculate value of a function for random inputs.
 
     Given an expression with variables,
@@ -277,10 +272,10 @@ def rand_data(vars_, ranges, expr, n_out) -> List[T_DTYPE]:
         3. Evaluate the expression to get output value.
 
     Arguments:
-        vars_: input variables that occur in expr.
+        in_v: input variables that occur in expr.
         ranges: (min, max) of each variable.
         expr: literal (str) of a function to evaluate.
-        n_out: number of outputs
+        has_o: true if evaluation returns values
 
     Raises:
         Exception: if `expr` contains variables not in `in_vars`
@@ -291,8 +286,8 @@ def rand_data(vars_, ranges, expr, n_out) -> List[T_DTYPE]:
     """
     dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
     data = list(map(dt_v, ranges))
-    ret = as_list(eval(to_assert(vars_, data, expr))) if n_out else []
-    return data + ret
+    res = as_list(eval(to_assert(in_v, data, expr))) if has_o else []
+    return data + res
 
 
 def generate(f_name):
@@ -300,11 +295,11 @@ def generate(f_name):
     if f_name not in (conf := read_yaml(F_CONFIG)):
         raise Exception(f'No generator known for {f_name}!')
     fun = Namespace(**conf[f_name])
-    p = tokenize(fun.expr, TOKENS)
-    f_in = fun.vin if fun.vin else {}
-    vin, v_out, r = list(f_in.keys()), vos(fun.vo), list(f_in.values())
-    data = [rand_data(vin, r, p, len(v_out)) for _ in range(fun.n)]
-    construct_trace(vin + v_out, data)
+    fin = fun.vin if fun.vin else {}
+    p, has_o = tokenize(fun.expr, TOKENS), len(as_list(fun.vo)) > 0
+    vrs, r = map(list, [fin.keys(), fin.values()])
+    values = [rand_data(vrs, r, p, has_o) for _ in range(fun.n)]
+    construct_trace(c_vars(conf[f_name]), values)
 
 
 def stats(dir_path):
@@ -455,12 +450,12 @@ def match(fn):
         src, tgt = map(parse_dig_result, [fn, fc])
         vars_ = read_trace(trc)[1]
         eqv = lambda x: term_eq(vars_, *x) == unsat
-        n = len(src) * len(tgt)
-        with Progress() as progress:
-            task = progress.add_task(str(n), total=n)
-            for p in [product([t], src) for t in tgt]:
-                mtc += next((1 for x in p if eqv(x)), 0)
-                progress.update(task, advance=len(src))
+        if (n := len(src) * len(tgt)) > 0:
+            with Progress() as progress:
+                task = progress.add_task(str(n), total=n)
+                for p in [product([t], src) for t in tgt]:
+                    mtc += next((1 for x in p if eqv(x)), 0)
+                    progress.update(task, advance=len(src))
     print(f'{bfc}: {mtc}/{len(tgt)}')
 
 

@@ -1,9 +1,9 @@
 # Dynamic invariant discovery
 
-This repository is an experimental setting for _dynamic invariant detection over numeric data_.
-Invariant detection aims to find assertions that hold over all instances of the data.
+This repository is an experimental setting for _dynamic invariant detection_.
+Invariant detection aims to find assertions that hold over all instances of traced values.
 
-The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many input traces.
+The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many numerical input traces.
 The analyzers will have scalability issues with larger inputs. 
 DɪɢUᴘ is a wrapper for Dɪɢ that partitions the input trace and yields inference results based on the partitions.
 
@@ -66,19 +66,19 @@ Run `make clean` to reset the `results` directory.
 
 * `[INPUT]` is a benchmark name (like `l_003`).
 * `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
-* For example `make results/l_003.dig` run linear problem 3 on Dig.
+* For example `make results/l_003.dig` runs linear problem #3 on Dig.
 
 #### Overridable Makefile options
 
 <pre>
-OPTION              DESCRIPTION                                  DEFAULT             
+OPTION       DESCRIPTION                                         DEFAULT             
 ────────────────────────────────────────────────────────────────────────
-PYTHON              Path to Python runtime                       python3
-DOPT                Dig analysis options
-OUT                 Path to results directory                    results
-TMP                 Directory for temporary files                   .tmp
-SZ                  Trace sizes for times experiment        25 50 75 100
-TO                  Analysis timeout in seconds                       90
+PYTHON       Path to Python runtime                              python3
+DOPT         Dig analysis options
+OUT          Path to results directory                           results
+TMP          Directory for temporary files                          .tmp
+SZ           Trace sizes for times experiment               25 50 75 100
+TO           Analysis timeout in seconds                              90
 </pre>
 
 The times experiment runs until completion independently of timeout,
