@@ -1,4 +1,3 @@
-import os
 import random
 import shutil
 import signal
@@ -10,12 +9,9 @@ from pathlib import Path
 
 from rich.progress import Progress
 
-from scripts import read, input_csv, b_name
-from scripts import read_trace, construct_trace, parse_dig_str
-
-ENV = {'N_VAR': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600, **os.environ}
-TOTAL_TO, SUBPROC_TO = int(ENV['TO']), int(ENV['STO'])
-PICK_N, TMP = int(ENV['N_VAR']), ENV['TMP']
+from scripts import read_lines, input_csv, b_name
+from scripts import read_trace, construct_trace, dig_p
+from scripts.env import *
 
 
 def __calc_diff(n, combinations):
@@ -44,7 +40,7 @@ def run_parts(indices, name, args, trace, variables):
         name: benchmark name
         args: Dig arguments
         trace: input data
-        variables: trace variables
+        variables: list of variables
     """
     for ix in indices:
         vars_ = [v for i, v in enumerate(variables) if i in ix]
@@ -79,7 +75,6 @@ def partition(trace, vars_, fp, *args):
         fp: path to input trace
         *args: Dig arguments
     """
-    fn = Path(fp).stem
     history, recount = {}, 1
     flt = lambda x: x not in history
     ids = __calc_diff(4, list(comb(range(len(vrs)), PICK_N)))
@@ -90,8 +85,8 @@ def partition(trace, vars_, fp, *args):
     signal.alarm(TOTAL_TO)
     with Progress() as progress:
         task = progress.add_task('', total=len(ids))
-        for item in run_parts(ids, fn, args, trace, vars_):
-            if inv := list(filter(flt, parse_dig_str(item))):
+        for item in run_parts(ids, b_name(fp), args, trace, vars_):
+            if inv := list(filter(flt, dig_p(item))):
                 history.update(dict([(k, 1) for k in inv]))
                 print('\n#. '.join(inv))
             progress.update(task, advance=1)
@@ -102,10 +97,8 @@ def reformat(fp):
     """Rewrite stream result to sorted format."""
     if isfile(fp):
         loc = read_trace(input_csv(b_name(fp)))[-1]
-        if lines := (read(fp) or '').strip().split('\n'):
-            nums = [x for x in lines if '. ' in x]
-            ins = [ln.split('. ', 1)[1] for ln in nums]
-            values = sorted(ins, key=len)
+        if lines := read_lines(fp):
+            values = sorted(dig_p(lines), key=len)
             lines = [f'{1 + n}. {x}' for n, x in enumerate(values)]
         head = f'{loc} ({len(lines)} invs):'
         data = '\n'.join([head] + lines)

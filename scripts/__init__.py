@@ -1,4 +1,3 @@
-import re
 from argparse import Namespace
 from collections import Counter
 from itertools import product
@@ -8,44 +7,25 @@ from os import listdir
 from os.path import isfile, basename, splitext, join
 from pathlib import Path
 from random import randint
-from typing import List, Tuple
+from typing import Tuple
 
-import numpy as np
 import pandas as pd
 import yaml
 from prettytable import PrettyTable
 from rich.progress import Progress
 from z3 import *
 
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',',
-       'IN_DIR': 'input/traces',
-       'F_CONFIG': 'inputs.yaml',
-       **os.environ}
-
-# Config files
-IN_DIR, F_CONFIG = ENV['IN_DIR'], ENV['F_CONFIG']
-
-# Format configs
-T_SEP, C_SEP = ';', ENV['C_SEP']
-T_PREFIX, T_LABEL = 'I ', 'trace1'
-Z3_TO = ENV['Z3_TO']
-TIME_FMT = 1  # 1=MS, 1000=S
-
-# Tokenization of invariant expressions(in order)
-__tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
-         'if,in,or,===,==,**,<=,>=,(,),[,],*,-,+,/,%')
-TOKENS = (re.escape(__tkn)).split(',') + [',']
-WSP = '↡'  # a special symbol to mark spaces
-
-P = str  # predicate type
-PT = List[str]  # tokenized predicate type
-T_DTYPE = ENV["T_DTYPE"]  # value type
+from .env import *
 
 
 def read(fn):
     """Reads a file into memory."""
     with open(fn, 'r') as fp:
         return fp.read()
+
+
+def read_lines(fn):
+    return read(fn).strip().split('\n')
 
 
 def read_yaml(path):
@@ -69,10 +49,37 @@ def is_num(x: str) -> bool:
     return (x[1:] if x and x[0] == '-' else x).isnumeric()
 
 
-def pad_neg(value: T_DTYPE) -> str:
+def pad_neg(v: T_DTYPE) -> str:
     """Parenthesize negative values."""
-    return f'({value})' if \
-        str(value).isnumeric() and value < 0 else str(value)
+    return f'({v})' if str(v).isnumeric() and v < 0 else str(v)
+
+
+def as_list(x: Any) -> List[Any]:
+    return list(x) if isinstance(x, Iterable) else [x]
+
+
+def vos(vout):
+    return [vout] if isinstance(vout, str) else (vout or [])
+
+
+def c_vars(conf):
+    return list((conf['vin'] or {}).keys()) + vos(conf['vo'])
+
+
+def parse_times(input_file):
+    """Parse times experiment results."""
+    return [x.split(',') for x in read_lines(input_file)]
+
+
+def parse_dig_result(input_file):
+    """Extract invariants from a DIG result file."""
+    return dig_p(read_lines(input_file))
+
+
+def dig_p(lines: List[str]):
+    """Parse lines of dig predicates"""
+    pl = [x.split('.', 1)[1].strip() for x in lines if '.' in x]
+    return [dig_mod_repair(p) for p in pl]
 
 
 def sym_min(*vs):
@@ -89,28 +96,17 @@ def sym_max(*vs):
     return m
 
 
-def parse_times(input_file):
-    """Extract invariants from a DIG result file."""
-    times = read(input_file).strip().split('\n')
-    return [x.split(',') for x in times]
-
-
-def parse_dig_result(input_file):
-    """Extract invariants from a DIG result file."""
-    return parse_dig_str(read(input_file))
-
-
 def read_trace(path: str) -> Tuple[np.array, List[str], str]:
     """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
-    idx_slice, variables, t_loc = [], [], df.columns[0]
+    idx_slice, variables, loc = [], [], df.columns[0]
     for i, c in enumerate(df.columns[1:]):
         if not c.lower().startswith('unnamed:'):
             if c2 := str(c).strip().replace(T_PREFIX, ''):
                 idx_slice.append(i + 1)
                 variables.append(c2)
     data = np.array(df.values[:, idx_slice], dtype=T_DTYPE)
-    return data, variables, t_loc
+    return data, variables, loc
 
 
 def trace_to_csv(input_file: str):
@@ -139,14 +135,6 @@ def construct_trace(vars_: List[str], values, fn=sys.stdout):
     np.savetxt(fn, data, delimiter=T_SEP, fmt='%s')
 
 
-def parse_dig_str(invariants):
-    if invariants:
-        lines = invariants.strip().split('\n')[1:]
-        preds = [x.split('.', 1)[1].strip() for x in lines]
-        return [dig_mod_repair(p) for p in preds]
-    return []
-
-
 def tokenize(plain: str, tokens: List[str] = None) -> PT:
     """Splits a plaintext string by tokens.
     
@@ -165,8 +153,7 @@ def tokenize(plain: str, tokens: List[str] = None) -> PT:
     exists = [x for x in tokens_ if re.search(x, plain)]
     terms = re.split(f'({WSP})', plain.replace(' ', WSP))
     for x in exists:
-        tmp = terms
-        n = len(terms) - 1
+        tmp, n = terms, len(terms) - 1
         for i in range(n, -1, -1):
             curr = terms[i]
             terminal = curr in tokens_ or is_num(curr)
@@ -182,8 +169,8 @@ def tokenize(plain: str, tokens: List[str] = None) -> PT:
 def qt_fmt(value: T_DTYPE):
     """Express values as Q(n, d)."""
     frac = Fraction(str(value))
-    return (pad_neg(frac.numerator) if frac.denominator == 1 else
-            f'Q({frac.numerator},{frac.denominator})')
+    fn, fd = frac.numerator, frac.denominator
+    return pad_neg(fn) if fd == 1 else f'Q({fn},{fd})'
 
 
 def dig_mod_repair(expr):
@@ -255,19 +242,17 @@ def check(fn: str) -> bool:
     if not (predicates := parse_dig_result(fn)):
         return True
 
-    data, var, _ = read_trace(src)
     table = PrettyTable(["P(…)", "eval(P)", "CEX"])
-    solver = Solver()
+    (data, var), solver = read_trace(src)[:2], Solver()
     all_true = True
 
     for p in predicates:
         solver.reset()
-        pred, cex, sc = tokenize(p, TOKENS), '', None
+        pred, cex, sc, literals = tokenize(p, TOKENS), '', None, []
         idx, occ = zip(*[c for c in enumerate(var) if c[1] in pred])
-        literals = []
         for val in np.unique(data[:, idx], axis=0):
-            lit = to_assert(occ, val, pred)
-            literals.append(lit)
+            # lit = to_assert(occ, val, pred)
+            literals.append(lit := to_assert(occ, val, pred))
             try:
                 solver.add(eval(lit))
             except z3types.Z3Exception:
@@ -304,28 +289,14 @@ def rand_data(in_vars, ranges, expr, n_out):
     dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
     data = list(map(dt_v, ranges))
     if n_out > 0:
-        assert_ = to_assert(in_vars, data, expr)
-        result = eval(assert_)
-        result = list(result) if isinstance(result, Iterable) \
-            else [result]
-        data += result
+        data += as_list(eval(to_assert(in_vars, data, expr)))
     return data
-
-
-def vos(vout):
-    return [vout] if isinstance(vout, str) else (vout or [])
-
-
-def c_vars(conf):
-    return list((conf['vin'] or {}).keys()) + vos(conf['vo'])
 
 
 def generate(f_name):
     """Generate random function traces based on config template."""
-    conf = read_yaml(F_CONFIG)
-    if f_name not in conf:
-        raise Exception(f'No generator known for {f_name}\n'
-                        'Likely mismatch in Makefile vs. inputs')
+    if f_name not in (conf := read_yaml(F_CONFIG)):
+        raise Exception(f'No generator known for {f_name}!')
     fun = Namespace(**conf[f_name])
     pred = tokenize(fun.expr, TOKENS)
     f_in = fun.vin if fun.vin else {}
