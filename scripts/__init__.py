@@ -367,19 +367,16 @@ def score(dir_path):
     digs = lambda f: f.endswith(".dig") or f.endswith(".digup")
     is_t = lambda f: f.endswith(".time")
     files = list(filter(digs, listdir(dir_path)))
-    sources = [input_csv(b_name(f)) for f in files]
-    f_s = [x for x in zip(files, sources) if isfile(x[1])]
+    srcs = [input_csv(b_name(f)) for f in files]
     conf = read_yaml(F_CONFIG)
-
     base_h = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
     T1, T2, T3 = PrettyT(base_h + ['✔']), PrettyT(base_h), None
 
-    for f, src in sorted(f_s):
+    for f, s in sorted([x for x in zip(files, srcs) if isfile(x[1])]):
         name, ext = b_name(f), f.rsplit('.', 1)[-1]
         res = parse_dig_result(join(dir_path, f))
-        vrs = read_trace(src)[1]
+        vrs = read_trace(s)[1]
         row = [ext, name, len(vrs), len(res)]
-
         stats_ = np.array([[
             1 if '==' in pred else 0,
             1 if '<=' in pred else 0,
@@ -436,8 +433,8 @@ def match(fn):
     Arguments:
         fn: DigUp results file
     """
-    fc, bfc = fn.replace('.digup', '.dig'), b_name(fn)
-    trc, mtc, tgt = input_csv(bfc), 0, []
+    fc = fn.replace('.digup', '.dig')
+    trc, mtc, tgt = input_csv(b_name(fn)), 0, []
     if fn.endswith(".digup") and all(map(isfile, [fn, fc, trc])):
         src, tgt = map(parse_dig_result, [fn, fc])
         vars_ = read_trace(trc)[1]
@@ -448,14 +445,14 @@ def match(fn):
                 for p in [product([t], src) for t in tgt]:
                     mtc += next((1 for x in p if eqv(x)), 0)
                     progress.update(task, advance=len(src))
-    print(f'{bfc}: {mtc}/{len(tgt)}')
+    print(f'{b_name(fn)}: {mtc}/{len(tgt)}')
 
 
 def term_eq(v_list: List[str], t1: str, t2: str):
     """Try to prove equivalence of two expressions.
 
     Arguments:
-        v_list: list of variables, must include A U B.
+        v_list: list of variables, A U B.
         t1: expression A
         t2: expression B
     """

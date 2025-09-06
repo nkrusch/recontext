@@ -15,17 +15,19 @@ F_CONFIG = ENV['F_CONFIG']
 IN_DIR = ENV['IN_DIR']
 TMP = ENV['TMP']
 
-# Format configs
-C_SEP = ENV['C_SEP']
-T_SEP = ';'
-T_PREFIX = 'I '
-T_LABEL = 'trace1'
-SUBPROC_TO = int(ENV['STO'])
-T_FMT = int(ENV['T_FMT'])
-TOTAL_TO = int(ENV['TO'])
+# Runtime configs
 PICK_N = int(ENV['N_VAR'])
-Z3_TO = ENV['Z3_TO']
+SPROC_TO = int(ENV['STO'])
+TOTAL_TO = int(ENV['TO'])
+T_FMT = int(ENV['T_FMT'])
 Z3_SKIP_W = 'log,sin,cos,tan'.split(',')
+Z3_TO = ENV['Z3_TO']
+
+# Formatting
+C_SEP = ENV['C_SEP']
+T_LABEL = 'trace1'
+T_PREFIX = 'I '
+T_SEP = ';'
 
 # Tokenization of invariant expressions(in order)
 __tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'

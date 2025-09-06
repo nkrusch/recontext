@@ -29,7 +29,7 @@ def __run_dig(in_file, *args):
     return subprocess.run(
         ['python3', '-O', 'dig/src/dig.py', in_file, *args],
         cwd=dirname(dirname(abspath(__file__))),
-        timeout=SUBPROC_TO, capture_output=True, text=True).stdout
+        timeout=SPROC_TO, capture_output=True, text=True).stdout
 
 
 def run_parts(indices, name, args, trace, variables):
