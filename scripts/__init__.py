@@ -1,6 +1,7 @@
 import re
 from argparse import Namespace
 from collections import Counter
+from itertools import product
 # noinspection PyUnresolvedReferences
 from math import *
 from os import listdir
@@ -16,10 +17,13 @@ from prettytable import PrettyTable
 from rich.progress import Progress
 from z3 import *
 
-# Path to traces
-IN_DIR = 'input/traces'
-F_CONFIG = 'inputs.yaml'
-ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',', **os.environ}
+ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',',
+       'IN_DIR': 'input/traces',
+       'F_CONFIG': 'inputs.yaml',
+       **os.environ}
+
+# Config files
+IN_DIR, F_CONFIG = ENV['IN_DIR'], ENV['F_CONFIG']
 
 # Format configs
 T_SEP, C_SEP = ';', ENV['C_SEP']
@@ -33,13 +37,9 @@ __tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
 TOKENS = (re.escape(__tkn)).split(',') + [',']
 WSP = '↡'  # a special symbol to mark spaces
 
-# Types
-P = str
-"""Predicate"""
-PT = List[str]
-"""Tokenized predicate"""
-T_DTYPE = ENV["T_DTYPE"]
-"""Type of numerical data (int, double)"""
+P = str  # predicate type
+PT = List[str]  # tokenized predicate type
+T_DTYPE = ENV["T_DTYPE"]  # value type
 
 
 def read(fn):
@@ -54,6 +54,52 @@ def read_yaml(path):
         return yaml.safe_load(yml)
 
 
+def input_csv(bench_name):
+    """Construct input data path."""
+    return join(IN_DIR, f'{bench_name}.csv')
+
+
+def b_name(file_path):
+    """file name without path and extension."""
+    return splitext(basename(file_path))[0]
+
+
+def is_num(x: str) -> bool:
+    """Test if expression is a negative or positive number."""
+    return (x[1:] if x and x[0] == '-' else x).isnumeric()
+
+
+def pad_neg(value: T_DTYPE) -> str:
+    """Parenthesize negative values."""
+    return f'({value})' if \
+        str(value).isnumeric() and value < 0 else str(value)
+
+
+def sym_min(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v < m, v, m)
+    return m
+
+
+def sym_max(*vs):
+    m = vs[0]
+    for v in vs[1:]:
+        m = If(v > m, v, m)
+    return m
+
+
+def parse_times(input_file):
+    """Extract invariants from a DIG result file."""
+    times = read(input_file).strip().split('\n')
+    return [x.split(',') for x in times]
+
+
+def parse_dig_result(input_file):
+    """Extract invariants from a DIG result file."""
+    return parse_dig_str(read(input_file))
+
+
 def read_trace(path: str) -> Tuple[np.array, List[str], str]:
     """Reads a DIG trace into memory."""
     df = pd.read_csv(path, sep=T_SEP)
@@ -65,16 +111,6 @@ def read_trace(path: str) -> Tuple[np.array, List[str], str]:
                 variables.append(c2)
     data = np.array(df.values[:, idx_slice], dtype=T_DTYPE)
     return data, variables, t_loc
-
-
-def input_csv(bench_name):
-    """Construct input data path."""
-    return join(IN_DIR, f'{bench_name}.csv')
-
-
-def b_name(file_path):
-    """file name without path and extension."""
-    return splitext(basename(file_path))[0]
 
 
 def trace_to_csv(input_file: str):
@@ -103,28 +139,12 @@ def construct_trace(vars_: List[str], values, fn=sys.stdout):
     np.savetxt(fn, data, delimiter=T_SEP, fmt='%s')
 
 
-def parse_times(input_file):
-    """Extract invariants from a DIG result file."""
-    times = read(input_file).strip().split('\n')
-    return [x.split(',') for x in times]
-
-
-def parse_dig_result(input_file):
-    """Extract invariants from a DIG result file."""
-    return parse_dig_str(read(input_file))
-
-
 def parse_dig_str(invariants):
     if invariants:
         lines = invariants.strip().split('\n')[1:]
         preds = [x.split('.', 1)[1].strip() for x in lines]
         return [dig_mod_repair(p) for p in preds]
     return []
-
-
-def is_num(x: str) -> bool:
-    """Test if expression is a negative or positive number."""
-    return (x[1:] if x and x[0] == '-' else x).isnumeric()
 
 
 def tokenize(plain: str, tokens: List[str] = None) -> PT:
@@ -159,12 +179,6 @@ def tokenize(plain: str, tokens: List[str] = None) -> PT:
     return terms
 
 
-def pad_neg(value: T_DTYPE) -> str:
-    """Parenthesize negative values."""
-    return f'({value})' if \
-        str(value).isnumeric() and value < 0 else str(value)
-
-
 def qt_fmt(value: T_DTYPE):
     """Express values as Q(n, d)."""
     frac = Fraction(str(value))
@@ -175,26 +189,12 @@ def qt_fmt(value: T_DTYPE):
 def dig_mod_repair(expr):
     """Rewrites a DIG modulo to a Python/SMT-compat format."""
     if '===' and 'mod' in expr:
-        pre, post = expr.split('===', 1)  # ___, X (mod Y)
-        post = post.replace('(', '').replace(')', '')  # ___ mod ___
+        pre, post = expr.split('===', 1)
+        post = post.replace('(', '').replace(')', '')
         eqv, cong = post.split('mod', 1)
         pre, cong, eqv = [x.strip() for x in (pre, cong, eqv)]
         return f'({pre}) % {cong} == {eqv}'  # construct term
     return expr
-
-
-def sym_min(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v < m, v, m)
-    return m
-
-
-def sym_max(*vs):
-    m = vs[0]
-    for v in vs[1:]:
-        m = If(v > m, v, m)
-    return m
 
 
 def sym_minmax(term: str):
@@ -210,7 +210,6 @@ def to_assert(var: List[str], val, pred: PT, smt: bool = False) -> P:
         var: variable names.
         val: variable values.
         pred: a tokenized assertion.
-        fmt: value formatter
         smt: convert Python symbols to SMT-lib
 
     Returns:
@@ -238,24 +237,22 @@ def find_cex(pred: List[P], limit: int = 3) -> List[P]:
     return cex
 
 
-def check(dig_result: str) -> bool:
+def check(fn: str) -> bool:
     """Sanity check to confirm DIG invariants are valid.
 
     Checks that DIG invariants are valid for the input data. Displays,
     at stdout, the evaluation result for every invariant.
 
     Arguments:
-        dig_result (str): path to the results file to check.
+        fn (str): path to the results file to check.
 
     Returns:
         True if all invariants are satisfactory; otherwise False.
     """
-    src = input_csv(b_name(dig_result))
-    if not (dig_result.endswith('.dig') and isfile(src) and
-            isfile(dig_result)):
-        raise Exception(f'Invalid: {src} => {dig_result}')
-    predicates = parse_dig_result(dig_result)
-    if not predicates:
+    src = input_csv(b_name(fn))
+    if not (fn.endswith('.dig') and all(map(isfile, [src, fn]))):
+        raise Exception(f'Invalid: {src} => {fn}')
+    if not (predicates := parse_dig_result(fn)):
         return True
 
     data, var, _ = read_trace(src)
@@ -438,7 +435,7 @@ def score(dir_path):
                 term, i = pool.pop(), 0
                 while i < len(goals) and not match:
                     goal, i = goals[i], i + 1
-                    res, _ = term_eq(vrs, goal, term)
+                    res = term_eq(vrs, goal, term)
                     resp = '?' if res == unknown else resp
                     match = (res == unsat)
             row.append(('✔' if match else resp))
@@ -476,54 +473,45 @@ def score(dir_path):
             print(table, '\n')
 
 
-def match(f_name):
-    assert f_name.endswith(".digup")
-    f_comp = f_name.replace('.digup', '.dig')
-    src = input_csv(b_name(f_comp))
-    if isfile(f_name) and isfile(f_comp) and isfile(src):
-        maybe = parse_dig_result(f_name)
-        want = parse_dig_result(f_comp)
-        vrs = read_trace(src)[1]
-        matches = 0
+def match(fn):
+    """Count matching invariants between Dig and DigUp.
+
+    Arguments:
+        fn: DigUp results file
+    """
+    fc, bfc = fn.replace('.digup', '.dig'), b_name(fn)
+    trc, mtc, tgt = input_csv(bfc), 0, []
+    if fn.endswith(".digup") and all(map(isfile, [fn, fc, trc])):
+        src, tgt = map(parse_dig_result, [fn, fc])
+        vars_ = read_trace(trc)[1]
+        eqv = lambda x: term_eq(vars_, *x) == unsat
+        n = len(src) * len(tgt)
         with Progress() as progress:
-            task = progress.add_task('', total=len(want) * len(maybe))
-            while want:
-                t1 = want.pop()
-                pool, found = maybe[:], False
-                while pool and not found:
-                    t2 = pool.pop()
-                    res, _ = term_eq(vrs, t1, t2)
-                    found = (res == unsat)
-                progress.update(task, advance=len(maybe))
-                matches += 1 if found else 0
-        print(f'found {matches} of {len(want)}')
+            task = progress.add_task(str(n), total=n)
+            for p in [product([t], src) for t in tgt]:
+                mtc += next((1 for x in p if eqv(x)), 0)
+                progress.update(task, advance=len(src))
+    print(f'{bfc}: {mtc}/{len(tgt)}')
 
 
-def term_eq(var_list, t1, t2):
+def term_eq(v_list: List[str], t1: str, t2: str):
     """Try to prove equivalence of two expressions.
 
     Arguments:
-        var_list: list of variables, must include A U B.
+        v_list: list of variables, must include A U B.
         t1: expression A
         t2: expression B
-
-    Returns:
-        A pair of <result, model>.
-        * The result is one of: unsat (== proved), unknown, or no.
-        * If no, the model will be a counterexample.
     """
-    ttk1, ttk2 = [tokenize(x) for x in (t1, t2)]
-    for un_sup in ['log', 'sin', 'cos', 'tan']:
-        if un_sup in ttk1 or un_sup in ttk2:
-            return unknown, None
+    tf = ['log', 'sin', 'cos', 'tan']
+    t1, t2 = [tokenize(x) for x in (t1, t2)]
+    if next((x for x in tf if x in t1 + t2), False):
+        return unknown, None
     # noinspection PyUnusedLocal
-    z3v = [Int(vr) for vr in var_list]
-    values = [f'z3v[{i}]' for i in range(len(var_list))]
-    g = to_assert(var_list, values, ttk1, smt=True)
-    f = to_assert(var_list, values, ttk2, smt=True)
+    z3v = [Int(vr) for vr in v_list]
+    vals = [f'z3v[{i}]' for i in range(len(v_list))]
+    to_a = lambda x: to_assert(v_list, vals, x, smt=True)
+    g, f = map(to_a, [t1, t2])
     solver = Solver()
     solver.set('timeout', Z3_TO)
     solver.add(Not(eval(g) == eval(f)))
-    res = solver.check()
-    mod = solver.model() if res == sat else None
-    return res, mod
+    return solver.check()

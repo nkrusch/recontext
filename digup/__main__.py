@@ -5,26 +5,39 @@ import signal
 import subprocess
 import sys
 from itertools import combinations as comb
-from os.path import join, dirname, abspath
+from os.path import join, dirname, abspath, isfile
 from pathlib import Path
-from typing import Callable
 
 from rich.progress import Progress
 
-from src import read, input_csv, b_name
-from src import read_trace, construct_trace, parse_dig_str
+from scripts import read, input_csv, b_name
+from scripts import read_trace, construct_trace, parse_dig_str
 
-ENV = {'PICK_N': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600, **os.environ}
-TOTAL_TO, SUBPROC_TO = map(int, [(ENV['TO']), ENV['STO']])
-PICK_N, TMP = int(ENV['PICK_N']), ENV['TMP']
-
-
-def construct_fn(base_name, indices):
-    return f'{base_name}-' + '-'.join(map(str, indices)) + '.csv'
+ENV = {'N_VAR': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600, **os.environ}
+TOTAL_TO, SUBPROC_TO = int(ENV['TO']), int(ENV['STO'])
+PICK_N, TMP = int(ENV['N_VAR']), ENV['TMP']
 
 
-def __analyze(indices, name, args, trace, variables):
-    """A generator for invariant inference.
+def __calc_diff(n, combinations):
+    """Combinations with symmetric difference > n."""
+    result = []
+    for c in combinations:
+        diff = lambda r: set(c).symmetric_difference(set(r))
+        if not next((r for r in result if len(diff(r)) < n), None):
+            result.append(c)
+    return result
+
+
+def __run_dig(in_file, *args):
+    """Run Dig with timeout."""
+    return subprocess.run(
+        ['python3', '-O', 'dig/src/dig.py', in_file, *args],
+        cwd=dirname(dirname(abspath(__file__))),
+        timeout=SUBPROC_TO, capture_output=True, text=True).stdout
+
+
+def run_parts(indices, name, args, trace, variables):
+    """A generator for invariant inference over partitions.
 
     Arguments:
         indices: list of indices to analyze
@@ -34,56 +47,26 @@ def __analyze(indices, name, args, trace, variables):
         variables: trace variables
     """
     for ix in indices:
-        vrs = [v for i, v in enumerate(variables) if i in ix]
-        tmp_in = join(TMP, construct_fn(name, ix))
-        construct_trace(vrs, trace[:, ix], fn=tmp_in)
+        vars_ = [v for i, v in enumerate(variables) if i in ix]
+        f_names = f'{name}-' + '-'.join(map(str, ix)) + '.csv'
+        tmp_in = join(TMP, f_names)
+        construct_trace(vars_, trace[:, ix], fn=tmp_in)
         try:
-            yield subprocess.run(
-                ['python3', '-O', 'dig/src/dig.py', tmp_in, *args],
-                cwd=dirname(dirname(abspath(__file__))),
-                timeout=SUBPROC_TO,
-                capture_output=True, text=True).stdout
+            yield __run_dig(tmp_in, *args)
         except subprocess.TimeoutExpired:
             yield ''
         os.remove(tmp_in)
 
 
-def add_num(offset, values):
-    """Number a list of values."""
-    return [f'{offset + n}. {x}' for n, x in enumerate(values)]
-
-
-def calc_diff(n, combinations):
-    result = []
-    for c in combinations:
-        diff = lambda r: set(c).symmetric_difference(set(r))
-        if not next((r for r in result if len(diff(r)) < n), None):
-            result.append(c)
-    return result
-
-
-def header(tloc, count='?'):
-    """Format a result header."""
-    return f'{tloc} ({count} invs):'
-
-
-def do_with_to(action: Callable, cleanup: Callable = None):
-    def to_handler(signum, frame):
-        raise TimeoutError()
-
-    signal.signal(signal.SIGALRM, to_handler)
-    signal.alarm(TOTAL_TO)
-    code = 0
+def run_one(fp, *args):
+    """Run Dig on specified file."""
     try:
-        action()
-    except TimeoutError:
-        code = 129
-    if cleanup:
-        cleanup()
-    sys.exit(code)
+        print(__run_dig(fp, *args))
+    except subprocess.TimeoutExpired:
+        pass
 
 
-def main(fp, *args):
+def partition(trace, vars_, fp, *args):
     """Modified Dig run that partitions the input trace.
 
     If number of variables is low (<= 6), runs regular Dig.
@@ -91,62 +74,51 @@ def main(fp, *args):
     of the traces.
 
     Arguments:
+        trace: traced values
+        vars_: list of variables names
         fp: path to input trace
         *args: Dig arguments
     """
-    trc, vrs, tloc = read_trace(fp)
-
-    if len(vrs) <= 6:
-        def run_me():
-            try:
-                res = subprocess.run(
-                    ['python3', '-O', 'dig/src/dig.py', fp, *args],
-                    cwd=dirname(dirname(abspath(__file__))),
-                    timeout=SUBPROC_TO,
-                    capture_output=True, text=True).stdout
-                print(res)
-            except subprocess.TimeoutExpired:
-                pass
-        return do_with_to(run_me)
-
-    ids = calc_diff(4, list(comb(range(len(vrs)), PICK_N)))
-    Path(TMP).mkdir(parents=True, exist_ok=True)
-    cleanup = lambda: shutil.rmtree(TMP, ignore_errors=True)
+    fn = Path(fp).stem
+    history, recount = {}, 1
+    flt = lambda x: x not in history
+    ids = __calc_diff(4, list(comb(range(len(vrs)), PICK_N)))
     random.shuffle(ids)
-
-    def do_all():
-        history, recount = {}, 1
-        flt = lambda x: x not in history
-        with Progress() as progress:
-            print(header(tloc))
-            task = progress.add_task('', total=len(ids))
-            for item in __analyze(ids, Path(fp).stem, args, trc, vrs):
-                if inv := list(filter(flt, parse_dig_str(item))):
-                    history.update(dict([(k, 1) for k in inv]))
-                    print('\n'.join(add_num(recount, inv)))
-                    recount += len(inv)
-                progress.update(task, advance=1)
-
-    return do_with_to(do_all, cleanup)
+    Path(TMP).mkdir(parents=True, exist_ok=True)
+    to_handler = lambda _, __: sys.exit(129)
+    signal.signal(signal.SIGALRM, to_handler)
+    signal.alarm(TOTAL_TO)
+    with Progress() as progress:
+        task = progress.add_task('', total=len(ids))
+        for item in run_parts(ids, fn, args, trace, vars_):
+            if inv := list(filter(flt, parse_dig_str(item))):
+                history.update(dict([(k, 1) for k in inv]))
+                print('\n#. '.join(inv))
+            progress.update(task, advance=1)
+    shutil.rmtree(TMP, ignore_errors=True)
 
 
-def reform(fp):
+def reformat(fp):
     """Rewrite stream result to sorted format."""
-    source = input_csv(b_name(fp))
-    tloc = read_trace(source)[-1]
-    lines = (read(fp) or '').strip().split('\n')
-    if lines:
-        nums = [x for x in lines if '. ' in x]
-        ins = [ln.split('. ', 1)[1] for ln in nums]
-        lines = add_num(1, sorted(ins, key=len))
-    data = '\n'.join([header(tloc, str(len(lines)))] + lines)
-    with open(fp, 'w') as f:
-        f.write(data)
+    if isfile(fp):
+        loc = read_trace(input_csv(b_name(fp)))[-1]
+        if lines := (read(fp) or '').strip().split('\n'):
+            nums = [x for x in lines if '. ' in x]
+            ins = [ln.split('. ', 1)[1] for ln in nums]
+            values = sorted(ins, key=len)
+            lines = [f'{1 + n}. {x}' for n, x in enumerate(values)]
+        head = f'{loc} ({len(lines)} invs):'
+        data = '\n'.join([head] + lines)
+        with open(fp, 'w') as f:
+            f.write(data)
 
 
 if __name__ == "__main__":
     input_file, *dig_args = sys.argv[1:]
     if input_file.endswith('.csv'):
-        main(input_file, *dig_args)
+        trc, vrs, _ = read_trace(input_file)
+        a = lambda: run_one(input_file, *dig_args)
+        b = lambda: partition(trc, vrs, input_file, *dig_args)
+        a() if len(vrs) <= 6 else b()
     if input_file.endswith('.digup'):
-        reform(input_file)
+        reformat(input_file)

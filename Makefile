@@ -17,7 +17,7 @@ TMP := .tmp
 endif
 
 ifndef $TO # seconds
-TO := 600
+TO := 90
 endif
 
 ifndef $DOPT # DIG options
@@ -48,8 +48,9 @@ DIG_ALL  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_UPS  := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.digup}
 T_PROBS  := ${T_SET:%=$(OUT)/%.time}
 
-
+#=======================
 # main recipes
+#=======================
 all:     stats host dig digup times score
 stats:   $(STATS)
 host:    $(MACHINE)
@@ -66,14 +67,16 @@ CHECKS   := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 DIG_MTH  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/f_*.csv))
 DIG_LIN  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/l_*.csv))
 DIG_DSS  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(D_PROBS))
+COMP     := $(wildcard $(OUT)/*.digup)
 GEN_F    := ${MATH_F:%=gen/f_%}
 GEN_L    := ${LINEAR:%=gen/l_%}
 
 # debugging + generators
-check:   $(CHECKS)
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS) digup score
+compare: $(COMP)
+check:   $(CHECKS)
 trc_f:   $(GEN_F)
 trc_l:   $(GEN_L)
 
@@ -108,12 +111,15 @@ $(OUT)/%.time: $(TMP)/%.csv $(OUT)
 	   $(TIMER) "Tacle" $(N) "(cd tacle && $(PYTHON) -m tacle ../$(TMP)/$(f).$(N).csv -g)" >> $@ ; \
 	   $(TIMER) "Dig"   $(N) "$(PYTHON) -O dig/src/dig.py $(TMP)/$(f).$(N).trc -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS)" >> $@ ; )
 
-$(OUT)/%.check:
-	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
-
 gen/%:
 	$(eval fname := $(subst gen/,,$@))
 	$(PYTHON) -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
+
+$(OUT)/%.check:
+	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
+
+$(COMP):
+	@$(PYTHON) -m $(UTILS) -a match $@
 
 $(MACHINE): $(OUT)
 	@bash $(UTILS)/machine.sh > $@
@@ -133,4 +139,5 @@ clean_tmp:
 clean:
 	@rm -rf $(OUT)
 
-.PHONY: $(SCORE) $(STATS) $(MACHINE)
+
+.PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)

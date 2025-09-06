@@ -76,7 +76,7 @@ OPTION         DEFAULT              DESCRIPTION
 PYTHON         python3              Path to Python runtime
 OUT            results              Path to results directory
 TMP            .tmp                 Directory for temporary files 
-TO             60                   Analysis timeout in seconds
+TO             90                   Analysis timeout in seconds
 DOPT           (None)               Dig analysis options
 T_SIZES        25 50 75 100         Trace sizes for times experiment
 </pre>

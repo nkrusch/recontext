@@ -1,13 +1,13 @@
 import argparse
 
-from . import csv_to_trace, trace_to_csv,\
+from . import csv_to_trace, trace_to_csv, \
     check, generate, stats, score, match
-
-TRACE, CSV, CHECK, GEN, STATS, SCORE, MATCH = options = \
-    'trace,csv,check,gen,stats,score,match'.split(',')
 
 
 def main():
+    # noinspection PyPep8Naming
+    TRACE, CSV, CHECK, GEN, STATS, SCORE, MATCH = options = \
+        'trace,csv,check,gen,stats,score,match'.split(',')
     parser = argparse.ArgumentParser(
         prog="utils", description="Helpful operations")
     parser.add_argument(
