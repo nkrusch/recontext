@@ -6,13 +6,12 @@ from itertools import product
 from math import *
 from os import listdir
 from os.path import isfile, basename, splitext, join
-from pathlib import Path
 from random import randint
 from typing import Tuple
 
 import pandas as pd
 import yaml
-from prettytable import PrettyTable
+from prettytable import PrettyTable as PrettyT
 from rich.progress import Progress
 from z3 import *
 
@@ -45,6 +44,10 @@ def b_name(file_path):
     return splitext(basename(file_path))[0]
 
 
+def is_ds(f):
+    return f.startswith("ds_")
+
+
 def is_num(x: str) -> bool:
     """Test if expression is a negative or positive number."""
     return (x[1:] if x and x[0] == '-' else x).isnumeric()
@@ -56,7 +59,8 @@ def pad_neg(v: T_DTYPE) -> str:
 
 
 def as_list(x: Any) -> List[Any]:
-    return (list(x) if isinstance(x, Iterable) else
+    return (([x] if isinstance(x, str) else list(x))
+            if isinstance(x, Iterable) else
             ([x] if x is not None else []))
 
 
@@ -64,6 +68,10 @@ def c_vars(conf):
     vin = conf['vin'] if 'vin' in conf and conf['vin'] else {}
     vo = conf['vo'] if 'vo' in conf else []
     return list(vin.keys()) + as_list(vo)
+
+
+def lmap(f, iterable):
+    return list(map(f, iterable))
 
 
 def fresh_solver(sol=None):
@@ -97,6 +105,13 @@ def sym_min(*vs):
 def sym_max(*vs):
     """Python max evaluation for Z3."""
     return reduce(lambda x, m: If(x > m, x, m), vs[1:], vs[0])
+
+
+def dict_rev(dct):
+    """Reverse dictionary keys and values."""
+    uniq = set(map(str, dct.values()))
+    mtc = lambda x: [k for k, y in dct.items() if str(y) == x]
+    return dict([(uq, mtc(uq)) for uq in uniq])
 
 
 def read_trace(path: str) -> Tuple[np.array, List[str], str]:
@@ -257,7 +272,7 @@ def check(fn: str) -> bool:
             if (sc := solver.check()) == unsat:
                 all_t, cex = False, find_cex(expr)
         rows.append([p, sc, cex])
-    table = PrettyTable(["P(…)", "eval(P)", "CEX"])
+    table = PrettyT(["P(…)", "eval(P)", "CEX"])
     table.add_rows(rows)
     print(table)
     return all_t
@@ -285,7 +300,7 @@ def rand_data(in_v, ranges, expr, has_o) -> List[T_DTYPE]:
         A row of data, of selected inputs and the calculated output.
     """
     dt_v = lambda nx: randint(*nx) if isinstance(nx, list) else nx
-    data = list(map(dt_v, ranges))
+    data = lmap(dt_v, ranges)
     res = as_list(eval(to_assert(in_v, data, expr))) if has_o else []
     return data + res
 
@@ -302,140 +317,117 @@ def generate(f_name):
     construct_trace(c_vars(conf[f_name]), values)
 
 
+# noinspection PyPep8Naming
 def stats(dir_path):
     """Display statistics about a directory."""
-    files = [f for f in listdir(dir_path)
-             if f.endswith(".csv") and '_' in f]
-    if files:
-        cats = [f.split('_', 1)[0] for f in files]
-        vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
-        pt, ct = Counter(cats), Counter(vl)
-
+    is_trace = lambda f: f.endswith(".csv") and '_' in f
+    if files := list(filter(is_trace, listdir(dir_path))):
+        # traces stats
+        pt = Counter([f.split('_', 1)[0] for f in files])
         pt['∑'] = sum(pt.values())
-        table1 = PrettyTable(list(pt.keys()), title='Traces by kind')
-        table1.add_row(list(pt.values()))
+        T1 = PrettyT(list(pt.keys()), title='Traces by kind')
+        T1.add_row(list(pt.values()))
 
-        scope = range(min(vl), max(vl) + 1)
-        dct = {**dict([(x, 0) for x in scope]), **ct, ' ∑ ': sum(vl)}
-        table2 = PrettyTable(list(map(str, dct)))
-        table2.title = 'Variable counts (frequency)'
-        table2.add_row(list(dct.values()))
+        # variable frequencies
+        vl = [len(read_trace(join(dir_path, f))[1]) for f in files]
+        scope = [(x, 0) for x in range(min(vl), max(vl) + 1)]
+        dct = {**dict(scope), **Counter(vl), ' ∑ ': sum(vl)}
+        T2 = PrettyT(lmap(str, dct.keys()))
+        T2.title = 'Variable counts (frequency)'
+        T2.add_row(list(dct.values()))
 
-        ds = [f for f in files if f.startswith("ds_")]
+        # datasets
         fmap = lambda f: map(len, read_trace(join(dir_path, f))[:2])
-        vals = lambda f: tuple(reversed(list(fmap(f))))
-        data = [(f.split('.')[0],) + vals(f) for f in ds]
-        table3 = PrettyTable(['Name', 'V', 'N'])
-        table3.align[table3.field_names[0]] = 'l'
-        table3.title = 'Datasets'
-        table3.add_rows(sorted(data))
+        vals = lambda f: list(reversed(list(fmap(f))))
+        data = [[b_name(f)] + vals(f) for f in filter(is_ds, files)]
+        T3 = PrettyT(['Name', 'V', 'N'], title='Datasets', align='l')
+        T3.add_rows(sorted(data))
 
-        kfm = lambda l: ','.join(sorted(l))
-        fmt = lambda x: x.replace(' ', '') \
-            if x.startswith('[') else f'={x}'
+        # invariant configurations
+        cf = read_yaml(F_CONFIG)
         fft = lambda f: f.replace(' ', '')
+        kfm = lambda l: ','.join(sorted(l))
+        rfm = lambda x: fft(x) if x.startswith('[') else f'={x}'
+        formulae = [fft(x['formula']) for x in cf.values()]
+        rng = [[kfm(k) + rfm(r) for r, k in dict_rev(vin).items()]
+               for vin in [op['vin'] or {} for op in cf.values()]]
+        T4 = PrettyT(title='Invariant benchmarks')
+        T4.add_column('Name', list(cf), align='l')
+        T4.add_column('V', lmap(len, lmap(c_vars, cf.values())))
+        T4.add_column('N', [x['n'] for x in cf.values()])
+        T4.add_column('Formula', formulae, align='l')
+        T4.add_column('Ranges', [' '.join(x) for x in rng], align='l')
 
-        conf = read_yaml(F_CONFIG)
-        cv = conf.values()
-        data = [('Name', list(conf)),
-                ('V', [len(c_vars(x)) for x in cv]),
-                (' N ', [x['n'] for x in cv]),
-                ('Formula', [fft(x['formula']) for x in cv]),
-                ('Ranges', ranges := [])]
-
-        for vin in [opts['vin'] or {} for opts in cv]:
-            uniq = set(map(str, vin.values()))
-            rgs = dict([(uq, []) for uq in uniq])
-            for k, val in vin.items():
-                rgs[str(val)].append(k)
-            rg = [kfm(k) + fmt(r) for r, k in rgs.items()]
-            ranges.append(' '.join(rg))
-
-        table4 = PrettyTable(title='Invariant benchmarks', align='l')
-        [table4.add_column(*c) for c in data]
-        for i in range(len(data)):
-            table4.align[table4.field_names[i]] = 'l'
-
-        tables = map(str, [table1, table2, table3, table4])
-        print('\n\n'.join(tables))
+        print('\n\n'.join(map(str, [T1, T2, T3, T4])))
 
 
+# noinspection PyPep8Naming
 def score(dir_path):
-    """Given the known invariant, and the inferred candidates,
-    test how many correct invariants are recovered."""
-    files = [f for f in listdir(dir_path) if
-             f.endswith(".dig") or f.endswith(".digup")]
+    """Score analysis results at `dir_path`."""
+    digs = lambda f: f.endswith(".dig") or f.endswith(".digup")
+    is_t = lambda f: f.endswith(".time")
+    files = list(filter(digs, listdir(dir_path)))
     sources = [input_csv(b_name(f)) for f in files]
-    times = [f for f in listdir(dir_path) if f.endswith(".time")]
     f_s = [x for x in zip(files, sources) if isfile(x[1])]
-    t1h = 'Detector,Benchmark,V,∑,=,≤,%,↕,✔'.split(',')
-    t2h = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
-    tmh = 'Benchmark,Detector'.split(',')
     conf = read_yaml(F_CONFIG)
-    t1, t2, tm = [], [], []
+
+    base_h = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
+    T1, T2, T3 = PrettyT(base_h + ['✔']), PrettyT(base_h), None
 
     for f, src in sorted(f_s):
-        name, ext = Path(f).stem, Path(f).suffix[1:]
-        vrs = read_trace(src)[1]
-        is_ds = f.startswith('ds')
-
-        # result statistics
+        name, ext = b_name(f), f.rsplit('.', 1)[-1]
         res = parse_dig_result(join(dir_path, f))
-        eqv, inq, mod, mx, inv = 0, 0, 0, 0, len(res)
-        for term in res:
-            pred = tokenize(term, TOKENS)
-            inq += 1 if '<=' in pred else 0
-            eqv += 1 if '==' in pred else 0
-            mod += pred.count('%')
-            mx += (pred.count('min') + pred.count('max'))
-        assert inv == eqv + inq
-        row = [ext, name, len(vrs), inv, eqv, inq, mod, mx]
+        vrs = read_trace(src)[1]
+        row = [ext, name, len(vrs), len(res)]
 
-        if not is_ds:
-            match, resp = False, ''
-            goal = conf[name]['goal']
-            goals = [goal] if isinstance(goal, str) else goal
-            pool, resp = res[:], '✗'
-            while pool and not match:
-                term, i = pool.pop(), 0
-                while i < len(goals) and not match:
-                    goal, i = goals[i], i + 1
-                    res = term_eq(vrs, goal, term)
-                    resp = '?' if res == unknown else resp
-                    match = (res == unsat)
-            row.append(('✔' if match else resp))
-        (t1 if not is_ds else t2).append(row)
+        stats_ = np.array([[
+            1 if '==' in pred else 0,
+            1 if '<=' in pred else 0,
+            pred.count('%'),
+            pred.count('min') + pred.count('max')]
+            for pred in [tokenize(term, TOKENS) for term in res]])
+        row += np.sum(stats_, axis=0).astype(int).tolist()
 
-    if times:
-        results, sizes = {}, set()
+        if not is_ds(f):
+            mtc, resp = False, '✗'
+            pool = list(product(as_list(conf[name]['goal']), res))
+            while pool and not mtc:
+                res = term_eq(vrs, *pool.pop())
+                mtc = res == unsat
+                resp = '?' if res == unknown else resp
+            row.append('✔' if mtc else resp)
+        (T2 if is_ds(f) else T1).add_row(row)
+
+    if times := list(filter(is_t, listdir(dir_path))):
+        sec_f = lambda t: round(float(t) / T_FMT, 1)
+        t_fmt = lambda t: (int(t) if T_FMT <= 1 else sec_f(t))
+        res, sizes = {}, set()
+
         for f in sorted(times):
-            bm = Path(f).stem
-            results[bm] = {}
-            for row in parse_times(join(dir_path, f)):
-                tool, sz, dur = row[0], int(row[1]), row[-1]
-                if tool not in results[bm]:
-                    results[bm][tool] = {}
-                tmp = ''
-                if dur:
-                    tmp = float(dur) / TIME_FMT
-                    tmp = int(tmp) if TIME_FMT == 1 else round(tmp, 1)
-                results[bm][tool][sz] = tmp
-                sizes.add(sz)
+            rows = parse_times(join(dir_path, f))
+            res[bm := b_name(f)] = {}
+            tools = [(x, {}) for x in set([r[0] for r in rows])]
+            res[bm].update(**dict(sorted(tools, reverse=True)))
+            sizes.update(set([int(r[1]) for r in rows]))
+            for row in rows:
+                res[bm][row[0]][int(row[1])] = \
+                    (t_fmt(dur) if (dur := row[-1]) else '')
+
         sizes = sorted(list(sizes))
-        unit = 's' if TIME_FMT == 1000 else 'ms'
-        tmh += [f'N={n}, {unit}' for n in sizes]
-        for bm, val in results.items():
+        unit = 's' if T_FMT == 1000 else 'ms'
+        head = 'Benchmark,Detector'.split(',')
+        szh = [f'N={n}, {unit}' for n in sizes]
+        T3 = PrettyT(head + szh, align='r')
+
+        for bm, val in res.items():
             for dt, tms in val.items():
                 times = [tms[n] if n in tms else '' for n in sizes]
-                tm.append([bm, dt.lower()] + times)
+                T3.add_row([bm, dt.lower()] + times)
 
-    for h, t in [(t1h, t1), (t2h, t2), (tmh, tm)]:
-        if t:
-            table = PrettyTable(h, align='r')
-            for i in [0, 1]:
-                table.align[table.field_names[i]] = 'l'
-            table.add_rows(t)
-            print(table, '\n')
+    for x in [T1, T2, T3]:
+        for i in [0, 1]:
+            x.align[x.field_names[i]] = 'l'
+    print('\n\n'.join(map(str, [T1, T2, T3])))
 
 
 def match(fn):
@@ -467,9 +459,8 @@ def term_eq(v_list: List[str], t1: str, t2: str):
         t1: expression A
         t2: expression B
     """
-    tf = ['log', 'sin', 'cos', 'tan']
     t1, t2 = [tokenize(x) for x in (t1, t2)]
-    if next((x for x in tf if x in t1 + t2), False):
+    if next((x for x in Z3_SKIP_W if x in t1 + t2), False):
         return unknown, None
     # noinspection PyUnusedLocal
     z3v = [Int(vr) for vr in v_list]

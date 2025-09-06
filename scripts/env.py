@@ -7,16 +7,25 @@ import numpy as np
 ENV = {'T_DTYPE': np.int64, 'Z3_TO': 60, 'C_SEP': ',',
        'IN_DIR': 'input/traces', 'F_CONFIG': 'inputs.yaml',
        'N_VAR': 5, 'TMP': '.tmp', 'STO': 60, 'TO': 600,
+       'T_FMT': 1,  # 1=MS, 1000=S
        **os.environ}
 
 # Config files
-IN_DIR, F_CONFIG, TMP = ENV['IN_DIR'], ENV['F_CONFIG'], ENV['TMP']
+F_CONFIG = ENV['F_CONFIG']
+IN_DIR = ENV['IN_DIR']
+TMP = ENV['TMP']
 
 # Format configs
-T_PREFIX, T_LABEL, T_SEP, C_SEP = 'I ', 'trace1', ';', ENV['C_SEP']
-Z3_TO, TIME_FMT = ENV['Z3_TO'], 1  # 1=MS, 1000=S
-TOTAL_TO, SUBPROC_TO = int(ENV['TO']), int(ENV['STO'])
+C_SEP = ENV['C_SEP']
+T_SEP = ';'
+T_PREFIX = 'I '
+T_LABEL = 'trace1'
+SUBPROC_TO = int(ENV['STO'])
+T_FMT = int(ENV['T_FMT'])
+TOTAL_TO = int(ENV['TO'])
 PICK_N = int(ENV['N_VAR'])
+Z3_TO = ENV['Z3_TO']
+Z3_SKIP_W = 'log,sin,cos,tan'.split(',')
 
 # Tokenization of invariant expressions(in order)
 __tkn = ('randint,else,for,and,not,max,min,mod,log,sin,cos,tan,'
