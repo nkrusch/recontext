@@ -1,9 +1,9 @@
 # Dynamic invariant discovery
 
-This repository is an experimental setting for _dynamic invariant detection over numeric data_.
-Invariant detection aims to find assertions that hold over all instances of the data.
+This repository is an experimental setting for _dynamic invariant detection_.
+Invariant detection aims to find assertions that hold over all instances of traced values.
 
-The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many input traces.
+The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many numerical input traces.
 The analyzers will have scalability issues with larger inputs. 
 DɪɢUᴘ is a wrapper for Dɪɢ that partitions the input trace and yields inference results based on the partitions.
 
@@ -14,8 +14,10 @@ Select parts of the development are verified in Dafny.
 
 **🖥️ Setup for native hosts.** 
 
-**Prerequisites:** &nbsp;
-[git](https://git-scm.com/downloads), [make](https://www.gnu.org/software/make/), and
+PREREQUISITES:
+[git](https://git-scm.com/downloads), 
+[bash](https://www.gnu.org/software/bash/),
+[make](https://www.gnu.org/software/make/), and
 [Python](https://www.python.org/downloads/) (v3.10 or later)
 
 Clone the repository and install dependencies.
@@ -25,6 +27,7 @@ cd invariants
 python3 -m venv venv && source venv/bin/activate    # recommended
 python3 -m pip install -r requirements.txt
 ```
+
 The `venv` setup is for unix hosts. 
 Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating-virtual-environments) on other hosts.
 
@@ -63,35 +66,31 @@ Run `make clean` to reset the `results` directory.
 
 * `[INPUT]` is a benchmark name (like `l_003`).
 * `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
-* For example `make results/l_003.dig`
+* For example `make results/l_003.dig` runs linear problem #3 on Dig.
 
 #### Overridable Makefile options
 
 <pre>
-OPTION         DEFAULT              DESCRIPTION     
+OPTION       DESCRIPTION                                         DEFAULT             
 ────────────────────────────────────────────────────────────────────────
-PYTHON         python3              Path to Python runtime
-OUT            results              Directory for writing results
-TMP            .tmp                 Temporary files directory 
-TO             60                   Analysis timeout in seconds
-DOPT           (None)               Dig analysis options
-T_SIZES        25 50 75 100         Trace sizes for times experiment
+PYTHON       Path to Python runtime                              python3
+DOPT         Dig analysis options
+OUT          Path to results directory                           results
+TMP          Directory for temporary files                          .tmp
+SZ           Trace sizes for times experiment               25 50 75 100
+TO           Analysis timeout in seconds                              90
 </pre>
 
-The "times"-experiment runs until completion and is unaffected by the timeout.
-It can be adjusted by changing the sample sizes.
-
-For example, the following command will finish in about 10 minutes.
-
-     make TO=30 T_SIZES="10 25"
+The times experiment runs until completion independently of timeout,
+but can be adjusted by modifying the workloads (`SZ`).
 
 
 ## Inputs
 
 * Dataset details are available at the associated links.
-* Function and linear invariants are described in [`inputs.yaml`](../inputs.yaml).
-* Some problems require user-supplied options, defined in [`config.txt`](../config.txt)
-* Dig expects inputs as traces and tacle expects input in CSV format
+* Function and linear invariants are described in `inputs.yaml`.
+* Some problems require user-supplied options, defined in `config.txt`.
+* Dig expects inputs as traces and tacle expects input in CSV format.
 
 <pre>
 DATASETS (ds)                                                              
@@ -115,12 +114,13 @@ l_001 -- l_133   program traces
 
 <pre>
  .
- ├─ 🗀 dig                 analyzer (submodule)
- ├─ 🗀 input               all input traces 
- ├─ 🗀 results.0           referential result for inspection
- ├─ 🗀 src                 scripts for running experiments
- ├─ 🗀 tacle               analyzer (submodule) 
- ├─ 🗀 verified            Dafny-verified codes
+ ├─ 📁 dig                 analyzer (submodule)
+ ├─ 📁 digup               our modified analyzer
+ ├─ 📁 input               all input traces 
+ ├─ 📁 results.0           referential result for inspection
+ ├─ 📁 scripts             scripts for running experiments
+ ├─ 📁 tacle               analyzer (submodule) 
+ ├─ 📁 verified            Dafny-verified codes
  ├─ config.txt             input-specific run options
  ├─ inputs.yaml            configurations for trace generation
  ├─ LICENSE                software license

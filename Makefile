@@ -17,19 +17,19 @@ TMP := .tmp
 endif
 
 ifndef $TO # seconds
-TO := 600
+TO := 90
 endif
 
 ifndef $DOPT # DIG options
 DOPT :=
 endif
 
-ifndef $T_SIZES # sizes for timing
-T_SIZES := 25 50 75 100
+ifndef $SZ # sizes for timing
+SZ := 25 50 75 100
 endif
 
 # paths
-UTILS    := src
+UTILS    := scripts
 IN_CSV	 := input/csv
 IN_TRC	 := input/traces
 ARGS_F   := config.txt
@@ -48,8 +48,9 @@ DIG_ALL  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_UPS  := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.digup}
 T_PROBS  := ${T_SET:%=$(OUT)/%.time}
 
-
+#=======================
 # main recipes
+#=======================
 all:     stats host dig digup times score
 stats:   $(STATS)
 host:    $(MACHINE)
@@ -66,14 +67,16 @@ CHECKS   := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 DIG_MTH  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/f_*.csv))
 DIG_LIN  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/l_*.csv))
 DIG_DSS  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(D_PROBS))
+COMP     := $(wildcard $(OUT)/*.digup)
 GEN_F    := ${MATH_F:%=gen/f_%}
 GEN_L    := ${LINEAR:%=gen/l_%}
 
 # debugging + generators
-check:   $(CHECKS)
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS) digup score
+compare: $(COMP)
+check:   $(CHECKS)
 trc_f:   $(GEN_F)
 trc_l:   $(GEN_L)
 
@@ -86,8 +89,8 @@ $(OUT)/%.dig: $(IN_TRC)/%.csv $(OUT)
 
 $(OUT)/%.digup: $(IN_TRC)/%.csv $(OUT)
 	$(eval proc_to=$(shell echo $$(($(TO)-1))))
-	export TO=$(proc_to) && $(RUNNER) "$(PYTHON) src/digup.py $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
-	@$(PYTHON) src/digup.py $@
+	export TO=$(proc_to) && $(RUNNER) "$(PYTHON) -m digup $< -log 0 -noss -nomp -noarrays $(DOPT) > $@"
+	@$(PYTHON) -m digup $@
 
 $(OUT)/%.tacle: $(IN_CSV)/%.csv $(OUT)
 	$(RUNNER) "cd tacle && $(PYTHON) -m tacle ../$< -g > ../$@"
@@ -96,24 +99,27 @@ $(TMP)/%.csv: $(TMP)
 	$(eval CSV := $(subst $(TMP),$(IN_CSV),$@))
 	$(eval TRC := $(subst $(TMP),$(IN_TRC),$@))
 	@make --silent $(CSV)
-	@$(foreach N,$(T_SIZES),\
+	@$(foreach N,$(SZ),\
 		head -n $$(($(N)+1)) $(CSV) > $(subst .csv,.$(N).csv,$@) ; \
 		head -n $$(($(N)+1)) $(TRC) > $(subst .csv,.$(N).trc,$@) ;)
 
 $(OUT)/%.time: $(TMP)/%.csv $(OUT)
 	$(eval ARGS := $(shell grep $(basename $(notdir $@)) $(ARGS_F) | head -n 1 | cut -d' ' -f 2-))
 	$(eval f := $(subst .csv,,$(subst $(TMP)/,,$<)))
-	@$(foreach N,$(T_SIZES), \
-	   echo "Processing $(f) and size=$(N) [of $(T_SIZES)]…" ; \
+	@$(foreach N,$(SZ), \
+	   echo "Processing $(f) and size=$(N) [of $(SZ)]…" ; \
 	   $(TIMER) "Tacle" $(N) "(cd tacle && $(PYTHON) -m tacle ../$(TMP)/$(f).$(N).csv -g)" >> $@ ; \
 	   $(TIMER) "Dig"   $(N) "$(PYTHON) -O dig/src/dig.py $(TMP)/$(f).$(N).trc -log 0 -noss -nomp -noarrays $(DOPT)$(ARGS)" >> $@ ; )
-
-$(OUT)/%.check:
-	$(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
 
 gen/%:
 	$(eval fname := $(subst gen/,,$@))
 	$(PYTHON) -m $(UTILS) -a gen $(fname) > $(IN_TRC)/$(fname).csv
+
+$(OUT)/%.check:
+	export T_DTYPE=d && $(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
+
+$(COMP):
+	@$(PYTHON) -m $(UTILS) -a match $@
 
 $(MACHINE): $(OUT)
 	@bash $(UTILS)/machine.sh > $@
@@ -133,4 +139,5 @@ clean_tmp:
 clean:
 	@rm -rf $(OUT)
 
-.PHONY: $(SCORE) $(STATS) $(MACHINE)
+
+.PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)
