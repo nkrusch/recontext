@@ -13,7 +13,7 @@ env:
 jobs:
   test:
     name: Runtime test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,4 +25,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path: results/${{ env.WORKLOAD }}.${{ env.ANALYZER }} results/_log.txt
+          path: |
+            results/_log.txt
+            results/${{ env.WORKLOAD }}.${{ env.ANALYZER }} 

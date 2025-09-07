@@ -13,11 +13,9 @@ cleanup() {
 
 runCmdWithTimeout() {
   (exec sh -c "$2") 2>>"$3" 1>/dev/null & pid=$!
-  (sleep "$1" && kill -HUP $pid) 2>/dev/null & watcher=$!
+  (sleep "$1" && kill -9 $pid) 2>/dev/null & watcher=$!
   if wait $pid || ex=$? >/dev/null; then
-    if [[ $EUID -ne 0 ]]; then
-      pkill -HUP -P $watcher
-    fi
+    pkill -P $watcher
     wait $watcher
     cleanup
     echo $((ex))
