@@ -56,8 +56,8 @@ the shared directory after exiting the container.
 Source Code Organization
 ------------------------------------------------------------------------
 
-Besides the Python package dependencies, all source code is
-included in the artifact.
+Besides the Python package dependencies, all source code is included in
+the artifact.
 
      .
      ├─ 📁 dig                 Dig source code
@@ -67,14 +67,10 @@ included in the artifact.
      ├─ 📁 scripts             helper scripts for running experiments
      ├─ 📁 tacle               TaCle source code
      ├─ 📁 verified            Dafny-verified codes
-     ├─ config.txt             input-specific run options
-     ├─ Dockerfile             virtual runtime environment setup
-     ├─ inputs.yaml            configurations for trace generation
      ├─ LICENSE                software license
-     ├─ Makefile               pre-configured commands
      ├─ readme.txt             this readme
-     ├─ req.repro.txt          Python dependencies (frozen)
-     └─ requirements.txt       Python dependencies
+     ├─ requirements.txt       Python dependencies
+     └─ *                      other configuration files
 
 
 Step-by-Step Instructions: Reproducing Paper Claims
