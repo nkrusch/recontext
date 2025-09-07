@@ -5,10 +5,8 @@ LOG="$2"
 CMD="$3"
 
 cleanup() {
-  if [[ $EUID -ne 0 ]]; then
-    pkill -9 Python
-    pkill -9 python
-  fi
+   pkill -9 Python
+   pkill -9 python
 }
 
 runCmdWithTimeout() {
