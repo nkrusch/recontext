@@ -1,24 +1,25 @@
 FROM python:3.11.9-alpine3.20
 
-LABEL org.opencontainers.image.authors="secret"
+LABEL org.opencontainers.image.authors="anonymous"
 LABEL org.opencontainers.image.title="Recontext-artifact"
-LABEL org.opencontainers.image.description="Dynamic invariant inference experiments"
-LABEL org.opencontainers.image.source="secret"
+LABEL org.opencontainers.image.description="Dynamic invariant detection"
+LABEL org.opencontainers.image.source="https://github.com/anonymous/recontext"
 LABEL org.opencontainers.image.licenses="MIT"
 
-ARG HOME="/rectx"
-ENV PATH="$PATH:/usr/local/dotnet:/root/.dotnet/tools:/root/.local/bin"
+ARG PROJ="/rectx"
 ARG REQ="req.repro.txt"
+ARG DAFNY_V="4.10.0"
+ENV PATH="${PATH}:/root/.dotnet/tools"
 
 RUN apk update  \
     && apk upgrade  \
     && apk --no-cache add bash make perl nano dotnet8-sdk build-base libc6-compat
 
-RUN dotnet tool install --global dafny --version 4.10.0
+RUN dotnet tool install --global dafny --version $DAFNY_V
 
-RUN mkdir -p $HOME
-COPY . $HOME
-WORKDIR $HOME
+RUN mkdir -p $PROJ
+COPY . $PROJ
+WORKDIR $PROJ
 RUN pip3 install --no-cache-dir -r $REQ
 
 ENTRYPOINT ["/bin/sh"]

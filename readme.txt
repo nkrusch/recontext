@@ -46,8 +46,8 @@ Prerequisites
     docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
 
 The command mounts a shared directory on the container host.
-Results of all experiments run inside the container will persist in this
-shared directory after exiting the container.
+Results of all experiments run inside the container will persist in
+the shared directory after exiting the container.
 
 ### Source Code Organization
 
@@ -80,28 +80,27 @@ Precisely state the resource requirements you used:
 - see `logs/_host.txt` (in short Ubuntu 22.04.5, 8 cores, 64 GB RAM).
 
 Provide a rough estimate of the experiment times:
-- The times are based on `logs/_log.txt` and do not
-  include containerization overhead.
+- The times are based on `logs/_log.txt` and do not include
+  containerization overhead.
 
 Regarding tasks that require a large amount of resources:
-- The experiment of §3.4s take about 16h.
-  Reproduction requires extending the timeout (`make TO=54000`).
-  We do not expect the AEC to repeat the experiment, but claim
-  that it is in principle reproducible with the artifact
-  (the smoke test and full eval do execute the workloads, but
-  terminate with a timeout).
+- The experiment of §3.4s take about 16h. Reproduction requires
+  only extending the timeout (`make TO=54000`). We do not expect the
+  AEC to repeat the experiment, but claim that it is in principle
+  reproducible with the artifact (the evaluations do execute the
+  workloads, but they terminate with a timeout).
 
 ### Checking the verification (§5)
 
 The `verified` directory contains
-* Data mutation: maintains invariants under perturbations.
+* Data mutation that maintains invariants under perturbations.
 * Verified benchmarks to confirm consistency of linear invariants.
 
 Check the data mutation verification by running:
 
     dafny verify verified/mutation.dfy
 
-This should print "finished with 23 verified, 0 errors."
+This should print "finished with 20 verified, 0 errors."
 
 ### Reproducing Experiments (§3-4)
 
@@ -118,10 +117,10 @@ The results, including command logs, are written to `results` directory.
     make
 
 The `make` command runs a sequence of other commands.
-They generate statistics of traces and host machine,
-run all pre-configured experiments, and generate table plots.
+They generate statistics of traces and host machine; run all
+experiments, and generate table plots.
 
-To run the same as *individual steps*:
+To run the same as individual steps:
 
     COMMAND        DESCRIPTION                            DURATION
     ────────────────────────────────────────────────────────────────
@@ -132,7 +131,7 @@ To run the same as *individual steps*:
     make times     Run exec time experiments [Table 4]     ~30 min
     make score     Plot all tables                         < 1 min
 
-Run `make clean` to reset the `results` directory.
+Run `make clean` to reset `results` directory.
 
 Overridable Makefile options
 
@@ -154,14 +153,15 @@ The artifact reusability claims are:
 ### Native Execution from Sources
 
 Platform support
-  * ✔ POSIX - Tested: Linux 22.04, Darwin v11 (Intel), Darwin v15 (arm)
+  * ✔ POSIX
+  * Tested: Linux 22.04, Darwin v11/Intel and v15 M1/ARM
   * Windows compatibility is untested
 
 Software prerequisites
- * bash:   https://www.gnu.org/software/bash/
- * make:   https://www.gnu.org/software/make/
- * Python: https://www.python.org/downloads/   (v3.10 or later)
- * Dafny:  https://dafny.org (v4.7.0 or later)
+ * bash:   https://www.gnu.org/software/bash/  (≥ 3.2)
+ * make:   https://www.gnu.org/software/make/  (≥ 4)
+ * Python: https://www.python.org/downloads/   (≥ 3.10)
+ * Dafny:  https://dafny.org                   (≥ 4.7.0)
 
 ① [Optional] Create a virtual environment.
 
