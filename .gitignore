@@ -1,7 +1,7 @@
-*.rkt#*#
 *.pyc
-.venv
-env
 results
-.tmp
+sources
 input/csv
+venv
+.venv
+.tmp

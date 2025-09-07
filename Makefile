@@ -141,3 +141,20 @@ clean:
 
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)
+
+
+ARC       := sources
+ARC_OUT   := ~/Desktop/$(ARC).zip
+ARC_FIND  := find . -mindepth 1 -maxdepth 1 ! -name '.*'
+ARC_DIRS  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type d ! -name $(ARC) ! -name '__*__' ! -name 'results' ! -name 'venv'))
+ARC_FILE  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type f ! -name '*.zip')) .dockerignore
+archive:  $(ARC_OUT)
+
+$(ARC):
+	@mkdir -p $(@)
+
+%.zip: $(ARC)
+	$(foreach f, $(ARC_FILE), cp $(f) $(ARC)/$(f) ;)
+	$(foreach d, $(ARC_DIRS), mkdir -p $(ARC)/$(d) && cp -R $(d) $(ARC)/$(d) ;)
+#	@zip -r $@ $(ARC)
+#	@rm -rf $(ARC)

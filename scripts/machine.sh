@@ -15,21 +15,23 @@ version() {
 }
 
 echo "HARDWARE"
-if grep  'Alpine' < "/etc/os-release" 1>/dev/null 2>/dev/null ; then
-  echo "  OS: $(uname -a)"
-  echo "  OS version: $(cat /etc/alpine-release)"
-  echo "  Kernel: $(uname -s) $(uname -r)"
-  echo "  Architecture: $(uname -m)"
-  echo "  Processors: $(grep -c processor /proc/cpuinfo)"
-  echo "  Total memory: $(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo) GB"
-elif echo "$OSTYPE" | grep -qi 'linux' ; then
-  proc=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
-  echo "  OS: $(lsb_release -as 2>/dev/null | sed -n 2,3p | tac | tr '\n' ' ')"
-  echo "  Kernel: $(uname -s) $(uname -r)"
-  echo "  Architecture: $(uname -m)"
-  echo "  Processor: ${proc:-"unknown"}"
-  echo "  Cores: $(lscpu | grep -E '^Core\(' | awk '{print $(NF)}')"
-  echo "  Total memory: $(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo) GB"
+if echo "$OSTYPE" | grep -qi 'linux' ; then
+  if grep  'Alpine' < "/etc/os-release" 1>/dev/null 2>/dev/null ; then
+    echo "  OS: $(uname -a)"
+    echo "  OS version: $(cat /etc/alpine-release)"
+    echo "  Kernel: $(uname -s) $(uname -r)"
+    echo "  Architecture: $(uname -m)"
+    echo "  Processors: $(grep -c processor /proc/cpuinfo)"
+    echo "  Total memory: $(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo) GB"
+  else
+    proc=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
+    echo "  OS: $(lsb_release -as 2>/dev/null | sed -n 2,3p | tac | tr '\n' ' ')"
+    echo "  Kernel: $(uname -s) $(uname -r)"
+    echo "  Architecture: $(uname -m)"
+    echo "  Processor: ${proc:-"unknown"}"
+    echo "  Cores: $(lscpu | grep -E '^Core\(' | awk '{print $(NF)}')"
+    echo "  Total memory: $(awk '/MemTotal/ { printf "%.3f \n", $2/1024/1024 }' /proc/meminfo) GB"
+  fi
 elif echo "$OSTYPE" | grep -qi 'darwin' ; then
   echo "  OS: $(sw_vers -productName)"
   echo "  Version: $(sw_vers -productVersion)"
