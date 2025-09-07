@@ -3,7 +3,6 @@
 TIMEOUT="$1"
 LOG="$2"
 CMD="$3"
-current_tty=$(ps -o tty= -p $$)
 
 cleanup() {
     pkill -9 Python

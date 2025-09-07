@@ -33,22 +33,26 @@ Prerequisites
  * Docker - https://docs.docker.com/engine/install
  * Operating system - any Docker-compatible platform
  * Internet - only container setup requires the host to be online
- * Memory - the container size is approx. ?? GB
+ * Memory - the container size is 1.77GB
 
-Build and launch the container
+① [Choose one] Load or build (~500s) a container
 
-    docker build . -t inv
-    docker run -v "$(pwd)/results:/invariants/results" -it --rm inv
+    docker load -i rectx.<arch>.tar
+
+    docker build . -t rectx
+
+② Launch the container
+
+    docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
 
 The command mounts a shared directory on the container host.
-Results of all experiments run inside the container will
-persist in this shared directory after exiting the container.
+Results of all experiments run inside the container will persist in this
+shared directory after exiting the container.
 
 ### Source Code Organization
 
 Besides the Python package dependencies, all source code is
 included in the artifact.
-
 
      .
      ├─ 📁 dig                 Dig source code
@@ -59,11 +63,13 @@ included in the artifact.
      ├─ 📁 tacle               TaCle source code
      ├─ 📁 verified            Dafny-verified codes
      ├─ config.txt             input-specific run options
+     ├─ Dockerfile             virtual runtime environment setup
      ├─ inputs.yaml            configurations for trace generation
      ├─ LICENSE                software license
      ├─ Makefile               pre-configured commands
+     ├─ readme.txt             this readme
+     ├─ req.repro.txt          Python dependencies (frozen)
      └─ requirements.txt       Python dependencies
-
 
 ### Step-by-Step Instructions: Reproducing Paper Claims
 
@@ -71,7 +77,11 @@ Which claims or results can be replicated:
 - Experiments (Tables 1-4 in §3-4, except 3.4) and verification (§5).
 
 Precisely state the resource requirements you used:
-- see `logs/_host.txt` -- 22.04 Ubuntu 22.04.5 LTS, 8 cores, 64 GB RAM.
+- see `logs/_host.txt` (in short Ubuntu 22.04.5, 8 cores, 64 GB RAM).
+
+Provide a rough estimate of the experiment times:
+- The times are based on `logs/_log.txt` and do not
+  include containerization overhead.
 
 Regarding tasks that require a large amount of resources:
 - The experiment of §3.4s take about 16h.
@@ -93,13 +103,11 @@ Check the data mutation verification by running:
 
 This should print "finished with 23 verified, 0 errors."
 
-
 ### Reproducing Experiments (§3-4)
 
 The results, including command logs, are written to `results` directory.
 * Tables 1, 3, and 4 will be written to `results/_results.txt`
 * Table 2 will be written to `results/_inputs.txt`
-
 
 #### [~10 min] A Smoke Test
 
@@ -134,7 +142,6 @@ Overridable Makefile options
     SZ           Trace sizes for times experiment     25 50 75 100
     TO           Benchmark timeout in seconds                   90
 
-
 ------------------------------------------------------------------------
 REUSABLE EVALUATION
 ------------------------------------------------------------------------
@@ -156,7 +163,6 @@ Software prerequisites
  * Python: https://www.python.org/downloads/   (v3.10 or later)
  * Dafny:  https://dafny.org (v4.7.0 or later)
 
-
 ① [Optional] Create a virtual environment.
 
     python3 -m venv venv && source venv/bin/activate
@@ -166,6 +172,9 @@ For help, see: https://docs.python.org/3/library/venv.html
 ② Install Python dependencies.
 
     python3 -m pip install -r requirements.txt
+
+The precise dependency environment that was used in the paper
+experiments is documented in `req.repro.txt`.
 
 ### Executing Custom Workloads
 
@@ -195,7 +204,6 @@ The commands correspond to:
     python3 -m scripts -a trace test.csv > input/traces/test.csv
     make results/test.dig
     cat results/test.dig
-
 
 ------------------------------------------------------------------------
 📜️  LICENSING

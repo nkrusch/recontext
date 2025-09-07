@@ -1,27 +1,24 @@
-# export DOCKER_DEFAULT_PLATFORM=linux/amd64
-# docker build . -t inv
-# docker run -v "$(pwd)/results:/invariants/results" -it --rm inv
-
 FROM python:3.11.9-alpine3.20
 
-ARG HOME="/invariants"
-ARG DAFNY_URL="https://github.com/dafny-lang/dafny/releases/download/v4.10.0/dafny-4.10.0-x64-ubuntu-20.04.zip"
-ARG DAFNY_ARCH="dafny.zip"
-ARG DAFNY_PATH="/usr/lib/"
-ENV PATH=/root/.local/bin:$PATH:$DAFNY_PATH/dafny
+LABEL org.opencontainers.image.authors="secret"
+LABEL org.opencontainers.image.title="Recontext-artifact"
+LABEL org.opencontainers.image.description="Dynamic invariant inference experiments"
+LABEL org.opencontainers.image.source="secret"
+LABEL org.opencontainers.image.licenses="MIT"
 
-RUN apk update && \
-    apk upgrade apk --no-cache add \
-    bash make git dotnet6-sdk unzip nano libc6-compat
+ARG HOME="/rectx"
+ENV PATH="$PATH:/usr/local/dotnet:/root/.dotnet/tools:/root/.local/bin"
+ARG REQ="req.repro.txt"
+
+RUN apk update  \
+    && apk upgrade  \
+    && apk --no-cache add bash make perl nano dotnet8-sdk build-base libc6-compat
+
+RUN dotnet tool install --global dafny --version 4.10.0
 
 RUN mkdir -p $HOME
 COPY . $HOME
 WORKDIR $HOME
-
-RUN pip3 install -r requirements.txt
-
-ADD --chmod=777 $DAFNY_URL $HOME/$DAFNY_ARCH
-RUN unzip $HOME/$DAFNY_ARCH -d $DAFNY_PATH \
-    && rm -rf $HOME/$DAFNY_ARCH
+RUN pip3 install --no-cache-dir -r $REQ
 
 ENTRYPOINT ["/bin/sh"]
