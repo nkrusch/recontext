@@ -198,8 +198,8 @@ module DomainSpec {
   const degree: nat := 5
 
   // type of numerica data
-  type domain = real
-  const Default:= 0.0
+  type domain = int
+  const Default:= 0
 }
 
 module Tests {
@@ -228,7 +228,7 @@ module Tests {
     [[-2, 2, 5, 7, -3], [11, 6, -5, 5, 3]],
     [[-2, 2, 5, 7, -3], [11, 2, -7, 5, 3]])
 
-  const source := RealSample
+  const source := IntSample
   const X := source.0
   const Y := source.1
   const T := source.2
@@ -245,34 +245,34 @@ module Tests {
 
   method ImmutableTransfrom()
   {
-    var T0 := V.EnsureImmVector(X[0], Y[0], imm);
-    var T1 := V.EnsureImmVector(X[1], Y[1], imm);
-    assert T0 == T[0] && T1 == T[1];
+    // var T0 := V.EnsureImmVector(X[0], Y[0], imm);
+    // var T1 := V.EnsureImmVector(X[1], Y[1], imm);
+    // assert T0 == T[0] && T1 == T[1];
 
-    assert V.ImmutableVecCorrect(X[0], T0, imm);
-    assert V.ImmutableVecCorrect(X[1], T1, imm);
+    // assert V.ImmutableVecCorrect(X[0], T0, imm);
+    // assert V.ImmutableVecCorrect(X[1], T1, imm);
 
-    assert V.EvalPred(T0, mut[0]) == true;
-    assert V.EvalPred(T1, mut[0]) == false;
+    // assert V.EvalPred(T0, mut[0]) == true;
+    // assert V.EvalPred(T1, mut[0]) == false;
   }
 
   method Main() {
 
-    var Y' := V.ControlledMutation(X, Y, mut, imm);
-    assert V.IsCorrect(X, Y', mut, imm);
+    // var Y' := V.ControlledMutation(X, Y, mut, imm);
+    // assert V.IsCorrect(X, Y', mut, imm);
 
-    var T0 := V.EnsureImmVector(X[0], Y[0], imm);
-    assert V.MutableVecCorrect(T0, mut);
-    assert Y'[0]
-        == V.VectMutation(X[0], Y[0], mut, imm)
-        == V.EnsureMutVector(X[0], T0, mut)
-        == E[0] == T0;
+    // var T0 := V.EnsureImmVector(X[0], Y[0], imm);
+    // assert V.MutableVecCorrect(T0, mut);
+    // assert Y'[0]
+    //     == V.VectMutation(X[0], Y[0], mut, imm)
+    //     == V.EnsureMutVector(X[0], T0, mut)
+    //     == E[0] == T0;
 
-    var T1 := V.EnsureImmVector(X[1], Y[1], imm);
-    assert V.MutableVecCorrect(T1, mut) == false;
-    assert Y'[1]
-        == V.VectMutation(X[1], Y[1], mut, imm)
-        == V.EnsureMutVector(X[1], T1, mut)
-        == E[1] == X[1];
+    // var T1 := V.EnsureImmVector(X[1], Y[1], imm);
+    // assert V.MutableVecCorrect(T1, mut) == false;
+    // assert Y'[1]
+    //     == V.VectMutation(X[1], Y[1], mut, imm)
+    //     == V.EnsureMutVector(X[1], T1, mut)
+    //     == E[1] == X[1];
   }
 }

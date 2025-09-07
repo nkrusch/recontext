@@ -7,5 +7,7 @@ HARDWARE
   Total memory: 62.791  GB
 SOFTWARE
   make: 4.3
+  bash: 3.2.57
   python3: 3.10.12
   pip3: 22.0.2
+  dafny: 4.10.0+f24efae13647804624723de981bb5c95ea83e177

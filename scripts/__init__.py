@@ -9,6 +9,7 @@ from os.path import isfile, basename, splitext, join
 from random import randint
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 import yaml
 from prettytable import PrettyTable as PrettyT
@@ -377,12 +378,14 @@ def score(dir_path):
         res = parse_dig_result(join(dir_path, f))
         vrs = read_trace(s)[1]
         row = [ext, name, len(vrs), len(res)]
-        stats_ = np.array([[
-            1 if '==' in pred else 0,
-            1 if '<=' in pred else 0,
-            pred.count('%'),
-            pred.count('min') + pred.count('max')]
-            for pred in [tokenize(term, TOKENS) for term in res]])
+        stats_ = np.array([np.zeros(4)])
+        if len(res):
+            stats_ = np.array([[
+                1 if '==' in pred else 0,
+                1 if '<=' in pred else 0,
+                pred.count('%'),
+                pred.count('min') + pred.count('max')]
+                for pred in [tokenize(term, TOKENS) for term in res]])
         row += np.sum(stats_, axis=0).astype(int).tolist()
 
         if not is_ds(f):
