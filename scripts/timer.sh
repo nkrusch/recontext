@@ -14,7 +14,7 @@ end_time=$SECONDS
 END=$(utc_now)
 
 diff=$((end_time - start_time))
-echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${diff} s) ${res} ${CMD}\n----" >> "$LOG"
+echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${diff} s) 0 ${CMD}\n----" >> "$LOG"
 
 DIFF=$(echo "$END - $START" | bc)
 echo "$TOOL","$SIZE","$START","$END","$DIFF"

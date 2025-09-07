@@ -45,11 +45,11 @@ Prerequisites
 
 ② Launch the container.
 
-    docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
+    docker run --rm -v "$(pwd)/rdoc:/rectx/results" -it rectx:latest
 
-The command mounts a shared directory (results) on the host. This way,
+The command mounts a shared directory (rdoc) on the host. This way,
 the results of all experiments run inside the container will be
-visible on the host and will persist after container exit.
+immediately visible on the host and persist after container exit.
 
 
 Source Code Organization
@@ -90,7 +90,7 @@ Regarding tasks that require a large amount of resources:
    only extending the timeout (`make TO=54000`). We do not expect the
    AEC to repeat the experiment, but claim that it is in principle
    reproducible with the artifact (the evaluations commands do execute
-   the workloads, but they terminate with a timeout).
+   the workloads, but terminate with a timeout).
 
 
 Checking the verification (§5)

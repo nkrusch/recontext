@@ -134,10 +134,11 @@ $(OUT) $(IN_CSV) $(TMP):
 	@mkdir -p $@
 
 clean_tmp:
-	@rm -rf $(TMP)
+	@-rm -rf $(TMP)
 
 clean:
-	@rm -rf $(OUT)
+	@rm -rf $(OUT)/*
+	@-rm -rf $(OUT)
 
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)
