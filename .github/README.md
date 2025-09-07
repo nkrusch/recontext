@@ -55,7 +55,7 @@ make times          Run exec time experiments                    ~30 min
 make score          Plot results                                 < 1 min
 </pre>
 
-The duration estimates are based on `result.0`.
+The duration estimates are based on `logs`.
 
 Run `make clean` to reset the `results` directory.    
 
@@ -117,7 +117,7 @@ l_001 -- l_133   program traces
  ├─ 📁 dig                 analyzer (submodule)
  ├─ 📁 digup               our modified analyzer
  ├─ 📁 input               all input traces 
- ├─ 📁 results.0           referential result for inspection
+ ├─ 📁 logs                referential result for inspection
  ├─ 📁 scripts             scripts for running experiments
  ├─ 📁 tacle               analyzer (submodule) 
  ├─ 📁 verified            Dafny-verified codes
@@ -135,4 +135,5 @@ The `verified` directory contains:
 ### Licensing
 
 * Developments in this repository are licensed under the MIT license.
-* Dig and Tacle are submodules and have their own respective terms.
+* The datasets in input/traces are licensed under the CC BY 4.0 license.
+* Dig and Tacle are submodules and have their own terms of reuse.

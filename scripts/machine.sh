@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Capture details of running host
-SOFTWARE=(make python3 pip3)
+SOFTWARE=(make bash python3 pip3 dafny)
 
 version() {
   vc="$1 ${2:-"--version"}"
