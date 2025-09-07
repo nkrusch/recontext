@@ -150,11 +150,10 @@ ARC_DIRS  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type d ! -name $(ARC) ! -name
 ARC_FILE  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type f ! -name '*.zip')) .dockerignore
 archive:  $(ARC_OUT)
 
-$(ARC):
-	@mkdir -p $(@)
-
-%.zip: $(ARC)
-	$(foreach f, $(ARC_FILE), cp $(f) $(ARC)/$(f) ;)
-	$(foreach d, $(ARC_DIRS), mkdir -p $(ARC)/$(d) && cp -R $(d) $(ARC)/$(d) ;)
-#	@zip -r $@ $(ARC)
-#	@rm -rf $(ARC)
+%.zip:
+	@mkdir -p $(ARC)
+	@$(foreach f, $(ARC_FILE), cp $(f) $(ARC)/$(f) ;)
+	@$(foreach d, $(ARC_DIRS), cp -R $(d) $(ARC) ;)
+	@rm -rf $(ARC)/$(IN_CSV)
+	@zip -r $@ $(ARC)
+	@rm -rf $(ARC)
