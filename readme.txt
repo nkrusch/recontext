@@ -11,34 +11,36 @@ scalability issues with larger inputs. DɪɢUᴘ is a wrapper for Dɪɢ that
 partitions the input trace and yields inference results based on the
 partitions. Select parts of the development are verified in Dafny.
 
-Evaluation expectations
- * Running a smoke test takes about 10 minutes.
- * Full evaluation takes about 90 min (based on a 8-core Linux host).
- * Artifact execution requires Docker and no specialty hardware.
+Artifact evaluation expectations
+ * A smoke test takes about 10 minutes (+ some setup time).
+ * Full evaluation takes about 70 min (on an 8-core Linux host).
+ * Execution requires Docker and has no specialty hardware requirements.
+ 
 
 ------------------------------------------------------------------------
 SMOKE TEST & FUNCTIONAL EVALUATION
 ------------------------------------------------------------------------
 
-This section contains instructions for a functional evaluation, and
-explains how to reproduce the paper claims.
+This section explains how to reproduce the paper claims and complete
+a functional evaluation.
 
-The artifact includes
- * An experimental setup to reproduce paper experiments (§3-4)
- * All benchmarks, inputs, and source codes needed for experiments
- * The full verification described in (§5)
+The artifact includes:
+ * An experimental setup to reproduce paper experiments of §3–4.
+ * All benchmarks, inputs, and source codes used in the experiments.
+ * The full verification described in §5.
 
 
 Getting Started Guide
 ------------------------------------------------------------------------
 
 Prerequisites
- * Docker - https://docs.docker.com/engine/install
- * Operating system - any Docker-compatible platform
- * Internet - only container setup requires the host to be online
- * Memory - the container size is ~1.8GB
+ * 🐳 Docker - https://docs.docker.com/engine/install
+ * 🖥️ Operating system - any Docker-compatible platform
+ * 🌐 Internet - only container setup requires the host to be online
+ * 🧠 Memory - the container size is about 1.8GB
 
-① [Choose one] Load or build a container
+① [Choose one] Load or build the Docker container
+   (build time is about 10 min).
 
     docker load -i rectx.<arch>.tar
 
@@ -48,28 +50,28 @@ Prerequisites
 
     docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
 
-The command mounts a shared directory on the container host.
-Results of all experiments run inside the container will persist in
-the shared directory after exiting the container.
+The command mounts a shared directory (results) on the host. This way,
+the results of all experiments run inside the container will be
+visible on the host and will persist after container exit.
 
 
 Source Code Organization
 ------------------------------------------------------------------------
 
-Besides the Python package dependencies, all source code is included in
-the artifact.
+Except Python packages, all source code is included in the artifact.
 
-     .
-     ├─ 📁 dig                 Dig source code
+     .                          
+     ├─ 📁 dig                 Dɪɢ source code
      ├─ 📁 digup               source code of our prototype detector
      ├─ 📁 input/traces        all input traces
      ├─ 📁 logs                referential result from our experiments
      ├─ 📁 scripts             helper scripts for running experiments
-     ├─ 📁 tacle               TaCle source code
+     ├─ 📁 tacle               TᴀCʟᴇ source code
      ├─ 📁 verified            Dafny-verified codes
-     ├─ LICENSE                software license
+     ├─ Dockerfile             container build script
+     ├─ LICENSE                software license (MIT)
      ├─ readme.txt             this readme
-     ├─ requirements.txt       Python dependencies
+     ├─ requirements.txt       Python package dependencies
      └─ *                      other configuration files
 
 
@@ -80,24 +82,26 @@ Which claims or results can be replicated:
  * Experiments (Tables 1-4 in §3-4, except 3.4) and verification (§5).
 
 Precisely state the resource requirements you used:
- * see `logs/_host.txt` (Ubuntu 22.04.5, 8 cores, 64GB RAM).
+ * see `logs/_host.txt` → Ubuntu 22.04.5, 8 cores, 64GB RAM.
 
 Provide a rough estimate of the experiment times:
+ * smoke test 10 min and full evaluation 70 min.
  * The times are based on `logs` and exclude containerization overhead.
 
 Regarding tasks that require a large amount of resources:
  * The experiment of §3.4s take about 16h. Reproduction requires
    only extending the timeout (`make TO=54000`). We do not expect the
    AEC to repeat the experiment, but claim that it is in principle
-   reproducible with the artifact (the evaluations do execute the
-   workloads, but they terminate with a timeout).
+   reproducible with the artifact (the evaluations commands do execute
+   the workloads, but they terminate with a timeout).
 
 
-### Checking the verification (§5)
+Checking the verification (§5)
+------------------------------
 
-The `verified` directory contains
- * Data mutation that maintains invariants under perturbations.
- * Verified benchmarks to confirm consistency of linear invariants.
+The `verified` directory contains:
+ * Data mutation algorithm to maintain invariants under perturbations.
+ * Verified benchmarks to confirm consistency with linear invariants.
 
 Check the data mutation verification by running:
 
@@ -105,23 +109,30 @@ Check the data mutation verification by running:
 
 This should print "finished with 20 verified, 0 errors."
 
+To confirm the development matches the paper description, manually
+review the following parts of verified/mutation.dfy.
+ * Fig. 4 type definitions: L3–29
+ * Fig. 5 correctness: L35–84
+ * Fig. 6 mutations: L128–143, L178–192
 
-### Reproducing Experiments (§3-4)
+
+Reproducing Experiments (§3-4)
+------------------------------
 
 The results are written to `results` directory.
  * Tables 1, 3, and 4 will be written to `results/_results.txt`
  * Table 2 will be written to `results/_inputs.txt`
 
-#### [~10 min] A Smoke Test
+[~10 min] A SMOKE TEST
 
     make TO=60 SZ=25
 
-#### [~70 min] Full Evaluation
+[~70 min] FULL EVALUATION
 
     make
 
-The `make` command runs a sequence of other commands.
-They generate statistics of traces and host machine; run all
+The make-command just runs a sequence of other commands.
+They generate statistics of traces and host machine, run all
 experiments, and generate table plots.
 
 To run the same as individual steps:
@@ -145,59 +156,76 @@ Overridable Makefile options
     SZ           Trace sizes for times experiment     25 50 75 100
     TO           Benchmark timeout in seconds                   90
 
+
 ------------------------------------------------------------------------
-REUSABLE EVALUATION
+REUSABILITY GUIDE
 ------------------------------------------------------------------------
 
-The artifact reusability claims are:
- * Documentation and setup facilitate reuse in new environments.
- * Dependencies and platform support are documented.
- * Artifact enables running experiments on new input traces.
+The artifact is reusable in the sense that it can be extended to
+process new inputs, beyond the paper.
+
+The reusability claims are:
+ * Documentation and packaging facilitate reuse in new environments.
+ * Artifact documents dependencies and platform support.
+ * Artifact explains how to adapt the setup to new inputs.
 
 
 Native Execution from Sources
 ------------------------------------------------------------------------
 
 Platform support
- * ✔ tested on Linux 22.04, MacOS v11/Intel, and MacOS v15 M1/ARM
+ * YES for Unix-like operating systems:
+   tested on Linux 22.04, macOS v11/Intel, and macOS v15 M1/ARM
  * Windows compatibility is untested
 
 Software prerequisites
- * bash   ≥3.2:      https://www.gnu.org/software/bash/
- * make   ≥4:        https://www.gnu.org/software/make/
- * Python ≥3.10:     https://www.python.org/downloads/
- * Dafny  ≥4.7.0:    https://dafny.org
+ * ◼️ bash   ≥3.2:      https://www.gnu.org/software/bash/
+ * ⚒️ make   ≥4:        https://www.gnu.org/software/make/
+ * 🐍 Python ≥3.10:     https://www.python.org/downloads/
+ * 💛 Dafny  ≥4.7.0:    https://dafny.org
 
-① [Optional] Create a virtual environment.
+NOTE: Dafny is only needed for verification and not for experiments;
+      this guide will work without Dafny.
+
+
+① [Optional] At the sources root, create a fresh virtual environment.
 
     python3 -m venv venv && source venv/bin/activate
 
+For help, the guide for creating virtual environments is at
+https://docs.python.org/3/library/venv.html.
 
 ② Install Python dependencies.
 
     python3 -m pip install -r requirements.txt
 
-The precise environment used in the paper is in `req.repro.txt`.
+The precise environment we used in the paper experiments is captured in
+`req.repro.txt`. It can be used as an alternative source of Python
+package installation.
 
 
 Executing Custom Workloads
 ------------------------------------------------------------------------
 
-The command format to run a single experiment is
+The command format to run an experiment on a single input is
 
     make results/[INPUT].[EXT]
 
-* [INPUT] is a benchmark name in input/traces.
-* [EXT] is the choice invariant detector: dig, digup, or tacle.
-* E.g., `make results/l_003.dig` runs linear problem #3 on Dɪɢ.
+* [INPUT] is a benchmark name from `input/traces`.
+* [EXT] is the choice invariant detector in { dig, digup, tacle }.
+* For example `make results/l_003.dig` runs linear problem #3 on Dɪɢ.
 
-### Adding New Inputs
 
-This example can be evaluated in a Docker container on a native host.
+Adding New Inputs
+------------------------------------------------------------------------
+
+The artifact can be extended to new numeric input traces.
+
+This example can be executed in a Docker container on a native host.
 The commands correspond to:
- ① create a comma-separated file,
- ② convert the CSV to an input trace,
- ③ run an experiment, and
+ ① create a comma-separated value (CSV) file
+ ② convert the CSV to a trace
+ ③ run an experiment and
  ④ inspect the result.
 
     echo "varA,varB
@@ -210,10 +238,22 @@ The commands correspond to:
     make results/test.dig
     cat results/test.dig
 
+As output, you should finally observe the invariants extracted from
+the test data.
+
+    trace1 (5 invs):
+    1. -varB <= 4
+    2. varB <= 12
+    3. -varA + varB <= 7
+    4. -varA - varB <= -8
+    5. varA === 1 (mod 2)
+
+
 ------------------------------------------------------------------------
-📜️  LICENSING
+LICENSING
 ------------------------------------------------------------------------
 
-* Developments in this artifact are licensed under the MIT license.
-* The UCI datasets in inputs are licensed under CC BY 4.0.
-* The detectors Dig and Tacle have their own licensing terms.
+* The source code introduced in the artifact is licensed under MIT.
+* The UCI datasets at input/traces are licensed under CC BY 4.0.
+* The Dɪɢ detector is licensed under MIT.
+* TᴀCʟᴇ is unlicensed.
