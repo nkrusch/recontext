@@ -37,16 +37,13 @@ Prerequisites
  * 🐳 Docker - https://docs.docker.com/engine/install
  * 🖥️ Operating system - any Docker-compatible platform
  * 🌐 Internet - only container setup requires the host to be online
- * 🧠 Memory - the container size is about 1.8GB
+ * 🧠 Memory - the container size is about 1.4GB
 
-① [Choose one] Load or build the Docker container
-   (build time is about 10 min).
-
-    docker load -i rectx.<arch>.tar
+① [<2 min] Build the container. On some machines you may need sudo.
 
     docker build . -t rectx
 
-② Launch the container. On some machines you may need sudo.
+② Launch the container.
 
     docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
 
