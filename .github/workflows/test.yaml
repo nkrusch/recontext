@@ -23,6 +23,7 @@ jobs:
           python-version: "3.11"
       - run: python -m pip install -q -r requirements.txt
       - run: make results/${{ env.WORKLOAD }}.${{ env.ANALYZER }}
+      - run: cat results/${{ env.WORKLOAD }}.${{ env.ANALYZER }}
       - name: report
         uses: actions/upload-artifact@v4
         with:
