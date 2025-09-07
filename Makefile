@@ -144,11 +144,9 @@ clean:
 
 
 ARC       := sources
-ARC_OUT   := ~/Desktop/$(ARC).zip
 ARC_FIND  := find . -mindepth 1 -maxdepth 1 ! -name '.*'
 ARC_DIRS  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type d ! -name $(ARC) ! -name '__*__' ! -name 'results' ! -name 'venv'))
 ARC_FILE  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type f ! -name '*.zip')) .dockerignore
-archive:  $(ARC_OUT)
 
 %.zip:
 	@mkdir -p $(ARC)

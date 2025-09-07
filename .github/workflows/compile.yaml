@@ -34,7 +34,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
-8
+
       - name: Export digest
         run: |
           mkdir -p ${{ runner.temp }}/digests

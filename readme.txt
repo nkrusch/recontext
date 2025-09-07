@@ -11,11 +11,6 @@ scalability issues with larger inputs. DɪɢUᴘ is a wrapper for Dɪɢ that
 partitions the input trace and yields inference results based on the
 partitions. Select parts of the development are verified in Dafny.
 
-The artifact includes
- * An experimental setup to reproduce paper experiments (§3-4)
- * All benchmarks, inputs, and source codes needed for experiments
- * The full verification described in (§5)
-
 Evaluation expectations
  * Running a smoke test takes about 10 minutes.
  * Full evaluation takes about 90 min (based on a 8-core Linux host).
@@ -27,6 +22,11 @@ SMOKE TEST & FUNCTIONAL EVALUATION
 
 This section contains instructions for a functional evaluation, and
 explains how to reproduce the paper claims.
+
+The artifact includes
+ * An experimental setup to reproduce paper experiments (§3-4)
+ * All benchmarks, inputs, and source codes needed for experiments
+ * The full verification described in (§5)
 
 
 Getting Started Guide
@@ -195,10 +195,10 @@ The command format to run a single experiment is
 
 This example can be evaluated in a Docker container on a native host.
 The commands correspond to:
-① create a comma-separated file,
-② convert the CSV to an input trace,
-③ run an experiment, and
-④ inspect the result.
+ ① create a comma-separated file,
+ ② convert the CSV to an input trace,
+ ③ run an experiment, and
+ ④ inspect the result.
 
     echo "varA,varB
     1,7
