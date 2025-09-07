@@ -141,9 +141,9 @@ To run the same as individual steps:
     ────────────────────────────────────────────────────────────────
     make stats     Gather statistics of traces [Table 2]   < 1 min
     make host      Capture host machine details            < 1 min
-    make dig       Run Dig experiments [Tables 1, 3]       ~30 min
-    make digup     Run Digup experiments [Table 3]          ~5 min
-    make times     Run exec time experiments [Table 4]     ~30 min
+    make dig       Run Dɪɢ experiments [Tables 1, 3]       ~30 min
+    make digup     Run DɪɢUᴘ experiments [Table 3]          ~5 min
+    make times     Run exec-time experiments [Table 4]     ~30 min
     make score     Plot all tables                         < 1 min
 
 Run `make clean` to reset `results` directory.

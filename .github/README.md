@@ -12,15 +12,16 @@ Select parts of the development are verified in Dafny.
 
 ## Getting Started
 
-**🖥️ Setup for native hosts.** 
+### 🖥️ &nbsp; Setup for native hosts
 
-PREREQUISITES:
+Prerequisites:
 [git](https://git-scm.com/downloads), 
 [bash](https://www.gnu.org/software/bash/),
 [make](https://www.gnu.org/software/make/), and
-[Python](https://www.python.org/downloads/) (v3.10 or later)
+[Python](https://www.python.org/downloads/) (v3.10 or later).
 
-Clone the repository and install dependencies.
+**Clone the repository and install dependencies.**
+
 ```bash
 git clone --recurse-submodules https://github.com/nkrusch/invariants.git
 cd invariants
@@ -28,9 +29,20 @@ python3 -m venv venv && source venv/bin/activate    # recommended
 python3 -m pip install -r requirements.txt
 ```
 
-The `venv` setup is for unix hosts. 
+The included `venv` command is for POSIX/bash hosts. 
 Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating-virtual-environments) on other hosts.
 
+### 🐳 &nbsp; Setup for virtual environments
+
+Prerequisites:
+[Docker](https://docs.docker.com/engine/install).
+
+**[10 min] Build and launch a container.**
+
+```bash
+docker build . -t rectx
+docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
+```
 
 ## Experiments
 
@@ -49,13 +61,11 @@ COMMAND             DESCRIPTION                                 DURATION
 ────────────────────────────────────────────────────────────────────────
 make stats          Gather statistics about input traces         < 1 min
 make host           Capture host machine details                 < 1 min
-make dig            Run Dig experiments                          ~30 min
-make digup          Run Digup experiments                         ~5 min
-make times          Run exec time experiments                    ~30 min
+make dig            Run Dɪɢ experiments                          ~30 min
+make digup          Run DɪɢUᴘ experiments                         ~5 min
+make times          Run exec-time experiments                    ~30 min
 make score          Plot results                                 < 1 min
 </pre>
-
-The duration estimates are based on `logs`.
 
 Run `make clean` to reset the `results` directory.    
 
@@ -66,7 +76,7 @@ Run `make clean` to reset the `results` directory.
 
 * `[INPUT]` is a benchmark name (like `l_003`).
 * `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
-* For example `make results/l_003.dig` runs linear problem #3 on Dig.
+* For example `make results/l_003.dig` runs linear problem #3 on Dɪɢ.
 
 #### Overridable Makefile options
 
@@ -74,23 +84,58 @@ Run `make clean` to reset the `results` directory.
 OPTION       DESCRIPTION                                         DEFAULT             
 ────────────────────────────────────────────────────────────────────────
 PYTHON       Path to Python runtime                              python3
-DOPT         Dig analysis options
+DOPT         Dɪɢ analysis options
 OUT          Path to results directory                           results
 TMP          Directory for temporary files                          .tmp
 SZ           Trace sizes for times experiment               25 50 75 100
 TO           Analysis timeout in seconds                              90
 </pre>
 
-The times experiment runs until completion independently of timeout,
-but can be adjusted by modifying the workloads (`SZ`).
+Times experiment runs until completion, ignoring timeout.
+It can be adjusted by modifying the workloads `SZ`.
 
 
-## Inputs
+## Repository Details
 
-* Dataset details are available at the associated links.
+### Organization
+
+<pre>
+ .
+ ├─ 📁 dig                 [submodule] Dɪɢ analyzer 
+ ├─ 📁 digup               our modified analyzer
+ ├─ 📁 input               all input traces 
+ ├─ 📁 logs                referential result for inspection
+ ├─ 📁 scripts             scripts for running experiments
+ ├─ 📁 tacle               [submodule] TᴀCʟᴇ analyzer 
+ ├─ 📁 verified            Dafny-verified codes
+ ├─ config.txt             input-specific run options
+ ├─ Dockerfile             virtual runtime environment setup
+ ├─ inputs.yaml            configurations for trace generation
+ ├─ LICENSE                software license
+ ├─ Makefile               useful commands
+ ├─ readme.txt             artifact readme
+ ├─ req.repro.txt          [frozen] Python dependencies
+ └─ requirements.txt       Python dependencies
+</pre>
+
+The `verified` directory contains:
+* Verified linear benchmarks - to show the extracted invariants are true invariants.
+* Verified data mutation - to show we can maintain invariants under data perturbations.
+
+Running the verifier requires [Dafny](https://dafny.org).
+
+### Licensing
+
+* Developments in this repository are licensed under the MIT license.
+* The datasets in input/traces are licensed under the CC BY 4.0 license.
+* Dɪɢ and TᴀCʟᴇ are submodules and have their own licensing terms.
+
+### About Inputs
+
+* Dataset details and licenses are available at the associated links.
 * Function and linear invariants are described in `inputs.yaml`.
 * Some problems require user-supplied options, defined in `config.txt`.
-* Dig expects inputs as traces and tacle expects input in CSV format.
+* Dɪɢ expects inputs as traces and TᴀCʟᴇ expects input in CSV format.
 
 <pre>
 DATASETS (ds)                                                              
@@ -106,37 +151,3 @@ f_***            pure math functions
 LINEAR INVARIANT (l)
 l_001 -- l_133   program traces
 </pre>
-
-
-## Repository Details
-
-### Organization
-
-<pre>
- .
- ├─ 📁 dig                 analyzer (submodule)
- ├─ 📁 digup               our modified analyzer
- ├─ 📁 input               all input traces 
- ├─ 📁 logs                referential result for inspection
- ├─ 📁 scripts             scripts for running experiments
- ├─ 📁 tacle               analyzer (submodule) 
- ├─ 📁 verified            Dafny-verified codes
- ├─ config.txt             input-specific run options
- ├─ Dockerfile             virtual runtime environment setup
- ├─ inputs.yaml            configurations for trace generation
- ├─ LICENSE                software license
- ├─ Makefile               useful commands
- ├─ readme.txt             artifact readme
- ├─ req.repro.txt          Python dependencies (frozen)
- └─ requirements.txt       Python dependencies
-</pre>
-
-The `verified` directory contains:
-* Verified linear benchmarks: extracted invariants are true invariants.
-* Verified data mutation: we can maintain invariants under data perturbations.
-
-### Licensing
-
-* Developments in this repository are licensed under the MIT license.
-* The datasets in input/traces are licensed under the CC BY 4.0 license.
-* Dig and Tacle are submodules and have their own terms of reuse.
