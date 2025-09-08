@@ -1,10 +1,10 @@
 # Dynamic Invariant Detection
 
-This repository is an experimental setting for _dynamic invariant detection_.
+The repository is an experimental setting for _dynamic invariant detection_.
 Invariant detection aims to find assertions that hold over all instances of traced values.
 
 The environment is pre-configured with two detectors, Dɪɢ and TᴀCʟᴇ, and many numerical input traces.
-The analyzers will have scalability issues with larger inputs. 
+The analyzers will have scalability issues with larger inputs.
 DɪɢUᴘ is a wrapper for Dɪɢ that partitions the input trace and yields inference results based on the partitions.
 
 Select parts of the development are verified in Dafny.
@@ -12,37 +12,37 @@ Select parts of the development are verified in Dafny.
 
 ## Getting Started
 
-### 🖥️ &nbsp; Setup for native hosts
-
-Prerequisites:
-[git](https://git-scm.com/downloads), 
-[bash](https://www.gnu.org/software/bash/),
-[make](https://www.gnu.org/software/make/), and
-[Python](https://www.python.org/downloads/) (v3.10 or later).
-
-**Clone the repository and install dependencies.**
-
-```bash
-git clone --recurse-submodules https://github.com/nkrusch/invariants.git
-cd invariants
-python3 -m venv venv && source venv/bin/activate    # recommended
-python3 -m pip install -r requirements.txt
-```
-
-The included `venv` command is for POSIX/bash hosts. 
-Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating-virtual-environments) on other hosts.
-
 ### 🐳 &nbsp; Setup for virtual environments
 
 Prerequisites:
 [Docker](https://docs.docker.com/engine/install).
 
-**[<2 min] Build and launch a container.**
+* Build and launch a container.
 
-```bash
-docker build . -t rectx
-docker run --rm -v "$(pwd)/results:/rectx/results" -it rectx:latest
-```
+    ```bash
+    docker build . -t rectx
+    docker run --rm -v "$(pwd)/rdoc:/rectx/results" -it rectx:latest
+    ```
+
+### 🖥️ &nbsp; Setup for native hosts
+
+Prerequisites:
+[git](https://git-scm.com/downloads),
+[bash](https://www.gnu.org/software/bash/),
+[make](https://www.gnu.org/software/make/), and
+[Python](https://www.python.org/downloads/) (v3.10 or later).
+
+* Clone the repository and install dependencies.
+
+    ```bash
+    git clone --recurse-submodules https://github.com/nkrusch/recontext.git && cd recontext
+    python3 -m venv venv && source venv/bin/activate  
+    python3 -m pip install -r requirements.txt
+    ```
+
+The `venv` command is for POSIX/bash hosts.
+Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating-virtual-environments) on other hosts.
+
 
 ## Experiments
 
@@ -67,7 +67,7 @@ make times          Run exec-time experiments                    ~30 min
 make score          Plot results                                 < 1 min
 </pre>
 
-Run `make clean` to reset the `results` directory.    
+Run `make clean` to reset the `results` directory.
 
 
 #### Execute a single benchmark
@@ -75,7 +75,7 @@ Run `make clean` to reset the `results` directory.
     make results/[INPUT].[EXT]
 
 * `[INPUT]` is a benchmark name (like `l_003`).
-* `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`). 
+* `[EXT]` is the choice analyzer (`dig`, `digup`, or `tacle`).
 * For example `make results/l_003.dig` runs linear problem #3 on Dɪɢ.
 
 #### Overridable Makefile options
@@ -91,8 +91,8 @@ SZ           Trace sizes for times experiment               25 50 75 100
 TO           Analysis timeout in seconds                              90
 </pre>
 
-Times experiment runs until completion, ignoring timeout.
-It can be adjusted by modifying the workloads `SZ`.
+Times experiment runs to completion (ignoring timeout), but can be
+adjusted by modifying the workloads `SZ`.
 
 
 ## Repository Details
@@ -122,7 +122,7 @@ The `verified` directory contains:
 * Verified linear benchmarks - to show the extracted invariants are true invariants.
 * Verified data mutation - to show we can maintain invariants under data perturbations.
 
-Running the verifier requires [Dafny](https://dafny.org).
+Checking the verifier files requires [Dafny](https://dafny.org).
 
 ### Licensing
 
@@ -146,7 +146,7 @@ ds_wine          https://archive.ics.uci.edu/dataset/109
 ds_wred          https://archive.ics.uci.edu/dataset/186
 
 FUNCTION INVARIANTS (f)   
-f_***            pure math functions 
+f_***            math functions 
 
 LINEAR INVARIANT (l)
 l_001 -- l_133   program traces

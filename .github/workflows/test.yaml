@@ -3,6 +3,9 @@ name: "Runtime Test"
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
   workflow_dispatch:
     branches: [ main ]
 

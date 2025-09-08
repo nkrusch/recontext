@@ -3,7 +3,6 @@ INTRODUCTION
 ------------------------------------------------------------------------
 
 The artifact is an experimental setting for dynamic invariant detection.
-
 Invariant detection finds assertions that hold over all instances of
 traced values. The environment is pre-configured with two detectors,
 Dɪɢ and TᴀCʟᴇ, and many numerical input traces. The analyzers will have
@@ -14,7 +13,8 @@ partitions. Select parts of the development are verified in Dafny.
 Artifact evaluation expectations
  * A smoke test takes about 10 minutes (+ some setup time).
  * Full evaluation takes about 70 min (on an 8-core Linux host).
- * Execution requires Docker and has no specialty hardware requirements.
+ * Execution requires Docker (amd or arm).
+ * There are no specialty hardware requirements.
  
 
 ------------------------------------------------------------------------
@@ -257,5 +257,4 @@ LICENSING
 
 * The source code introduced in the artifact is licensed under MIT.
 * The UCI datasets at input/traces are licensed under CC BY 4.0.
-* The Dɪɢ detector is licensed under MIT.
-* TᴀCʟᴇ is unlicensed.
+* The Dɪɢ detector is licensed under MIT and TᴀCʟᴇ is unlicensed.
