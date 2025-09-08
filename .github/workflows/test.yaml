@@ -6,10 +6,6 @@ on:
   workflow_dispatch:
     branches: [ main ]
 
-env:
-  WORKLOAD: f_2x3y
-  ANALYZER: dig
-
 jobs:
   test:
     name: Runtime test
@@ -22,12 +18,12 @@ jobs:
         with:
           python-version: "3.11"
       - run: python -m pip install -q -r requirements.txt
-      - run: make results/${{ env.WORKLOAD }}.${{ env.ANALYZER }}
-      - run: cat results/${{ env.WORKLOAD }}.${{ env.ANALYZER }}
+      - run: time make TO=10 SZ=10
+      - run: cat results/_results.txt
       - name: report
         uses: actions/upload-artifact@v4
         with:
           name: results
           path: |
             results/_log.txt
-            results/${{ env.WORKLOAD }}.${{ env.ANALYZER }} 
+            results/_results.txt
