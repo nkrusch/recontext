@@ -75,7 +75,6 @@ GEN_L    := ${LINEAR:%=gen/l_%}
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS) digup score
-compare: $(COMP)
 check:   $(CHECKS)
 trc_f:   $(GEN_F)
 trc_l:   $(GEN_L)
@@ -118,8 +117,8 @@ gen/%:
 $(OUT)/%.check:
 	export T_DTYPE=d && $(PYTHON) -m $(UTILS) -a check $(subst .check,.dig,$@) > $@
 
-$(COMP):
-	@$(PYTHON) -m $(UTILS) -a match $@
+compare:
+	@$(foreach f,$(COMP), $(PYTHON) -m $(UTILS) -a match $(f) ;)
 
 $(MACHINE): $(OUT)
 	@bash $(UTILS)/machine.sh > $@
@@ -141,19 +140,18 @@ clean:
 	@-rm -rf $(OUT)
 
 
-.PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)
+.PHONY: $(SCORE) $(STATS) $(MACHINE) compare
 
 #=======================
 # Build an archive
 #=======================
-
 ARC       := sources
 ARC_NO    := $(ARC) .* __*__ results venv rdoc *.zip
 ACT_RM   := __MACOSX/* *.pyo *.pyc __pycache__ *.DS_Store
 ARC_FLTR  := $(patsubst %,! -name '%',$(ARC_NO))
 ARC_ITEMS := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(ARC_FLTR))) .dockerignore
 
-%.zip:
+%.zip: clean clean_tmp
 	@mkdir -p $(ARC)
 	@$(foreach x, $(ARC_ITEMS), cp -R $(x) $(ARC) ;)
 	@-rm -rf $(ARC)/$(IN_CSV) && make $(ACT_RM)
