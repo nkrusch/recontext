@@ -145,15 +145,16 @@ clean:
 #=======================
 # Build an archive
 #=======================
-ARC       := sources
+ARC       := artifact-sources
 ARC_NO    := $(ARC) .* __*__ results venv rdoc *.zip
-ACT_RM   := __MACOSX/* *.pyo *.pyc __pycache__ *.DS_Store
+ACT_RM   := __MACOSX/* *.pyo *.pyc */__pycache__/ *.DS_Store
 ARC_FLTR  := $(patsubst %,! -name '%',$(ARC_NO))
 ARC_ITEMS := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(ARC_FLTR))) .dockerignore
 
 %.zip: clean clean_tmp
 	@mkdir -p $(ARC)
 	@$(foreach x, $(ARC_ITEMS), cp -R $(x) $(ARC) ;)
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@-rm -rf $(ARC)/$(IN_CSV) && make $(ACT_RM)
 	@zip -r $@ $(ARC)
 	@rm -rf $(ARC)
