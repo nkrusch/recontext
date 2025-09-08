@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: python -m pip install -q -r requirements.txt
-      - run: time make TO=10 SZ=10
+      - run: time make TO=60 SZ=10
       - run: cat results/_results.txt
       - name: report
         uses: actions/upload-artifact@v4
@@ -27,3 +27,4 @@ jobs:
           path: |
             results/_log.txt
             results/_results.txt
+          compression-level: 0

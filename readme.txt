@@ -36,12 +36,16 @@ Getting Started Guide
 Prerequisites
  * 🐳 Docker - https://docs.docker.com/engine/install
  * 🖥️ Operating system - any Docker-compatible platform
- * 🌐 Internet - only container setup requires the host to be online
+ * 🌐 Internet - only container build requires the host to be online
  * 🧠 Memory - the container size is about 1.5GB
 
-① [~1 min] Build the container. On some machines you may need sudo.
+① [<2 min] Build the container. On some machines you may need sudo.
 
     docker build . -t rectx
+
+Alternatively, for a pre-built container, run:
+
+    docker load -i [NAME].tar
 
 ② Launch the container.
 
