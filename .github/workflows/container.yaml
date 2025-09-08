@@ -1,50 +1,72 @@
 name: Container
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main ]
+    tags:
+      - '*'
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
   workflow_dispatch:
     branches: [ main ]
 
 env:
   IMAGE_NAME: rectx
   TAG_LATEST: latest
+  REGISTRY_IMAGE: nkrusch/rectx
 
 jobs:
-  amd:
-    name: AMD build
+  container:
+    name: build
     if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
     runs-on: ubuntu-latest
-    permissions: write-all
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: pierreraffa/cancel-previous-runs-action@1.11
       - uses: actions/checkout@v4
         with:
           submodules: true
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
-      - name: Build Docker image
+      - name: Build and push by digest
+        id: build
         uses: docker/build-push-action@v6
         with:
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
-          platforms: linux/amd64
-          push: false
-  arm:
-    name: ARM build
-    if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
-    runs-on: macos-13
-    permissions: write-all
-    steps:
-      - uses: pierreraffa/cancel-previous-runs-action@1.11
-      - uses: actions/checkout@v4
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
         with:
-          submodules: true
-      - uses: douglascamata/setup-docker-macos-action@v1
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
-          platforms: linux/arm64
-          push: false
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
