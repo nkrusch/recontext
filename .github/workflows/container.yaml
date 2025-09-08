@@ -1,27 +1,27 @@
 name: Container
 
 on:
-  #  push:
-  #    branches: [ main ]
+  push:
+    branches: [ main ]
   workflow_dispatch:
     branches: [ main ]
 
 env:
-  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
   TAG_LATEST: latest
-  IMAGE_NAME: rectx  # push fails w/o namespace
 
 jobs:
   container:
     name: Docker build
+    if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
     runs-on: ubuntu-latest
     permissions: write-all
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - amd64
-          - arm64
+          - linux/amd64
+          - linux/arm64
     steps:
       - uses: pierreraffa/cancel-previous-runs-action@1.11
       - uses: actions/checkout@v4
@@ -32,14 +32,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/${{ matrix.platform }}
+          context: .
           tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
+          platforms: ${{ matrix.platform }}
           push: false
-      - run: docker save -o ${{ env.IMAGE_NAME }}_${{ matrix.platform }}.tar ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
-      - name: Export artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.IMAGE_NAME }}_${{ matrix.platform }}.tar
-          path: .
-          if-no-files-found: error
-          retention-days: 2

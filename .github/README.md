@@ -37,7 +37,7 @@ Follow [this guide &nearr;](https://docs.python.org/3/library/venv.html#creating
 Prerequisites:
 [Docker](https://docs.docker.com/engine/install).
 
-**[10 min] Build and launch a container.**
+**[<2 min] Build and launch a container.**
 
 ```bash
 docker build . -t rectx

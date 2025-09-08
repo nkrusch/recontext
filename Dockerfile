@@ -1,9 +1,9 @@
 FROM python:3.11-slim
 
-LABEL org.opencontainers.image.authors="anonymous"
-LABEL org.opencontainers.image.title="Recontext-artifact"
+LABEL org.opencontainers.image.authors="Neea Rusch"
+LABEL org.opencontainers.image.title="recontext"
 LABEL org.opencontainers.image.description="Dynamic invariant detection"
-LABEL org.opencontainers.image.source="https://github.com/anonymous/recontext"
+LABEL org.opencontainers.image.source="https://github.com/nkrusch/recontext"
 LABEL org.opencontainers.image.licenses="MIT"
 
 ARG PROJ="/rectx"
