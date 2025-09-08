@@ -223,7 +223,7 @@ Adding New Inputs
 
 The artifact can be extended to new numeric input traces.
 
-This example can be executed in a Docker container on a native host.
+This example can be executed in a Docker container or on a native host.
 The commands correspond to:
  ① create a comma-separated value (CSV) file
  ② convert the CSV to a trace
