@@ -23,7 +23,7 @@ RUN apt-get update -y \
     &&  chmod +x ./dotnet-install.sh \
     && ./dotnet-install.sh --version latest --runtime aspnetcore \
     && ./dotnet-install.sh --channel 8.0 \
-    && export PATH="root/.dotnet/:$PATH" \
+    && export PATH="/root/.dotnet/:$PATH" \
     && dotnet tool install --global dafny --version $DAFNY_V
 
 RUN mkdir -p $PROJ
