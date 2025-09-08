@@ -143,16 +143,22 @@ clean:
 
 .PHONY: $(SCORE) $(STATS) $(MACHINE) $(COMP)
 
+#=======================
+# Build an archive
+#=======================
 
 ARC       := sources
-ARC_FIND  := find . -mindepth 1 -maxdepth 1 ! -name '.*'
-ARC_DIRS  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type d ! -name $(ARC) ! -name '__*__' ! -name 'results' ! -name 'venv'))
-ARC_FILE  := $(patsubst ./%,%,$(shell $(ARC_FIND) -type f ! -name '*.zip')) .dockerignore
+ARC_NO    := $(ARC) .* __*__ results venv rdoc *.zip
+ACT_RM   := __MACOSX/* *.pyo *.pyc __pycache__ *.DS_Store
+ARC_FLTR  := $(patsubst %,! -name '%',$(ARC_NO))
+ARC_ITEMS := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(ARC_FLTR))) .dockerignore
 
 %.zip:
 	@mkdir -p $(ARC)
-	@$(foreach f, $(ARC_FILE), cp $(f) $(ARC)/$(f) ;)
-	@$(foreach d, $(ARC_DIRS), cp -R $(d) $(ARC) ;)
-	@rm -rf $(ARC)/$(IN_CSV)
+	@$(foreach x, $(ARC_ITEMS), cp -R $(x) $(ARC) ;)
+	@-rm -rf $(ARC)/$(IN_CSV) && make $(ACT_RM)
 	@zip -r $@ $(ARC)
 	@rm -rf $(ARC)
+
+$(ACT_RM):
+	@find $(ARC) -name $@ -exec rm -rf {} +

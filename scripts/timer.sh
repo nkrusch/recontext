@@ -12,9 +12,8 @@ start_time=$SECONDS
 (exec sh -c "$CMD") 1>/dev/null 2>> "$LOG"
 end_time=$SECONDS
 END=$(utc_now)
-
+DIFF=$((END - START))
 diff=$((end_time - start_time))
-echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${diff} s) 0 ${CMD}\n----" >> "$LOG"
 
-DIFF=$(echo "$END - $START" | bc)
+echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${diff} s) 0 ${CMD}\n----" >> "$LOG"
 echo "$TOOL","$SIZE","$START","$END","$DIFF"

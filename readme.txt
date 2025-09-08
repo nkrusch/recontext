@@ -37,9 +37,9 @@ Prerequisites
  * 🐳 Docker - https://docs.docker.com/engine/install
  * 🖥️ Operating system - any Docker-compatible platform
  * 🌐 Internet - only container setup requires the host to be online
- * 🧠 Memory - the container size is about 1.4GB
+ * 🧠 Memory - the container size is about 1.5GB
 
-① [<2 min] Build the container. On some machines you may need sudo.
+① [~1 min] Build the container. On some machines you may need sudo.
 
     docker build . -t rectx
 
@@ -116,7 +116,8 @@ review the following parts of verified/mutation.dfy.
 Reproducing Experiments (§3-4)
 ------------------------------
 
-The results are written to `results` directory.
+The experiment results are written to `results` directory
+(if in Docker, the directory appear as `rdoc` on the host).
  * Tables 1, 3, and 4 will be written to `results/_results.txt`
  * Table 2 will be written to `results/_inputs.txt`
 

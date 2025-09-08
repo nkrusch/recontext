@@ -2,6 +2,7 @@
 results
 sources
 input/csv
+rdoc
 venv
 .venv
 .tmp
