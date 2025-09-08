@@ -11,17 +11,11 @@ env:
   TAG_LATEST: latest
 
 jobs:
-  container:
-    name: Docker build
+  amd:
+    name: AMD build
     if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
     runs-on: ubuntu-latest
     permissions: write-all
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
     steps:
       - uses: pierreraffa/cancel-previous-runs-action@1.11
       - uses: actions/checkout@v4
@@ -32,7 +26,24 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
           tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
+          push: false
+  arm:
+    name: ARM build
+    if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
+    runs-on: ubuntu-latest-arm64
+    permissions: write-all
+    steps:
+      - uses: pierreraffa/cancel-previous-runs-action@1.11
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
+          platforms: linux/arm64
           push: false
