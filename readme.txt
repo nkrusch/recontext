@@ -108,7 +108,7 @@ Check the data mutation verification by running:
 
     dafny verify verified/mutation.dfy
 
-This should print "finished with 27 verified, 0 errors."
+This should print "finished with 29 verified, 0 errors."
 
 To confirm the development matches the paper description, manually
 review the following parts of verified/mutation.dfy.
