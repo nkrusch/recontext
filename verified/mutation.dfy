@@ -128,6 +128,7 @@ module MutationModule {
   function EnsureMutVector(o: vec, m: vec, cond: mutables): vec
     requires MutableVecCorrect(o, cond)
     ensures MutableVecCorrect(EnsureMutVector(o, m, cond), cond)
+    ensures !MutableVecCorrect(m, cond) ==> EnsureMutVector(o, m, cond) == o
     ensures EnsureMutVector(o, m, cond) ==
             if MutableVecCorrect(m, cond) then m else o
     ensures var m' := EnsureMutVector(o, m, cond);
@@ -141,6 +142,12 @@ module MutationModule {
     EquivCorrectness(if corr then m else o, m', cond);
     m'
   }
+
+  lemma MutationFailResets(o: vec, m: vec, cond: mutables)
+    requires MutableVecCorrect(o, cond)
+    requires !MutableVecCorrect(m, cond) 
+    ensures EnsureMutVector(o, m, cond) == o {}
+
 
   function IdxValues(row: vec, indices: seq<idx>): seq<D>
     ensures |indices| == |IdxValues(row, indices)|
@@ -246,14 +253,19 @@ module Tests {
 
     // the mutation does not preserve all invariants
     assert (V.MutableHold(Y, mut) == false) by {
-      assert V.MutableVecCorrect(Y[1], mut) == false;
+      assert !V.MutableVecCorrect(Y[1], mut);
     }
+
+    // expect a mix of initial and mutated values
+    assert E[0] == T[0] && E[1] == X[1];
   }
 
   method EnsureImmRestoresImmutableIndices()
-    ensures forall i : nat :: i < |X| ==>
-      var vi := V.EnsureImmVector(X[i], Y[i], imm);
-      V.ImmutableVecCorrect(X[i], vi, imm)
+    ensures
+      forall i : nat ::
+        i < |X| ==>
+          var vi := V.EnsureImmVector(X[i], Y[i], imm);
+          V.ImmutableVecCorrect(X[i], vi, imm)
   {
     var T0 := V.EnsureImmVector(X[0], Y[0], imm);
     assert V.ImmutableVecCorrect(X[0], T0, imm);
@@ -270,34 +282,23 @@ module Tests {
     assert V.EvalPred(X[0], I);
     var T0 := V.EnsureImmVector(X[0], Y[0], imm);
     assert V.EvalPred(T0, I);
+    assert V.MutableVecCorrect(T0, mut);
+    assert  E[0] == V.EnsureMutVector(X[0], T0, mut) == T0;
 
-    // Mutation predicates fail for T1
+    // Mutation predicates fails => reset to X
     assert V.EvalPred(X[1], I);
     var T1 := V.EnsureImmVector(X[1], Y[1], imm);
-    assert V.EvalPred(T1, mut[0]) == false by {
+    assert V.EvalPred(T1, I) == false by {
       assert T1[1] == Y[1][1];
       assert T1[3] == X[1][3];
       assert !(T1[1] <= T1[3]);
     }
+    assert V.MutableVecCorrect(T1, mut) == false;
+    assert E[1] == V.EnsureMutVector(X[1], T1, mut) == X[1];
   }
 
   method Main() {
-
-    CheckPremises();
-    EnsureImmRestoresImmutableIndices();
-    MutableTransfrom();
-
     var Y' := V.ControlledMutation(X, Y, mut, imm);
     assert V.IsCorrect(X, Y', mut, imm);
-
-    var T0 := V.EnsureImmVector(X[0], Y[0], imm);
-    assert T0 == V.EnsureMutVector(X[0], T0, mut) == Y'[0];
-
-    var T1 := V.EnsureImmVector(X[1], Y[1], imm);
-    assert !V.MutableVecCorrect(T1, mut);
-    assert X[1] 
-            == V.EnsureMutVector(X[1], T1, mut)
-            == V.VectMutation(X[1], Y[1], mut, imm) 
-            == Y'[1];
   }
 }
