@@ -108,13 +108,13 @@ Check the data mutation verification by running:
 
     dafny verify verified/mutation.dfy
 
-This should print "finished with 29 verified, 0 errors."
+This should print "finished with 18 verified, 0 errors."
 
 To confirm the development matches the paper description, manually
 review the following parts of verified/mutation.dfy.
  * Fig. 4 type definitions: L3–29
  * Fig. 5 correctness: L35–84
- * Fig. 6 mutations: L128–143, L178–192
+ * Fig. 6 mutations: L128–144, L179–192
 
 
 Reproducing Experiments (§3-4)

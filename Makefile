@@ -157,6 +157,7 @@ ARC_ITEMS := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(ARC_FLTR)
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@-rm -rf $(ARC)/$(IN_CSV) && make $(ACT_RM)
 	@zip -r $@ $(ARC)
+	@cp readme.txt $(dir $(@))/readme.txt
 	@rm -rf $(ARC)
 
 $(ACT_RM):
