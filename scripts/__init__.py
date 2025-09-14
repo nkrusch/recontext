@@ -426,8 +426,9 @@ def score(dir_path):
 
     for x in [T1, T2, T3]:
         for i in [0, 1]:
-            x.align[x.field_names[i]] = 'l'
-    print('\n\n'.join(map(str, [T1, T2, T3])))
+            if x:
+                x.align[x.field_names[i]] = 'l'
+    print('\n\n'.join(map(str, filter(lambda x: x, [T1, T2, T3]))))
 
 
 def match(fn):
