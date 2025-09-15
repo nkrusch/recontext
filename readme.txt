@@ -80,7 +80,7 @@ Step-by-Step Instructions: Reproducing Paper Claims
 ------------------------------------------------------------------------
 
 Which claims or results can be replicated:
- * Experiments (Tables 1-4 in §3-4, except 3.4) and verification (§5).
+ * Experiments (Tables 1-4 in §3-4, except §3.4) and verification (§5).
 
 Precisely state the resource requirements you used:
  * see `logs/_host.txt` → Ubuntu 22.04.5, 8 cores, 64GB RAM.
@@ -90,7 +90,7 @@ Provide a rough estimate of the experiment times:
  * The times are based on `logs` and exclude containerization overhead.
 
 Regarding tasks that require a large amount of resources:
- * The experiment of §3.4s take about 16h. Reproduction requires
+ * The experiment of §3.4 takes about 16h. Reproduction requires
    only extending the timeout (`make TO=54000`). We do not expect the
    AEC to repeat the experiment, but claim that it is in principle
    reproducible with the artifact (the evaluations commands do execute
@@ -114,16 +114,17 @@ To confirm the development matches the paper description, manually
 review the following parts of verified/mutation.dfy.
  * Fig. 4 type definitions: L3–29
  * Fig. 5 correctness: L35–84
- * Fig. 6 mutations: L128–144, L179–192
+ * Fig. 6 mutations: L90–192
 
 
 Reproducing Experiments (§3-4)
 ------------------------------
 
 The experiment results are written to `results` directory
-(if in Docker, the directory appear as `rdoc` on the host).
+(if in Docker, the directory appears as `rdoc` on the host).
  * Tables 1, 3, and 4 will be written to `results/_results.txt`
  * Table 2 will be written to `results/_inputs.txt`
+ * The exact times of Table 4 may vary, but the relative pattern should be similar.
 
 [~10 min] A SMOKE TEST
 
