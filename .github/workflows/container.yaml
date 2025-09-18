@@ -20,6 +20,26 @@ env:
   REGISTRY_IMAGE: rectx
 
 jobs:
+  archive:
+    name: Archive
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Make source deposit
+        run:  make artifact-sources.zip && md5sum artifact-sources.zip
+      - name: Update Zenodo deposition (sources)
+        run: |
+          curl -H 'Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}' \
+          --upload-file artifact-sources.zip \
+          https://zenodo.org/api/files/${{ secrets.ZENODO_BUCKET }}/artifact-sources.zip
+      - name: Update Zenodo deposition (readme)
+        run: |
+          curl -H 'Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}' \
+          --upload-file readme.txt  \
+          https://zenodo.org/api/files/${{ secrets.ZENODO_BUCKET }}/readme.txt
+
   container:
     name: build
     if: ${{ github.event_name != 'push' || vars.DOCKER_ON == 1 }}
@@ -56,6 +76,11 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
           outputs: type=docker,dest=${{ runner.temp }}/${{ env.REGISTRY_IMAGE }}-${{ env.PLATFORM_PAIR }}.tar
+      - name: Update Zenodo deposition (${{ env.PLATFORM_PAIR }} container)
+        run: |
+          curl -H 'Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}' \
+          --upload-file ${{ runner.temp }}/${{ env.REGISTRY_IMAGE }}-${{ env.PLATFORM_PAIR }}.tar  \
+          https://zenodo.org/api/files/${{ secrets.ZENODO_BUCKET }}/${{ env.REGISTRY_IMAGE }}-${{ env.PLATFORM_PAIR }}.tar
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
