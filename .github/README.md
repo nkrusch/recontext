@@ -122,7 +122,7 @@ The `verified` directory contains:
 * Verified linear benchmarks - to show the extracted invariants are true invariants.
 * Verified data mutation - to show we can maintain invariants under data perturbations.
 
-Checking the verifier files requires [Dafny](https://dafny.org).
+Checking the verified files requires [Dafny](https://dafny.org).
 
 ### Licensing
 
@@ -135,7 +135,7 @@ Checking the verifier files requires [Dafny](https://dafny.org).
 * Dataset details and licenses are available at the associated links.
 * Function and linear invariants are described in `inputs.yaml`.
 * Some problems require user-supplied options, defined in `config.txt`.
-* Dɪɢ expects inputs as traces and TᴀCʟᴇ expects input in CSV format.
+* Dɪɢ expects inputs as traces and TᴀCʟᴇ expects inputs in CSV format.
 
 <pre>
 DATASETS (ds)                                                              
