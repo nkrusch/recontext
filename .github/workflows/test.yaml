@@ -1,5 +1,9 @@
 name: "Runtime Test"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main ]
@@ -20,8 +24,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: "Install Dafny"
-        uses: dafny-lang/setup-dafny-action@v1
+      - uses: dafny-lang/setup-dafny-action@v1
         with:
           dafny-version: "4.10.0"
       - run: python -m pip install -q -r requirements.txt

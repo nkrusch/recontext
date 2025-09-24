@@ -3,30 +3,17 @@ SHELL := /bin/bash
 # supress Make output
 MAKEFLAGS += --no-print-directory
 
-# options
-ifndef $PYTHON
-PYTHON := python3
-endif
-
+# where to save results
 ifndef $OUT  
 OUT := results
 endif
 
-ifndef $TMP
-TMP := .tmp
-endif
-
-ifndef $TO # seconds
-TO := 90
-endif
-
-ifndef $DOPT # DIG options
-DOPT :=
-endif
-
-ifndef $SZ # sizes for timing
-SZ := 25 50 75 100
-endif
+# options
+TMP      ?= .tmp
+TO       ?= 90
+DOPT     ?=
+SZ       ?= 25 50 75 100
+PYTHON   ?= python3
 
 # paths
 UTILS    := scripts
@@ -47,6 +34,7 @@ D_PROBS  := $(wildcard $(IN_TRC)/ds_*.csv)
 DIG_ALL  := ${INPUTS:$(IN_TRC)/%.csv=$(OUT)/%.dig}
 DIG_UPS  := ${D_PROBS:$(IN_TRC)/%.csv=$(OUT)/%.digup}
 T_PROBS  := ${T_SET:%=$(OUT)/%.time}
+COMP     := $(wildcard $(OUT)/*.digup)
 
 #=======================
 # main recipes
@@ -63,15 +51,14 @@ score:   $(SCORE)
 MATH_F   := xy xxy xxxy 2x₊y 2xy 3xy 2x3y axby axbycz m2x0 m8x0 m2xa mbxa mbxya logxy sinxy
 LINEAR   := 001 003 007 009 015 023 024 025 028 035 038 040 050 063 065 067 071 077 083 087 091 093 094 095 097 099 101 107 108 109 110 114 120 124 128 130 132 133
 
+# debugging + generators
 CHECKS   := $(patsubst %.dig,%.check,$(wildcard $(OUT)/*.dig))
 DIG_MTH  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/f_*.csv))
 DIG_LIN  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(wildcard $(IN_TRC)/l_*.csv))
 DIG_DSS  := $(patsubst $(IN_TRC)/%.csv,$(OUT)/%.dig,$(D_PROBS))
-COMP     := $(wildcard $(OUT)/*.digup)
 GEN_F    := ${MATH_F:%=gen/f_%}
 GEN_L    := ${LINEAR:%=gen/l_%}
 
-# debugging + generators
 math:    $(DIG_MTH) score
 linear:  $(DIG_LIN) score
 sets:    $(DIG_DSS) digup score
@@ -147,17 +134,12 @@ clean:
 #=======================
 ARC       := artifact-sources
 ARC_NO    := $(ARC) .* __*__ results venv rdoc *.zip
-ACT_RM   := __MACOSX/* *.pyo *.pyc */__pycache__/ *.DS_Store
-ARC_FLTR  := $(patsubst %,! -name '%',$(ARC_NO))
-ARC_ITEMS := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(ARC_FLTR))) .dockerignore
+ACT_RM    := __MACOSX/* *.pyo *.pyc __pycache__ *.DS_Store $(ARC)/$(IN_CSV)
+ARC_FL    := $(patsubst ./%,%,$(shell find . -mindepth 1 -maxdepth 1 $(patsubst %,! -name '%',$(ARC_NO)))) .dockerignore
 
 %.zip: clean clean_tmp
 	@mkdir -p $(ARC)
-	@$(foreach x, $(ARC_ITEMS), cp -R $(x) $(ARC) ;)
-	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@-rm -rf $(ARC)/$(IN_CSV) && make $(ACT_RM)
+	@$(foreach x, $(ARC_FL), cp -R $(x) $(ARC) ;)
+	@$(foreach x, $(ACT_RM), find $(ARC) -name $(x) -exec rm -rf {} +;)
 	@zip -r $@ $(ARC)
 	@rm -rf $(ARC)
-
-$(ACT_RM):
-	@find $(ARC) -name $@ -exec rm -rf {} +
