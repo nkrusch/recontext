@@ -97,7 +97,7 @@ Regarding tasks that require a large amount of resources:
    the workloads, but terminate with a timeout).
 
 
-Checking the verification (§5)
+Checking The Verification (§5)
 ------------------------------
 
 The `verified` directory contains:
@@ -112,19 +112,24 @@ This should print "finished with 18 verified, 0 errors."
 
 To confirm the development matches the paper description, manually
 review the following parts of verified/mutation.dfy.
- * Fig. 4 type definitions: L3–29
- * Fig. 5 correctness: L35–84
- * Fig. 6 mutations: L90–192
+ * Fig. 4 type definitions: L15–28
+ * Fig. 5 correctness: L35–48 + L75–79
+ * Fig. 6 mutations: L90–105 + L179–192
+
+Some identifiers are changed for paper presentation (paper → code):
+ * PreservingMutation → ControlledMutation
+ * CorrectTraceMutation → MutableHold
+ * VectorMutation → VectMutation
+ * MutationCorrect → MutableVecCorrect
+ * ImmutableCorrect → ImmutableVecCorrect
+ * EnsureImmutable → EnsureImmVector
+ * EnsureMutation → EnsureMutVector
+ * ψ → mutables-type
+ * φ → immutables-type
 
 
 Reproducing Experiments (§3-4)
 ------------------------------
-
-The experiment results are written to `results` directory
-(if in Docker, the directory appears as `rdoc` on the host).
- * Tables 1, 3, and 4 will be written to `results/_results.txt`
- * Table 2 will be written to `results/_inputs.txt`
- * The exact times of Table 4 may vary, but the relative pattern should be similar.
 
 [~10 min] A SMOKE TEST
 
@@ -158,6 +163,38 @@ Overridable Makefile options
     OUT          Path to results directory                 results
     SZ           Trace sizes for times experiment     25 50 75 100
     TO           Benchmark timeout in seconds                   90
+
+
+Matching Experiment Results with Paper (§3-4)
+---------------------------------------------
+
+The experiment results are written to `results` directory
+(if in Docker, the directory appears as `rdoc` on the host).
+
+Table 1 (first table in _results.txt)
+ * I (in paper) is ∑ (in artifact)
+ * Symbol ? means SMT solver could not automatically prove equivalence
+   b/w known and inferred invariants (appears as ✗ in paper)
+ * NOTE: There is a transcription issue with the paper draft and
+   our results (in logs/_results.txt). The issue does not affect the
+   conclusion of the experiment, and will be fixed before publication.
+   The logs/_results.txt is correct.
+
+Table 2 ("Invariant benchmarks" in _inputs.txt)
+ * The function (f) benchmarks appear in different order
+
+Table 3 (second table in _results.txt)
+ * First 3 rows should match between paper and artifact
+ * Last 2 rows (wine/*) will be incomplete (require longer timeout)
+ * "surveillance" in paper → "ds_blink" in artifact
+ * "intrusion" in paper → "ds_lt-fs-id" in artifact
+ * variable and record counts are in "datasets" table in _inputs.txt
+ * time values are recorded in _log.txt
+
+Table 4 (third table in _results.txt)
+ * Paper and artifact use different units (min vs. ms)
+ * Exact times will vary, but the relative pattern should be similar
+   (tacle times increase rapidly with input size)
 
 
 ------------------------------------------------------------------------
