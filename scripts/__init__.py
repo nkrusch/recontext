@@ -370,7 +370,7 @@ def score(dir_path):
     files = list(filter(digs, listdir(dir_path)))
     srcs = [input_csv(b_name(f)) for f in files]
     conf = read_yaml(F_CONFIG)
-    base_h = 'Detector,Benchmark,V,∑,=,≤,%,↕'.split(',')
+    base_h = 'Detector,Benchmark,V,I,=,≤,%,↕'.split(',')
     T1, T2, T3 = PrettyT(base_h + ['✔']), PrettyT(base_h), None
 
     for f, s in sorted([x for x in zip(files, srcs) if isfile(x[1])]):

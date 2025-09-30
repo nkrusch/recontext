@@ -51,7 +51,10 @@ def run_parts(indices, name, args, trace, variables):
             yield __run_dig(tmp_in, *args)
         except subprocess.TimeoutExpired:
             yield ''
-        os.remove(tmp_in)
+        try:
+            os.remove(tmp_in)
+        except:
+            pass
 
 
 def run_one(fp, *args):
@@ -86,7 +89,8 @@ def partition(trace, vars_, fp, *args):
     with Progress() as progress:
         task = progress.add_task('', total=len(ids))
         for item in run_parts(ids, b_name(fp), args, trace, vars_):
-            item = (item or []).split('\n')
+            if isinstance(item, str):
+                item = (item or '').split('\n')
             if inv := list(filter(flt, dig_p(item))):
                 history.update(dict([(k, 1) for k in inv]))
                 print('\n#. '.join(inv))

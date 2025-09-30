@@ -172,23 +172,22 @@ The experiment results are written to `results` directory
 (if in Docker, the directory appears as `rdoc` on the host).
 
 Table 1 (first table in _results.txt)
- * Symbol I (in paper) is ∑ (in artifact).
+ * NOTE: There is are transcription issues between the paper and the
+   results in logs/_results.txt. The logged result is correct.
+   The issue does not affect the main experimental claim (Dig is
+   effective at finding invariants) as passing ✔ cases are the same.
  * Symbol ? means SMT solver could not automatically prove equivalence
    between known and inferred invariants (appears as ✗ in paper).
- * NOTE: There is a transcription issue with the paper draft and
-   our results (in logs/_results.txt). The issue does not affect the
-   conclusion of the experiment, and will be fixed before publication.
-   The logs/_results.txt is correct.
 
 Table 2 ("Invariant benchmarks" in _inputs.txt)
  * The function (f) benchmarks appear in different order.
 
 Table 3 (second table in _results.txt)
  * First 3 rows should match between paper and artifact.
- * Last 2 rows (wine/*) will be incomplete (require longer timeout).
  * "surveillance" in paper → "ds_blink" in artifact.
  * "intrusion" in paper → "ds_lt-fs-id" in artifact.
- * variable and record counts are in "datasets" table in _inputs.txt.
+ * Last 2 rows (wine/*) will be incomplete (require longer timeout).
+ * Variable and record counts are in _inputs.txt in "datasets" table.
  * time values are recorded in _log.txt.
 
 Table 4 (third table in _results.txt)
