@@ -172,10 +172,10 @@ The experiment results are written to `results` directory
 (if running in Docker, the directory appears as `rdoc` on the host).
 
 Table 1 (first table in _results.txt)
- * NOTE: There is are transcription issues between the paper and the
+ * NOTE: There are transcription issues between the paper and the
    results in logs/_results.txt. The logged result is correct.
    The issue does not affect the main experimental claim (that Dig is
-   effective at finding invariants) since passing ✔ cases are the same.
+   effective at finding invariants); the passing ✔ cases are the same.
  * Symbol ? means SMT solver could not automatically prove equivalence
    between known and inferred invariants (appears as ✗ in paper).
 
