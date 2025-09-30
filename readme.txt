@@ -174,7 +174,7 @@ The experiment results are written to `results` directory
 Table 1 (first table in _results.txt)
  * I (in paper) is ∑ (in artifact)
  * Symbol ? means SMT solver could not automatically prove equivalence
-   b/w known and inferred invariants (appears as ✗ in paper)
+   between known and inferred invariants (appears as ✗ in paper)
  * NOTE: There is a transcription issue with the paper draft and
    our results (in logs/_results.txt). The issue does not affect the
    conclusion of the experiment, and will be fixed before publication.
