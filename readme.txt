@@ -174,13 +174,13 @@ The experiment results are written to `results` directory
 Table 1 (first table in _results.txt)
  * NOTE: There is are transcription issues between the paper and the
    results in logs/_results.txt. The logged result is correct.
-   The issue does not affect the main experimental claim (Dig is
-   effective at finding invariants) as passing ✔ cases are the same.
+   The issue does not affect the main experimental claim (that Dig is
+   effective at finding invariants) since passing ✔ cases are the same.
  * Symbol ? means SMT solver could not automatically prove equivalence
    between known and inferred invariants (appears as ✗ in paper).
 
 Table 2 ("Invariant benchmarks" in _inputs.txt)
- * The function (f) benchmarks appear in different order.
+ * The function benchmarks appear in different order.
 
 Table 3 (second table in _results.txt)
  * First 3 rows should match between paper and artifact.
