@@ -86,6 +86,7 @@ def partition(trace, vars_, fp, *args):
     with Progress() as progress:
         task = progress.add_task('', total=len(ids))
         for item in run_parts(ids, b_name(fp), args, trace, vars_):
+            item = (item or []).split('\n')
             if inv := list(filter(flt, dig_p(item))):
                 history.update(dict([(k, 1) for k in inv]))
                 print('\n#. '.join(inv))
