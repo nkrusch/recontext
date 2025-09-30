@@ -90,10 +90,10 @@ def partition(trace, vars_, fp, *args):
         task = progress.add_task('', total=len(ids))
         for item in run_parts(ids, b_name(fp), args, trace, vars_):
             if isinstance(item, str):
-                item = (item or '').split('\n')
+                item = ('' if item is None else item).split('\n')
             if inv := list(filter(flt, dig_p(item))):
                 history.update(dict([(k, 1) for k in inv]))
-                print('\n#. '.join(inv))
+                print('#. ' + ('\n#. '.join(inv)))
             progress.update(task, advance=1)
     shutil.rmtree(TMP, ignore_errors=True)
 

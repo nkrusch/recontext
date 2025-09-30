@@ -169,7 +169,7 @@ Matching Experiment Results with Paper (§3-4)
 ---------------------------------------------
 
 The experiment results are written to `results` directory
-(if in Docker, the directory appears as `rdoc` on the host).
+(if running in Docker, the directory appears as `rdoc` on the host).
 
 Table 1 (first table in _results.txt)
  * NOTE: There is are transcription issues between the paper and the

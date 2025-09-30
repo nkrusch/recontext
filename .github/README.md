@@ -135,7 +135,7 @@ Checking the verified files requires [Dafny](https://dafny.org).
 * Dataset details and licenses are available at the associated links.
 * Function and linear invariants are described in `inputs.yaml`.
 * Some problems require user-supplied options, defined in `config.txt`.
-* Dɪɢ expects inputs as traces and TᴀCʟᴇ expects inputs in CSV format.
+* Dɪɢ inputs are traces and TᴀCʟᴇ inputs are CSV-formatted files.
 
 <pre>
 DATASETS (ds)                                                              
