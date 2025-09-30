@@ -172,29 +172,29 @@ The experiment results are written to `results` directory
 (if in Docker, the directory appears as `rdoc` on the host).
 
 Table 1 (first table in _results.txt)
- * I (in paper) is ∑ (in artifact)
+ * Symbol I (in paper) is ∑ (in artifact).
  * Symbol ? means SMT solver could not automatically prove equivalence
-   between known and inferred invariants (appears as ✗ in paper)
+   between known and inferred invariants (appears as ✗ in paper).
  * NOTE: There is a transcription issue with the paper draft and
    our results (in logs/_results.txt). The issue does not affect the
    conclusion of the experiment, and will be fixed before publication.
    The logs/_results.txt is correct.
 
 Table 2 ("Invariant benchmarks" in _inputs.txt)
- * The function (f) benchmarks appear in different order
+ * The function (f) benchmarks appear in different order.
 
 Table 3 (second table in _results.txt)
- * First 3 rows should match between paper and artifact
- * Last 2 rows (wine/*) will be incomplete (require longer timeout)
- * "surveillance" in paper → "ds_blink" in artifact
- * "intrusion" in paper → "ds_lt-fs-id" in artifact
- * variable and record counts are in "datasets" table in _inputs.txt
- * time values are recorded in _log.txt
+ * First 3 rows should match between paper and artifact.
+ * Last 2 rows (wine/*) will be incomplete (require longer timeout).
+ * "surveillance" in paper → "ds_blink" in artifact.
+ * "intrusion" in paper → "ds_lt-fs-id" in artifact.
+ * variable and record counts are in "datasets" table in _inputs.txt.
+ * time values are recorded in _log.txt.
 
 Table 4 (third table in _results.txt)
- * Paper and artifact use different units (min vs. ms)
- * Exact times will vary, but the relative pattern should be similar
-   (tacle times increase rapidly with input size)
+ * Paper and artifact use different units (min/ms).
+ * Exact times will vary by hardware, but the relative pattern should
+   be observable, e.g., tacle times increase rapidly with input size.
 
 
 ------------------------------------------------------------------------
